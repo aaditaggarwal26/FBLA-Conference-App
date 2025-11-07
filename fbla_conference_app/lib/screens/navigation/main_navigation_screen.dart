@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import '../home/home_screen.dart';
 import '../events/events_screen.dart';
 import '../schedule/schedule_screen.dart';
+import '../resources/resources_screen.dart';
 import '../profile/profile_screen.dart';
 import '../../theme/app_theme.dart';
 
@@ -19,6 +20,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     HomeScreen(),
     EventsScreen(),
     ScheduleScreen(),
+    ResourcesScreen(),
     ProfileScreen(),
   ];
 
@@ -46,7 +48,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                 _buildNavItem(0, Icons.home_rounded, 'Home'),
                 _buildNavItem(1, Icons.event_rounded, 'Events'),
                 _buildNavItem(2, Icons.calendar_today_rounded, 'Schedule'),
-                _buildNavItem(3, Icons.person_rounded, 'Profile'),
+                _buildNavItem(3, Icons.folder_rounded, 'Resources'),
+                _buildNavItem(4, Icons.person_rounded, 'Profile'),
               ],
             ),
           ),
