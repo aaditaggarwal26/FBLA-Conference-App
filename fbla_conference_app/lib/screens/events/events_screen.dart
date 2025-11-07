@@ -3,6 +3,7 @@ import '../../services/event_service.dart';
 import '../../models/event_model.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/event_card.dart';
+import 'event_qr_scanner_screen.dart';
 
 class EventsScreen extends StatefulWidget {
   const EventsScreen({super.key});
@@ -111,6 +112,19 @@ class _EventsScreenState extends State<EventsScreen> {
             ),
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton.extended(
+        onPressed: () {
+          Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const EventQRScannerScreen(),
+            ),
+          );
+        },
+        backgroundColor: AppTheme.primaryBlue,
+        icon: const Icon(Icons.qr_code_scanner_rounded),
+        label: const Text('Scan QR'),
       ),
     );
   }

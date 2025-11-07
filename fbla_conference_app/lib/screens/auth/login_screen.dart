@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'dart:io' show Platform;
+import 'package:flutter/foundation.dart' show kIsWeb;
 import '../../services/auth_service.dart';
 import '../../theme/app_theme.dart';
 
@@ -40,6 +42,58 @@ class _LoginScreenState extends State<LoginScreen> {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
           content: Text(e.message ?? 'An error occurred'),
+          backgroundColor: AppTheme.error,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _signInWithGoogle() async {
+    setState(() => _isLoading = true);
+
+    try {
+      final result = await _authService.signInWithGoogle();
+      if (result == null && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Sign in cancelled'),
+            backgroundColor: AppTheme.mediumGray,
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
+          backgroundColor: AppTheme.error,
+        ),
+      );
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
+    }
+  }
+
+  Future<void> _signInWithApple() async {
+    setState(() => _isLoading = true);
+
+    try {
+      final result = await _authService.signInWithApple();
+      if (result == null && mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Sign in cancelled'),
+            backgroundColor: AppTheme.mediumGray,
+          ),
+        );
+      }
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(e.toString()),
           backgroundColor: AppTheme.error,
         ),
       );
@@ -164,6 +218,49 @@ class _LoginScreenState extends State<LoginScreen> {
                           )
                         : const Text('Sign In'),
                   ),
+                  const SizedBox(height: 24),
+
+                  // Divider
+                  Row(
+                    children: [
+                      Expanded(child: Divider(color: AppTheme.lightGray)),
+                      Padding(
+                        padding: const EdgeInsets.symmetric(horizontal: 16),
+                        child: Text(
+                          'OR',
+                          style: Theme.of(context).textTheme.bodyMedium,
+                        ),
+                      ),
+                      Expanded(child: Divider(color: AppTheme.lightGray)),
+                    ],
+                  ),
+                  const SizedBox(height: 24),
+
+                  // Google Sign In
+                  OutlinedButton.icon(
+                    onPressed: _isLoading ? null : _signInWithGoogle,
+                    icon: const Icon(Icons.g_mobiledata, size: 28),
+                    label: const Text('Continue with Google'),
+                    style: OutlinedButton.styleFrom(
+                      minimumSize: const Size(double.infinity, 50),
+                    ),
+                  ),
+
+                  // Apple Sign In (iOS/macOS/Web only)
+                  if (!kIsWeb && (Platform.isIOS || Platform.isMacOS) ||
+                      kIsWeb) ...[
+                    const SizedBox(height: 12),
+                    OutlinedButton.icon(
+                      onPressed: _isLoading ? null : _signInWithApple,
+                      icon: const Icon(Icons.apple, size: 24),
+                      label: const Text('Continue with Apple'),
+                      style: OutlinedButton.styleFrom(
+                        minimumSize: const Size(double.infinity, 50),
+                        foregroundColor: AppTheme.black,
+                        side: const BorderSide(color: AppTheme.black, width: 2),
+                      ),
+                    ),
+                  ],
                   const SizedBox(height: 24),
 
                   // Sign Up Link

@@ -4,6 +4,7 @@ import '../../models/event_model.dart';
 import '../../services/event_service.dart';
 import '../../services/auth_service.dart';
 import '../../theme/app_theme.dart';
+import 'event_qr_code_screen.dart';
 
 class EventDetailScreen extends StatefulWidget {
   final EventModel event;
@@ -91,6 +92,20 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
           SliverAppBar(
             expandedHeight: 250,
             pinned: true,
+            actions: [
+              IconButton(
+                icon: const Icon(Icons.qr_code_rounded),
+                onPressed: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => EventQRCodeScreen(event: widget.event),
+                    ),
+                  );
+                },
+                tooltip: 'Show QR Code',
+              ),
+            ],
             flexibleSpace: FlexibleSpaceBar(
               background: widget.event.imageUrl != null &&
                       widget.event.imageUrl!.isNotEmpty
