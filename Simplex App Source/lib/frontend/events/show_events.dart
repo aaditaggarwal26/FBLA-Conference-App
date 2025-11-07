@@ -4,20 +4,15 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-// import 'package:simplex_chapter_x/app_info.dart';
 import 'package:simplex_chapter_x/backend/models.dart';
 import 'package:simplex_chapter_x/frontend/events/event_landing_page.dart';
 import 'package:simplex_chapter_x/frontend/tasks/task_landing_page.dart';
 
-// import 'package:simplex_chapter_x/frontend/tasks/show_all_tasks.dart';
-// import 'package:simplex_chapter_x/frontend/tasks/task_landing_page.dart';
-import '../flutter_flow/flutter_flow_theme.dart';
-
 class ShowEvents extends StatefulWidget {
-  DateTime startDate;
-  DateTime endDate;
+  final DateTime startDate;
+  final DateTime endDate;
 
-  ShowEvents({required this.startDate, required this.endDate, super.key});
+  const ShowEvents({required this.startDate, required this.endDate, super.key});
 
   @override
   _ShowEventsState createState() => _ShowEventsState();
@@ -207,143 +202,208 @@ class _ShowEventsState extends State<ShowEvents> {
   // }
 
   Widget _buildEventItem(EventModel event) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    final now = DateTime.now();
+    // final isUpcoming = event.startDate.isAfter(now);
+    final isOngoing = event.startDate.isBefore(now) && event.endDate.isAfter(now);
+    
     return Padding(
-      padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 0, 10),
+      padding: const EdgeInsets.only(bottom: 16),
       child: GestureDetector(
         onTap: () {
           showModalBottomSheet(
-              isScrollControlled: true,
-              context: context,
-              builder: (context) => EventLandingPageWidget(
-                  event: event, chapterId: _currentChapter!));
+            isScrollControlled: true,
+            context: context,
+            backgroundColor: Colors.transparent,
+            builder: (context) => EventLandingPageWidget(
+              event: event,
+              chapterId: _currentChapter!,
+            ),
+          );
         },
         child: Container(
           decoration: BoxDecoration(
-            // TODO Event types?
-            color: true
-                ? const Color.fromARGB(255, 208, 242, 255)
-                : false
-                    ? const Color(0xFFFFE5E5)
-                    : const Color(0xFFEEEFEF),
-            borderRadius: BorderRadius.circular(12),
+            gradient: LinearGradient(
+              colors: isOngoing
+                  ? (isDark
+                      ? [const Color(0xFF1E40AF), const Color(0xFF3B82F6)]
+                      : [const Color(0xFF4F46E5), const Color(0xFF7C3AED)])
+                  : (isDark
+                      ? [const Color(0xFF1F2937), const Color(0xFF374151)]
+                      : [Colors.white, const Color(0xFFF9FAFB)]),
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: (isOngoing
+                        ? const Color(0xFF4F46E5)
+                        : Colors.black)
+                    .withValues(alpha: isDark ? 0.3 : 0.1),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
           child: Padding(
-            padding: const EdgeInsetsDirectional.fromSTEB(17, 15, 18, 15),
+            padding: const EdgeInsets.all(16),
             child: Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Flexible(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
-                    children: [
-                      Container(
-                        width: 39,
-                        height: 39,
-                        decoration: const BoxDecoration(
-                          // TODO Event colors
-                          color: true
-                              ? Color.fromARGB(255, 0, 119, 255)
-                              : false
-                                  ? Color(0xFFFF6B6B)
-                                  : Color(0xFFC1AD83),
-                          shape: BoxShape.circle,
-                        ),
-                        child: const Icon(
-                          // Event icons
-                          true
-                              ? Icons.calendar_month
-                              : false
-                                  ? Icons.warning
-                                  : Icons.access_time,
-                          color: Colors.white,
-                          size: 24,
-                        ),
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding:
-                              const EdgeInsetsDirectional.fromSTEB(10, 0, 8, 0),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.max,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                // TODO event type names
-                                event.eventType,
-                                style: FlutterFlowTheme.of(context)
-                                    .bodyMedium
-                                    .override(
-                                      fontFamily: 'Google Sans',
-                                      // TODO event colors
-                                      color: true
-                                          ? const Color.fromARGB(255, 5, 0, 77)
-                                          : false
-                                              ? const Color(0xFFFF6B6B)
-                                              : const Color(0xFFC1AD83),
-                                      fontSize: 12,
-                                      letterSpacing: 0.0,
-                                      fontWeight: FontWeight.bold,
-                                      useGoogleFonts: false,
-                                    ),
-                              ),
-                              const SizedBox(height: 3),
-                              Text(
-                                event.name,
-                                style: FlutterFlowTheme.of(context)
-                                    .bodyMedium
-                                    .override(
-                                      fontFamily: 'Google Sans',
-                                      color: const Color(0xFF333333),
-                                      fontSize: 15,
-                                      letterSpacing: 0.0,
-                                      fontWeight: FontWeight.w500,
-                                      useGoogleFonts: false,
-                                    ),
-                              ),
-                              const SizedBox(height: 3),
-                              Visibility(
-                                visible: !event.allDay,
-                                child: Text(
-                                  '${_formatTime(event.startDate, event.endDate)}',
-                                  style: FlutterFlowTheme.of(context)
-                                      .bodyMedium
-                                      .override(
-                                        fontFamily: 'Google Sans',
-                                        // TODO color changes?
-                                        color: true
-                                            ? const Color.fromARGB(
-                                                255, 21, 0, 138)
-                                            : const Color(0xFF666666),
-                                        fontSize: 12,
-                                        letterSpacing: 0.0,
-                                        fontWeight: FontWeight.normal,
-                                        useGoogleFonts: false,
-                                      ),
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
+                // Icon container
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: isOngoing
+                          ? [const Color(0xFF8B5CF6), const Color(0xFFEC4899)]
+                          : [const Color(0xFF6366F1), const Color(0xFF8B5CF6)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: const Color(0xFF6366F1).withValues(alpha: 0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
                       ),
                     ],
                   ),
+                  child: const Icon(
+                    Icons.event_rounded,
+                    color: Colors.white,
+                    size: 28,
+                  ),
                 ),
-                Text(
-                  _formatDate(event.startDate),
-                  style: FlutterFlowTheme.of(context).bodyMedium.override(
-                        fontFamily: 'Google Sans',
-                        color: const Color.fromARGB(255, 107, 107, 107),
-                        fontSize: 16,
-                        letterSpacing: 0.0,
-                        fontWeight: FontWeight.bold,
-                        useGoogleFonts: false,
+                const SizedBox(width: 16),
+                // Event details
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      // Event type badge
+                      Container(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
+                        decoration: BoxDecoration(
+                          color: isOngoing
+                              ? Colors.white.withValues(alpha: 0.25)
+                              : (isDark
+                                  ? const Color(0xFF374151)
+                                  : const Color(0xFFE0E7FF)),
+                          borderRadius: BorderRadius.circular(6),
+                        ),
+                        child: Text(
+                          event.eventType.toUpperCase(),
+                          style: TextStyle(
+                            fontFamily: 'Google Sans',
+                            color: isOngoing
+                                ? Colors.white
+                                : (isDark
+                                    ? const Color(0xFF93C5FD)
+                                    : const Color(0xFF4F46E5)),
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.5,
+                          ),
+                        ),
                       ),
+                      const SizedBox(height: 8),
+                      // Event name
+                      Text(
+                        event.name,
+                        style: TextStyle(
+                          fontFamily: 'Google Sans',
+                          color: isOngoing
+                              ? Colors.white
+                              : (isDark ? Colors.white : const Color(0xFF0F1113)),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 6),
+                      // Date and time
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.access_time_rounded,
+                            size: 14,
+                            color: isOngoing
+                                ? Colors.white.withValues(alpha: 0.9)
+                                : (isDark
+                                    ? const Color(0xFF9CA3AF)
+                                    : const Color(0xFF6B7280)),
+                          ),
+                          const SizedBox(width: 6),
+                          Flexible(
+                            child: Text(
+                              DateFormat('MMM d, h:mm a').format(event.startDate),
+                              style: TextStyle(
+                                fontFamily: 'Google Sans',
+                                color: isOngoing
+                                    ? Colors.white.withValues(alpha: 0.9)
+                                    : (isDark
+                                        ? const Color(0xFF9CA3AF)
+                                        : const Color(0xFF6B7280)),
+                                fontSize: 13,
+                                fontWeight: FontWeight.w500,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                      if (event.location.isNotEmpty) ...[
+                        const SizedBox(height: 4),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.location_on_rounded,
+                              size: 14,
+                              color: isOngoing
+                                  ? Colors.white.withValues(alpha: 0.9)
+                                  : (isDark
+                                      ? const Color(0xFF9CA3AF)
+                                      : const Color(0xFF6B7280)),
+                            ),
+                            const SizedBox(width: 6),
+                            Flexible(
+                              child: Text(
+                                event.location,
+                                style: TextStyle(
+                                  fontFamily: 'Google Sans',
+                                  color: isOngoing
+                                      ? Colors.white.withValues(alpha: 0.9)
+                                      : (isDark
+                                          ? const Color(0xFF9CA3AF)
+                                          : const Color(0xFF6B7280)),
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w500,
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ],
+                  ),
                 ),
-                const Icon(
-                  Icons.arrow_forward_ios,
-                  color: Color(0xFFC8C8C8),
-                  size: 12,
+                // Arrow indicator
+                Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  color: isOngoing
+                      ? Colors.white.withValues(alpha: 0.7)
+                      : (isDark
+                          ? const Color(0xFF6B7280)
+                          : const Color(0xFFD1D5DB)),
+                  size: 16,
                 ),
               ],
             ),
@@ -354,131 +414,207 @@ class _ShowEventsState extends State<ShowEvents> {
   }
 
   Widget _buildTaskItem(TaskModel task) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     final isCompleted =
         task.usersSubmitted.contains(FirebaseAuth.instance.currentUser?.uid);
     final isOverdue = task.dueDate.isBefore(DateTime.now()) && !isCompleted;
 
     return Padding(
-      padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 0, 10),
+      padding: const EdgeInsets.only(bottom: 16),
       child: GestureDetector(
         onTap: () {
-          // Navigator.of(context).push(MaterialPageRoute(
-          //   builder: (context) => TaskLandingPageWidget(
-          //     task: task,
-          //     chapterId: _currentChapter!,
-          //   ),
-          // ));
           showModalBottomSheet(
-              isScrollControlled: true,
-              context: context,
-              builder: (context) => TaskLandingPageWidget(
-                  task: task, chapterId: _currentChapter!));
+            isScrollControlled: true,
+            context: context,
+            backgroundColor: Colors.transparent,
+            builder: (context) => TaskLandingPageWidget(
+              task: task,
+              chapterId: _currentChapter!,
+            ),
+          );
         },
         child: Container(
           decoration: BoxDecoration(
-            color: isCompleted
-                ? const Color(0xFFDEF3DD)
-                : isOverdue
-                    ? const Color(0xFFFFE5E5)
-                    : const Color(0xFFEEEFEF),
-            borderRadius: BorderRadius.circular(12),
+            gradient: LinearGradient(
+              colors: isCompleted
+                  ? (isDark
+                      ? [const Color(0xFF065F46), const Color(0xFF059669)]
+                      : [const Color(0xFFDEF3DD), const Color(0xFFD1FAE5)])
+                  : isOverdue
+                      ? (isDark
+                          ? [const Color(0xFF991B1B), const Color(0xFFDC2626)]
+                          : [const Color(0xFFFFE5E5), const Color(0xFFFEE2E2)])
+                      : (isDark
+                          ? [const Color(0xFF1F2937), const Color(0xFF374151)]
+                          : [Colors.white, const Color(0xFFF9FAFB)]),
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: (isOverdue
+                        ? const Color(0xFFDC2626)
+                        : isCompleted
+                            ? const Color(0xFF059669)
+                            : Colors.black)
+                    .withValues(alpha: isDark ? 0.3 : 0.1),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
           ),
           child: Padding(
-            padding: const EdgeInsetsDirectional.fromSTEB(17, 15, 18, 15),
+            padding: const EdgeInsets.all(16),
             child: Row(
-              mainAxisSize: MainAxisSize.max,
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                Flexible(
-                  child: Row(
-                    mainAxisSize: MainAxisSize.max,
+                // Icon container
+                Container(
+                  width: 56,
+                  height: 56,
+                  decoration: BoxDecoration(
+                    gradient: LinearGradient(
+                      colors: isCompleted
+                          ? [const Color(0xFF10B981), const Color(0xFF059669)]
+                          : isOverdue
+                              ? [const Color(0xFFEF4444), const Color(0xFFDC2626)]
+                              : [const Color(0xFFF59E0B), const Color(0xFFEF4444)],
+                      begin: Alignment.topLeft,
+                      end: Alignment.bottomRight,
+                    ),
+                    borderRadius: BorderRadius.circular(12),
+                    boxShadow: [
+                      BoxShadow(
+                        color: (isCompleted
+                                ? const Color(0xFF10B981)
+                                : isOverdue
+                                    ? const Color(0xFFEF4444)
+                                    : const Color(0xFFF59E0B))
+                            .withValues(alpha: 0.3),
+                        blurRadius: 8,
+                        offset: const Offset(0, 2),
+                      ),
+                    ],
+                  ),
+                  child: Icon(
+                    isCompleted
+                        ? Icons.check_circle_rounded
+                        : isOverdue
+                            ? Icons.warning_rounded
+                            : Icons.assignment_rounded,
+                    color: Colors.white,
+                    size: 28,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                // Task details
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
+                      // Task status badge
                       Container(
-                        width: 39,
-                        height: 39,
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: isCompleted
-                              ? const Color(0xFF8CBC89)
+                              ? (isDark
+                                  ? Colors.white.withValues(alpha: 0.25)
+                                  : const Color(0xFFD1FAE5))
                               : isOverdue
-                                  ? const Color(0xFFFF6B6B)
-                                  : const Color(0xFFC1AD83),
-                          shape: BoxShape.circle,
+                                  ? (isDark
+                                      ? Colors.white.withValues(alpha: 0.25)
+                                      : const Color(0xFFFEE2E2))
+                                  : (isDark
+                                      ? const Color(0xFF374151)
+                                      : const Color(0xFFFEF3C7)),
+                          borderRadius: BorderRadius.circular(6),
                         ),
-                        child: Icon(
+                        child: Text(
                           isCompleted
-                              ? Icons.check
+                              ? 'COMPLETED'
                               : isOverdue
-                                  ? Icons.warning
-                                  : Icons.checklist,
-                          color: Colors.white,
-                          size: 24,
-                        ),
-                      ),
-                      Expanded(
-                        child: Padding(
-                          padding:
-                              const EdgeInsetsDirectional.fromSTEB(10, 0, 8, 0),
-                          child: Column(
-                            mainAxisSize: MainAxisSize.max,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                isCompleted
-                                    ? 'COMPLETED'
-                                    : isOverdue
-                                        ? 'OVERDUE'
-                                        : 'TASK',
-                                style: FlutterFlowTheme.of(context)
-                                    .bodyMedium
-                                    .override(
-                                      fontFamily: 'Google Sans',
-                                      color: isCompleted
-                                          ? const Color(0xFF8CBC89)
-                                          : isOverdue
-                                              ? const Color(0xFFFF6B6B)
-                                              : const Color(0xFFC1AD83),
-                                      fontSize: 12,
-                                      letterSpacing: 0.0,
-                                      fontWeight: FontWeight.bold,
-                                      useGoogleFonts: false,
-                                    ),
-                              ),
-                              const SizedBox(height: 3),
-                              Text(
-                                task.title,
-                                style: FlutterFlowTheme.of(context)
-                                    .bodyMedium
-                                    .override(
-                                      fontFamily: 'Google Sans',
-                                      color: const Color(0xFF333333),
-                                      fontSize: 15,
-                                      letterSpacing: 0.0,
-                                      fontWeight: FontWeight.w500,
-                                      useGoogleFonts: false,
-                                    ),
-                              ),
-                            ],
+                                  ? 'OVERDUE'
+                                  : 'TASK',
+                          style: TextStyle(
+                            fontFamily: 'Google Sans',
+                            color: isCompleted
+                                ? (isDark ? Colors.white : const Color(0xFF059669))
+                                : isOverdue
+                                    ? (isDark ? Colors.white : const Color(0xFFDC2626))
+                                    : (isDark
+                                        ? const Color(0xFFFBBF24)
+                                        : const Color(0xFFD97706)),
+                            fontSize: 11,
+                            fontWeight: FontWeight.bold,
+                            letterSpacing: 0.5,
                           ),
                         ),
+                      ),
+                      const SizedBox(height: 8),
+                      // Task title
+                      Text(
+                        task.title,
+                        style: TextStyle(
+                          fontFamily: 'Google Sans',
+                          color: isCompleted || isOverdue
+                              ? (isDark ? Colors.white : const Color(0xFF0F1113))
+                              : (isDark ? Colors.white : const Color(0xFF0F1113)),
+                          fontSize: 16,
+                          fontWeight: FontWeight.w600,
+                        ),
+                        maxLines: 2,
+                        overflow: TextOverflow.ellipsis,
+                      ),
+                      const SizedBox(height: 6),
+                      // Due date
+                      Row(
+                        children: [
+                          Icon(
+                            Icons.access_time_rounded,
+                            size: 14,
+                            color: isCompleted || isOverdue
+                                ? (isDark
+                                    ? Colors.white.withValues(alpha: 0.9)
+                                    : const Color(0xFF6B7280))
+                                : (isDark
+                                    ? const Color(0xFF9CA3AF)
+                                    : const Color(0xFF6B7280)),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            'Due ${DateFormat('MMM d, h:mm a').format(task.dueDate)}',
+                            style: TextStyle(
+                              fontFamily: 'Google Sans',
+                              color: isCompleted || isOverdue
+                                  ? (isDark
+                                      ? Colors.white.withValues(alpha: 0.9)
+                                      : const Color(0xFF6B7280))
+                                  : (isDark
+                                      ? const Color(0xFF9CA3AF)
+                                      : const Color(0xFF6B7280)),
+                              fontSize: 13,
+                              fontWeight: FontWeight.w500,
+                            ),
+                          ),
+                        ],
                       ),
                     ],
                   ),
                 ),
-                Text(
-                  _formatDate(task.dueDate),
-                  style: FlutterFlowTheme.of(context).bodyMedium.override(
-                        fontFamily: 'Google Sans',
-                        color: const Color.fromARGB(255, 107, 107, 107),
-                        fontSize: 16,
-                        letterSpacing: 0.0,
-                        fontWeight: FontWeight.bold,
-                        useGoogleFonts: false,
-                      ),
-                ),
-                const Icon(
-                  Icons.arrow_forward_ios,
-                  color: Color(0xFFC8C8C8),
-                  size: 12,
+                // Arrow indicator
+                Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  color: isCompleted || isOverdue
+                      ? (isDark
+                          ? Colors.white.withValues(alpha: 0.7)
+                          : const Color(0xFF6B7280))
+                      : (isDark
+                          ? const Color(0xFF6B7280)
+                          : const Color(0xFFD1D5DB)),
+                  size: 16,
                 ),
               ],
             ),
@@ -486,22 +622,5 @@ class _ShowEventsState extends State<ShowEvents> {
         ),
       ),
     );
-  }
-
-  String _formatTime(DateTime startDate, DateTime endDate) {
-    final DateFormat formatter =
-        DateFormat('h.mma'); // 12-hour format with AM/PM
-    String startTime = formatter
-        .format(startDate.toLocal())
-        .toLowerCase(); // Format start time
-    String endTime =
-        formatter.format(endDate.toLocal()).toLowerCase(); // Format end time
-
-    return '$startTime - $endTime';
-  }
-
-  String _formatDate(DateTime startDate) {
-    DateFormat formatter = DateFormat('MMM dd ');
-    return formatter.format(startDate.toLocal());
   }
 }

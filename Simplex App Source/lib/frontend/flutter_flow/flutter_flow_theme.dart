@@ -294,22 +294,22 @@ class DarkModeTheme extends FlutterFlowTheme {
   @Deprecated('Use tertiary instead')
   Color get tertiaryColor => tertiary;
 
-  late Color primary = const Color(0xFF9489F5);
-  late Color secondary = const Color(0xFF39D2C0);
-  late Color tertiary = const Color(0xFF6D5FED);
-  late Color alternate = const Color(0xFF22282F);
-  late Color primaryText = const Color(0xFFFFFFFF);
-  late Color secondaryText = const Color(0xFF95A1AC);
-  late Color primaryBackground = const Color(0xFF1A1F24);
-  late Color secondaryBackground = const Color(0xFF101213);
-  late Color accent1 = const Color(0x4C9489F5);
-  late Color accent2 = const Color(0x4E39D2C0);
-  late Color accent3 = const Color(0x4D6D5FED);
-  late Color accent4 = const Color(0xB31D2428);
-  late Color success = const Color(0xFF24A891);
-  late Color warning = const Color(0xFFCA6C45);
-  late Color error = const Color(0xFFE74852);
-  late Color info = const Color(0xFFFFFFFF);
+  late Color primary = const Color(0xFF60A5FA); // Brighter blue for better visibility
+  late Color secondary = const Color(0xFF34D399); // Modern green
+  late Color tertiary = const Color(0xFF818CF8); // Softer purple
+  late Color alternate = const Color(0xFF334155); // Slate gray for borders
+  late Color primaryText = const Color(0xFFF8FAFC); // Slightly off-white for reduced eye strain
+  late Color secondaryText = const Color(0xFF94A3B8); // Better contrast gray
+  late Color primaryBackground = const Color(0xFF0F172A); // Deep slate background
+  late Color secondaryBackground = const Color(0xFF1E293B); // Elevated surface color
+  late Color accent1 = const Color(0x4D60A5FA); // Blue with transparency
+  late Color accent2 = const Color(0x4E34D399); // Green with transparency
+  late Color accent3 = const Color(0x4D818CF8); // Purple with transparency
+  late Color accent4 = const Color(0xB3334155); // Slate with transparency
+  late Color success = const Color(0xFF10B981); // Vibrant green
+  late Color warning = const Color(0xFFF59E0B); // Bright amber
+  late Color error = const Color(0xFFEF4444); // Clear red
+  late Color info = const Color(0xFFF8FAFC); // Off-white for info text
 }
 
 extension TextStyleHelper on TextStyle {

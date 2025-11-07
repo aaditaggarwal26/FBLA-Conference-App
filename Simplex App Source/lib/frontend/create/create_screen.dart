@@ -8,7 +8,7 @@ import 'create_task_sheet.dart';
 import '../flutter_flow/flutter_flow_theme.dart';
 
 class CreateScreen extends StatelessWidget {
-  List<String> firstLast = AppInfo.currentUser.name.split(' ');
+  final List<String> firstLast = AppInfo.currentUser.name.split(' ');
 
   CreateScreen({super.key});
 

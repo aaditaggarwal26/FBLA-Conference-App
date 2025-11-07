@@ -197,28 +197,19 @@ class AuthService {
         nonce: nonce,
       );
 
-      if (appleCredential == null) {
-        return;
-      }
-
+      // Create OAuth credential from Apple ID
       final oauthCredential = OAuthProvider("apple.com").credential(
           idToken: appleCredential.identityToken,
           rawNonce: rawNonce,
           accessToken: appleCredential.authorizationCode);
-
-      if (oauthCredential == null) {
-        return;
-      }
 
       userCredential = await _auth.signInWithCredential(oauthCredential);
       DocumentSnapshot userDoc = await _firestore
           .collection('users')
           .doc(userCredential!.user!.uid)
           .get();
-      String fullName;
 
       if (userDoc.exists) {
-        fullName = userDoc.get('name') ?? '';
         await AppInfo.getCurrentUserData();
       } else {
         String name = "";

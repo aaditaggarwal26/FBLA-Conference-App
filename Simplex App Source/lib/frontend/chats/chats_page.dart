@@ -144,157 +144,222 @@ class _ChatsWidgetState extends State<ChatsWidget> {
         ),
       );
     }
-    // List<Widget> otherItems = showUnsubscribed ? unsubscribedChats : [];
+    
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+    
     return Scaffold(
       floatingActionButton: Padding(
         padding: EdgeInsets.only(bottom: Platform.isIOS ? 90 : 80),
-        child: FloatingActionButton(
-          onPressed: () {
-            Navigator.pushReplacement(
-              context,
-              MaterialPageRoute(builder: (context) => const JoinChatsWidget()),
-            );
-          },
-          backgroundColor: const Color(0xFF3B58F4),
-          elevation: 8,
-          child: const Icon(
-            Icons.add_rounded,
-            color: Colors.white,
-            size: 32,
+        child: Container(
+          decoration: BoxDecoration(
+            gradient: const LinearGradient(
+              colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+              begin: Alignment.topLeft,
+              end: Alignment.bottomRight,
+            ),
+            borderRadius: BorderRadius.circular(16),
+            boxShadow: [
+              BoxShadow(
+                color: const Color(0xFF6366F1).withValues(alpha: 0.4),
+                blurRadius: 12,
+                offset: const Offset(0, 4),
+              ),
+            ],
+          ),
+          child: FloatingActionButton(
+            onPressed: () {
+              Navigator.pushReplacement(
+                context,
+                MaterialPageRoute(builder: (context) => const JoinChatsWidget()),
+              );
+            },
+            backgroundColor: Colors.transparent,
+            elevation: 0,
+            child: const Icon(
+              Icons.add_rounded,
+              color: Colors.white,
+              size: 28,
+            ),
           ),
         ),
       ),
       key: scaffoldKey,
-      backgroundColor: const Color(0xFFF5F6F7),
-      body: Container(
-        constraints: BoxConstraints(
-          minHeight: MediaQuery.sizeOf(context).height * 1,
-        ),
-        decoration: const BoxDecoration(
-          color: Color(0xFFF5F6F7),
-        ),
-        child: SingleChildScrollView(
-          child: Column(
-            mainAxisSize: MainAxisSize.max,
-            children: [
-              Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(24, 65, 24, 0),
-                child: Column(
-                  mainAxisSize: MainAxisSize.max,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    Padding(
-                      padding: const EdgeInsetsDirectional.fromSTEB(0, 0, 4, 0),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.max,
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Padding(
-                            padding: const EdgeInsetsDirectional.fromSTEB(
-                                0, 6, 0, 0),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.max,
-                              mainAxisAlignment: MainAxisAlignment.start,
-                              crossAxisAlignment: CrossAxisAlignment.center,
-                              children: [
-                                Text(
-                                  'Channels',
-                                  style: FlutterFlowTheme.of(context)
-                                      .bodyMedium
-                                      .override(
-                                        fontFamily: 'Google Sans',
-                                        color: FlutterFlowTheme.of(context)
-                                            .primary,
-                                        fontSize: 40,
-                                        letterSpacing: 0.0,
-                                        fontWeight: FontWeight.w500,
-                                        useGoogleFonts: false,
-                                      ),
-                                ),
-                                // const Padding(
-                                //   padding: EdgeInsetsDirectional.fromSTEB(
-                                //       15, 0, 0, 0),
-                                //   child: Icon(
-                                //     Icons.help_outline,
-                                //     color: Color(0xFF98989D),
-                                //     size: 17,
-                                //   ),
-                                // ),
-                              ],
-                            ),
-                          ),
-                          InkWell(
-                            onTap: () {
-                              Profile.showProfilePage(context);
-                            },
-                            child: Container(
-                              width: 33,
-                              height: 33,
-                              decoration: BoxDecoration(
-                                color: const Color(0xFF526BF4),
-                                shape: BoxShape.circle,
-                                border: Border.all(
-                                  color: const Color(0xFF051989),
-                                  width: 1,
-                                ),
+      backgroundColor: Theme.of(context).scaffoldBackgroundColor,
+      body: CustomScrollView(
+        slivers: [
+          // Modern gradient header
+          SliverAppBar(
+            expandedHeight: 180,
+            pinned: false,
+            flexibleSpace: FlexibleSpaceBar(
+              background: Container(
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: isDark
+                        ? [const Color(0xFF1E3A8A), const Color(0xFF3B82F6)]
+                        : [const Color(0xFF4B39EF), const Color(0xFF7C3AED)],
+                    begin: Alignment.topLeft,
+                    end: Alignment.bottomRight,
+                  ),
+                ),
+                child: SafeArea(
+                  child: Padding(
+                    padding: const EdgeInsets.fromLTRB(24, 20, 24, 0),
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          children: [
+                            const Text(
+                              'Channels',
+                              style: TextStyle(
+                                fontFamily: 'Google Sans',
+                                color: Colors.white,
+                                fontSize: 40,
+                                fontWeight: FontWeight.bold,
                               ),
-                              child: Align(
-                                alignment: const AlignmentDirectional(0, 0),
-                                child: Text(
-                                  firstLast[0][0] + firstLast[1][0],
-                                  style: const TextStyle(
-                                    fontFamily: 'Google Sans',
-                                    color: Colors.white,
-                                    fontSize: 13,
-                                    letterSpacing: 0.0,
-                                    fontWeight: FontWeight.bold,
+                            ),
+                            InkWell(
+                              onTap: () {
+                                Profile.showProfilePage(context);
+                              },
+                              child: Container(
+                                width: 40,
+                                height: 40,
+                                decoration: BoxDecoration(
+                                  gradient: const LinearGradient(
+                                    colors: [Color(0xFF6366F1), Color(0xFF8B5CF6)],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                  shape: BoxShape.circle,
+                                  boxShadow: [
+                                    BoxShadow(
+                                      color: Colors.black.withValues(alpha: 0.2),
+                                      blurRadius: 8,
+                                      offset: const Offset(0, 4),
+                                    ),
+                                  ],
+                                ),
+                                child: Center(
+                                  child: Text(
+                                    firstLast[0][0] + firstLast[1][0],
+                                    style: const TextStyle(
+                                      fontFamily: 'Google Sans',
+                                      color: Colors.white,
+                                      fontSize: 16,
+                                      fontWeight: FontWeight.bold,
+                                    ),
                                   ),
                                 ),
                               ),
                             ),
-                          )
+                          ],
+                        ),
+                        const SizedBox(height: 12),
+                        Text(
+                          '${subscribedChats.length} active channels',
+                          style: TextStyle(
+                            fontFamily: 'Google Sans',
+                            color: Colors.white.withValues(alpha: 0.9),
+                            fontSize: 16,
+                            fontWeight: FontWeight.w400,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+          // Content
+          SliverPadding(
+            padding: const EdgeInsets.fromLTRB(24, 20, 24, 100),
+            sliver: dataLoaded
+                ? (subscribedChats.isEmpty
+                    ? SliverFillRemaining(
+                        child: Center(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            children: [
+                              Container(
+                                width: 120,
+                                height: 120,
+                                decoration: BoxDecoration(
+                                  gradient: LinearGradient(
+                                    colors: isDark
+                                        ? [const Color(0xFF374151), const Color(0xFF4B5563)]
+                                        : [const Color(0xFFE0E7FF), const Color(0xFFDDD6FE)],
+                                    begin: Alignment.topLeft,
+                                    end: Alignment.bottomRight,
+                                  ),
+                                  borderRadius: BorderRadius.circular(24),
+                                ),
+                                child: Icon(
+                                  Icons.chat_bubble_outline_rounded,
+                                  size: 60,
+                                  color: isDark
+                                      ? const Color(0xFF9CA3AF)
+                                      : const Color(0xFF6366F1),
+                                ),
+                              ),
+                              const SizedBox(height: 24),
+                              Text(
+                                'No channels yet',
+                                style: TextStyle(
+                                  fontFamily: 'Google Sans',
+                                  color: isDark ? Colors.white : const Color(0xFF0F1113),
+                                  fontSize: 24,
+                                  fontWeight: FontWeight.bold,
+                                ),
+                              ),
+                              const SizedBox(height: 12),
+                              Text(
+                                'Tap the + button to join a channel',
+                                style: TextStyle(
+                                  fontFamily: 'Google Sans',
+                                  color: isDark
+                                      ? const Color(0xFF9CA3AF)
+                                      : const Color(0xFF6B7280),
+                                  fontSize: 16,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      )
+                    : SliverList(
+                        delegate: SliverChildListDelegate(subscribedChats),
+                      ))
+                : SliverFillRemaining(
+                    child: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: [
+                          CircularProgressIndicator(
+                            valueColor: AlwaysStoppedAnimation<Color>(
+                              isDark ? const Color(0xFF6366F1) : const Color(0xFF4B39EF),
+                            ),
+                          ),
+                          const SizedBox(height: 16),
+                          Text(
+                            'Loading channels...',
+                            style: TextStyle(
+                              fontFamily: 'Google Sans',
+                              color: isDark
+                                  ? const Color(0xFF9CA3AF)
+                                  : const Color(0xFF6B7280),
+                              fontSize: 16,
+                            ),
+                          ),
                         ],
                       ),
                     ),
-                  ],
-                ),
-              ),
-              Padding(
-                padding: const EdgeInsetsDirectional.fromSTEB(24, 25, 0, 12),
-                child: Row(mainAxisSize: MainAxisSize.max, children: [
-                  Text(
-                    'Subscribed',
-                    style: FlutterFlowTheme.of(context).bodyMedium.override(
-                          fontFamily: 'Google Sans',
-                          color: const Color(0xFF999999),
-                          fontSize: 18,
-                          letterSpacing: 0.0,
-                          fontWeight: FontWeight.w500,
-                          useGoogleFonts: false,
-                        ),
                   ),
-                  Padding(
-                    padding: const EdgeInsetsDirectional.fromSTEB(10, 0, 0, 0),
-                    child: Container(
-                      width: 6,
-                      height: 6,
-                      decoration: const BoxDecoration(
-                        color: Color(0xFFD90000),
-                        shape: BoxShape.circle,
-                      ),
-                    ),
-                  ),
-                ]),
-              ),
-              Padding(
-                  padding: const EdgeInsets.only(left: 24, right: 24),
-                  child: Column(
-                    children: subscribedChats,
-                  )),
-            ],
           ),
-        ),
+        ],
       ),
     );
   }

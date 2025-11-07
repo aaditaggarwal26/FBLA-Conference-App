@@ -19,6 +19,12 @@ class UserModel {
   /// the username
   final String name;
 
+  /// user bio/description
+  String bio;
+
+  /// user phone number
+  String phone;
+
   /// list of names of past events
   final List<String> pastEvents;
 
@@ -48,6 +54,8 @@ class UserModel {
     required this.email,
     required this.profilePic,
     required this.name,
+    this.bio = '',
+    this.phone = '',
     required this.pastEvents,
     required this.compEvents,
     required this.grade,
@@ -68,6 +76,8 @@ class UserModel {
         currentChapter = doc.get('currentChapter') as String,
         profilePic = doc.get('profilePic') as String,
         name = doc.get('name') as String,
+        bio = (doc.data() as Map).containsKey('bio') ? doc.get('bio') as String : '',
+        phone = (doc.data() as Map).containsKey('phone') ? doc.get('phone') as String : '',
         pastEvents = (doc.get('pastEvents') as List).cast<String>(),
         compEvents = (doc.get('compEvents') as List).cast<String>(),
         grade = doc.get('grade') as int,
@@ -86,6 +96,8 @@ class UserModel {
       'email': email,
       'profilePic': profilePic,
       'name': name,
+      'bio': bio,
+      'phone': phone,
       'pastEvents': pastEvents,
       'compEvents': compEvents,
       'grade': grade,

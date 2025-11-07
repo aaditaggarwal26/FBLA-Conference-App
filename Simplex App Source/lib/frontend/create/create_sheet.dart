@@ -278,7 +278,7 @@ class CreateSheet {
 
   static void getCreatePageSheet(String type, BuildContext context) {
     Navigator.pop(context);
-    Widget page = Container();
+    Widget? page;
     switch (type) {
       case "Event":
         page = const CreateEventWidget();
@@ -307,7 +307,7 @@ class CreateSheet {
           backgroundColor: const Color(0xFFF5F6F7),
           context: context,
           builder: (context) {
-            return page;
+            return page!;
           });
     }
   }

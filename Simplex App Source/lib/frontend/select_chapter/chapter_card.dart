@@ -26,7 +26,7 @@ class ChapterCard extends StatelessWidget {
         clubImg = doc.get("logo") as String;
 
   static Future<List<ChapterCard>> getCards() async {
-    if (AppInfo.currentUser.chapters == null) {
+    if (AppInfo.currentUser.chapters.isEmpty) {
       print('User has no chapters');
       return [];
     }
