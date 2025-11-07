@@ -1,5 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+enum UserRole {
+  attendee,
+  speaker,
+  organizer,
+  admin,
+}
+
 class UserModel {
   final String id;
   final String email;
@@ -9,6 +16,8 @@ class UserModel {
   final String? position;
   final List<String> registeredEvents;
   final DateTime createdAt;
+  final UserRole role;
+  final bool isApproved;
 
   UserModel({
     required this.id,
@@ -19,7 +28,13 @@ class UserModel {
     this.position,
     required this.registeredEvents,
     required this.createdAt,
+    this.role = UserRole.attendee,
+    this.isApproved = true,
   });
+
+  bool get isAdmin => role == UserRole.admin;
+  bool get isOrganizer => role == UserRole.organizer || role == UserRole.admin;
+  bool get isSpeaker => role == UserRole.speaker || role == UserRole.organizer || role == UserRole.admin;
 
   factory UserModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
@@ -32,7 +47,35 @@ class UserModel {
       position: data['position'],
       registeredEvents: List<String>.from(data['registeredEvents'] ?? []),
       createdAt: (data['createdAt'] as Timestamp).toDate(),
+      role: _roleFromString(data['role'] as String? ?? 'attendee'),
+      isApproved: data['isApproved'] ?? true,
     );
+  }
+
+  static UserRole _roleFromString(String role) {
+    switch (role.toLowerCase()) {
+      case 'admin':
+        return UserRole.admin;
+      case 'organizer':
+        return UserRole.organizer;
+      case 'speaker':
+        return UserRole.speaker;
+      default:
+        return UserRole.attendee;
+    }
+  }
+
+  static String _roleToString(UserRole role) {
+    switch (role) {
+      case UserRole.admin:
+        return 'admin';
+      case UserRole.organizer:
+        return 'organizer';
+      case UserRole.speaker:
+        return 'speaker';
+      case UserRole.attendee:
+        return 'attendee';
+    }
   }
 
   Map<String, dynamic> toFirestore() {
@@ -44,6 +87,8 @@ class UserModel {
       'position': position,
       'registeredEvents': registeredEvents,
       'createdAt': Timestamp.fromDate(createdAt),
+      'role': _roleToString(role),
+      'isApproved': isApproved,
     };
   }
 
@@ -56,6 +101,8 @@ class UserModel {
     String? position,
     List<String>? registeredEvents,
     DateTime? createdAt,
+    UserRole? role,
+    bool? isApproved,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -66,6 +113,8 @@ class UserModel {
       position: position ?? this.position,
       registeredEvents: registeredEvents ?? this.registeredEvents,
       createdAt: createdAt ?? this.createdAt,
+      role: role ?? this.role,
+      isApproved: isApproved ?? this.isApproved,
     );
   }
 }
