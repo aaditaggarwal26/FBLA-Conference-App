@@ -59,37 +59,47 @@ class AppInfo {
 
   ///
   static Future<void> loadData() async {
-    await getCurrentUserData().then(
-      (value) {
-        AppInfo.currentUser = value;
-      },
-    );
+    try {
+      // Load user data first (required for chapter context)
+      AppInfo.currentUser = await getCurrentUserData();
 
-    if (AppInfo.currentUser.currentChapter != "") {
-      await EventModel.getCurrentEvents().then(
-        (value) {
-          AppInfo.currentEvents = value;
-        },
-      );
-      DocumentSnapshot d = await AppInfo.database
-          .collection('chapters')
-          .doc(currentUser.currentChapter)
-          .get();
-      List<String> exec = (d.get('exec') as List).cast<String>();
-      AppInfo.isAdmin = exec.contains(AppInfo.currentUser.id);
-      AppInfo.isOwner = (d.get('owner') as String) == AppInfo.currentUser.id;
+      // If user has a chapter, load chapter-specific data in parallel
+      if (AppInfo.currentUser.currentChapter != "") {
+        // Run all queries in parallel for faster loading
+        final results = await Future.wait([
+          EventModel.getCurrentEvents(),
+          PacketModel.getPackets(),
+          AppInfo.database
+              .collection('chapters')
+              .doc(currentUser.currentChapter)
+              .get(),
+        ]);
+
+        // Assign results
+        AppInfo.currentEvents = results[0] as List<EventModel>?;
+        AppInfo.currentPackets = results[1] as List<PacketModel>;
+        
+        final chapterDoc = results[2] as DocumentSnapshot;
+        if (chapterDoc.exists) {
+          List<String> exec = (chapterDoc.get('exec') as List).cast<String>();
+          AppInfo.isAdmin = exec.contains(AppInfo.currentUser.id);
+          AppInfo.isOwner = (chapterDoc.get('owner') as String) == AppInfo.currentUser.id;
+        }
+      } else {
+        // No chapter, just load packets
+        AppInfo.currentPackets = await PacketModel.getPackets();
+        AppInfo.currentEvents = [];
+      }
+    } catch (e) {
+      // Graceful error handling - set defaults
+      if (kDebugMode) {
+        print('Error loading app data: $e');
+      }
+      AppInfo.currentEvents = [];
+      AppInfo.currentPackets = [];
+      AppInfo.isAdmin = false;
+      AppInfo.isOwner = false;
     }
-
-    // await TaskModel.getCurrentTasks().then(
-    //   (value) {
-    //     AppInfo.currentTasks = value;
-    //   },
-    // );
-    await PacketModel.getPackets().then(
-      (value) {
-        AppInfo.currentPackets = value;
-      },
-    );
   }
 
   static Future<void> configureFirebaseMessaging() async {

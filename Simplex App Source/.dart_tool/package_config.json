@@ -188,6 +188,30 @@
       "languageVersion": "3.4"
     },
     {
+      "name": "file_selector_linux",
+      "rootUri": "file:///Users/aaditaggarwal/.pub-cache/hosted/pub.dev/file_selector_linux-0.9.3+2",
+      "packageUri": "lib/",
+      "languageVersion": "3.3"
+    },
+    {
+      "name": "file_selector_macos",
+      "rootUri": "file:///Users/aaditaggarwal/.pub-cache/hosted/pub.dev/file_selector_macos-0.9.4+4",
+      "packageUri": "lib/",
+      "languageVersion": "3.7"
+    },
+    {
+      "name": "file_selector_platform_interface",
+      "rootUri": "file:///Users/aaditaggarwal/.pub-cache/hosted/pub.dev/file_selector_platform_interface-2.6.2",
+      "packageUri": "lib/",
+      "languageVersion": "3.0"
+    },
+    {
+      "name": "file_selector_windows",
+      "rootUri": "file:///Users/aaditaggarwal/.pub-cache/hosted/pub.dev/file_selector_windows-0.9.3+4",
+      "packageUri": "lib/",
+      "languageVersion": "3.4"
+    },
+    {
       "name": "firebase_auth",
       "rootUri": "file:///Users/aaditaggarwal/.pub-cache/hosted/pub.dev/firebase_auth-5.5.0",
       "packageUri": "lib/",
@@ -416,6 +440,54 @@
       "languageVersion": "3.0"
     },
     {
+      "name": "image_picker",
+      "rootUri": "file:///Users/aaditaggarwal/.pub-cache/hosted/pub.dev/image_picker-1.2.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.6"
+    },
+    {
+      "name": "image_picker_android",
+      "rootUri": "file:///Users/aaditaggarwal/.pub-cache/hosted/pub.dev/image_picker_android-0.8.13+1",
+      "packageUri": "lib/",
+      "languageVersion": "3.7"
+    },
+    {
+      "name": "image_picker_for_web",
+      "rootUri": "file:///Users/aaditaggarwal/.pub-cache/hosted/pub.dev/image_picker_for_web-3.1.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.6"
+    },
+    {
+      "name": "image_picker_ios",
+      "rootUri": "file:///Users/aaditaggarwal/.pub-cache/hosted/pub.dev/image_picker_ios-0.8.13",
+      "packageUri": "lib/",
+      "languageVersion": "3.6"
+    },
+    {
+      "name": "image_picker_linux",
+      "rootUri": "file:///Users/aaditaggarwal/.pub-cache/hosted/pub.dev/image_picker_linux-0.2.2",
+      "packageUri": "lib/",
+      "languageVersion": "3.6"
+    },
+    {
+      "name": "image_picker_macos",
+      "rootUri": "file:///Users/aaditaggarwal/.pub-cache/hosted/pub.dev/image_picker_macos-0.2.2",
+      "packageUri": "lib/",
+      "languageVersion": "3.6"
+    },
+    {
+      "name": "image_picker_platform_interface",
+      "rootUri": "file:///Users/aaditaggarwal/.pub-cache/hosted/pub.dev/image_picker_platform_interface-2.11.1",
+      "packageUri": "lib/",
+      "languageVersion": "3.7"
+    },
+    {
+      "name": "image_picker_windows",
+      "rootUri": "file:///Users/aaditaggarwal/.pub-cache/hosted/pub.dev/image_picker_windows-0.2.2",
+      "packageUri": "lib/",
+      "languageVersion": "3.6"
+    },
+    {
       "name": "intl",
       "rootUri": "file:///Users/aaditaggarwal/.pub-cache/hosted/pub.dev/intl-0.20.2",
       "packageUri": "lib/",
@@ -472,6 +544,18 @@
     {
       "name": "meta",
       "rootUri": "file:///Users/aaditaggarwal/.pub-cache/hosted/pub.dev/meta-1.16.0",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
+    },
+    {
+      "name": "mime",
+      "rootUri": "file:///Users/aaditaggarwal/.pub-cache/hosted/pub.dev/mime-2.0.0",
+      "packageUri": "lib/",
+      "languageVersion": "3.2"
+    },
+    {
+      "name": "nested",
+      "rootUri": "file:///Users/aaditaggarwal/.pub-cache/hosted/pub.dev/nested-1.0.0",
       "packageUri": "lib/",
       "languageVersion": "2.12"
     },
@@ -552,6 +636,12 @@
       "rootUri": "file:///Users/aaditaggarwal/.pub-cache/hosted/pub.dev/posix-6.0.1",
       "packageUri": "lib/",
       "languageVersion": "3.0"
+    },
+    {
+      "name": "provider",
+      "rootUri": "file:///Users/aaditaggarwal/.pub-cache/hosted/pub.dev/provider-6.1.5+1",
+      "packageUri": "lib/",
+      "languageVersion": "2.12"
     },
     {
       "name": "rxdart",
@@ -818,7 +908,7 @@
       "languageVersion": "3.3"
     }
   ],
-  "generated": "2025-11-07T03:13:15.747875Z",
+  "generated": "2025-11-07T07:44:42.416501Z",
   "generator": "pub",
   "generatorVersion": "3.8.0-171.0.dev",
   "flutterRoot": "file:///Users/aaditaggarwal/Documents/flutter",

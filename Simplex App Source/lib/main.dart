@@ -8,8 +8,10 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_app_badge_control/flutter_app_badge_control.dart';
+import 'package:provider/provider.dart';
 import 'frontend/login/login_page.dart';
 import 'frontend/select_chapter/chapter_select.dart';
+import 'frontend/flutter_flow/theme_provider.dart';
 import 'firebase_options.dart';
 import 'app_info.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
@@ -38,7 +40,12 @@ void main() async {
     DeviceOrientation.portraitUp,
   ]);
 
-  runApp(MyApp());
+  runApp(
+    ChangeNotifierProvider(
+      create: (_) => ThemeProvider(),
+      child: MyApp(),
+    ),
+  );
 }
 
 class MyApp extends StatelessWidget with WidgetsBindingObserver {
@@ -61,32 +68,65 @@ class MyApp extends StatelessWidget with WidgetsBindingObserver {
 
   @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'Simplex Chapter',
-      theme: ThemeData(
-        colorScheme: ColorScheme.fromSeed(seedColor: Colors.deepPurple),
-        useMaterial3: true,
-      ),
-      debugShowCheckedModeBanner: false,
+    return Consumer<ThemeProvider>(
+      builder: (context, themeProvider, _) {
+        return MaterialApp(
+          title: 'Simplex Chapter',
+          theme: themeProvider.lightTheme,
+          darkTheme: themeProvider.darkTheme,
+          themeMode: themeProvider.isDarkMode ? ThemeMode.dark : ThemeMode.light,
+          debugShowCheckedModeBanner: false,
       home: StreamBuilder<User?>(
         stream: FirebaseAuth.instance.authStateChanges(),
         builder: (context, snapshot) {
           if (snapshot.connectionState == ConnectionState.waiting) {
-            return const Scaffold(
-              body: Center(child: CircularProgressIndicator()),
+            return Scaffold(
+              body: Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: const [
+                    CircularProgressIndicator(),
+                    SizedBox(height: 16),
+                    Text('Loading...'),
+                  ],
+                ),
+              ),
             );
           }
+          
           if (snapshot.hasData) {
             return FutureBuilder<void>(
-              future: AppInfo.loadData(),
+              future: AppInfo.loadData().timeout(
+                const Duration(seconds: 10),
+                onTimeout: () {
+                  if (kDebugMode) {
+                    print('AppInfo.loadData() timed out after 10 seconds');
+                  }
+                  // Set defaults on timeout
+                  AppInfo.currentEvents = [];
+                  AppInfo.currentPackets = [];
+                },
+              ),
               builder: (context, loadSnapshot) {
                 if (loadSnapshot.connectionState == ConnectionState.waiting) {
-                  return const Scaffold(
-                    body: Center(child: CircularProgressIndicator()),
+                  return Scaffold(
+                    body: Center(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        children: const [
+                          CircularProgressIndicator(),
+                          SizedBox(height: 16),
+                          Text('Setting up your account...'),
+                        ],
+                      ),
+                    ),
                   );
                 }
 
                 if (loadSnapshot.hasError) {
+                  if (kDebugMode) {
+                    print('Error loading data: ${loadSnapshot.error}');
+                  }
                   return const LoginWidget();
                 }
 
@@ -94,9 +134,12 @@ class MyApp extends StatelessWidget with WidgetsBindingObserver {
               },
             );
           }
+          
           return const LoginWidget();
         },
       ),
+        );
+      },
     );
   }
 }

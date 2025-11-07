@@ -9,6 +9,8 @@ import '../gallery/gallery_page.dart';
 import '../home/home_page.dart';
 import '../create/create_sheet.dart';
 import '../settings/settings_page.dart';
+import '../pins/pin_trading_page.dart';
+import '../messages/messages_list_page.dart';
 
 import '../../app_info.dart';
 
@@ -53,6 +55,8 @@ class _NavigationState extends State<Navigation> {
       const HomeWidget(),
       const ChatsWidget(),
       const GalleryPage(),
+      const PinTradingPage(),
+      const MessagesListPage(),
       const SettingsPage(),
       CreateScreen(),
     ];
@@ -110,9 +114,35 @@ class _NavigationState extends State<Navigation> {
           pageController.jumpToPage(3);
         },
         child: Icon(
-          Symbols.settings,
-          fill: pI == 3 ? 1.0 : 0.0,
+          Icons.push_pin_rounded,
           color: pI == 3 ? const Color(0xFF333333) : const Color(0xFFDFDFDF),
+          size: iconSize,
+        ),
+      ),
+      InkWell(
+        onTap: () {
+          setState(() {
+            pI = 4;
+          });
+          pageController.jumpToPage(4);
+        },
+        child: Icon(
+          Icons.mail_outline_rounded,
+          color: pI == 4 ? const Color(0xFF333333) : const Color(0xFFDFDFDF),
+          size: iconSize,
+        ),
+      ),
+      InkWell(
+        onTap: () {
+          setState(() {
+            pI = 5;
+          });
+          pageController.jumpToPage(5);
+        },
+        child: Icon(
+          Symbols.settings,
+          fill: pI == 5 ? 1.0 : 0.0,
+          color: pI == 5 ? const Color(0xFF333333) : const Color(0xFFDFDFDF),
           size: iconSize,
         ),
       ),
@@ -153,6 +183,8 @@ class _NavigationState extends State<Navigation> {
                             icons[1],
                             icons[2],
                             icons[3],
+                            icons[4],
+                            icons[5],
                           ],
                         ),
                       ),
@@ -191,9 +223,9 @@ class _NavigationState extends State<Navigation> {
                             child: InkWell(
                               onTap: () {
                                 setState(() {
-                                  pI = 4;
+                                  pI = 6;
                                 });
-                                pageController.jumpToPage(4);
+                                pageController.jumpToPage(6);
                               },
                               child: Container(
                                 width: 66,

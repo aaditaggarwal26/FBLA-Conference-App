@@ -4,10 +4,11 @@ import 'manage_users.dart';
 
 import '../../app_info.dart';
 import '../flutter_flow/flutter_flow_theme.dart';
+import '../flutter_flow/theme_provider.dart';
+import '../profile/user_profile_page.dart';
 
 import 'package:flutter/material.dart';
-
-import '../profile/profile_page.dart';
+import 'package:provider/provider.dart';
 
 class SettingsPage extends StatefulWidget {
   const SettingsPage({super.key});
@@ -95,7 +96,12 @@ class _SettingsPageState extends State<SettingsPage> {
                           ),
                           InkWell(
                             onTap: () {
-                              Profile.showProfilePage(context);
+                              Navigator.push(
+                                context,
+                                MaterialPageRoute(
+                                  builder: (context) => const UserProfilePage(),
+                                ),
+                              );
                             },
                             child: Container(
                               width: 33,
@@ -129,6 +135,124 @@ class _SettingsPageState extends State<SettingsPage> {
                   ],
                 ),
               ),
+              // Dark Mode Toggle Section
+              Padding(
+                padding: const EdgeInsetsDirectional.fromSTEB(24, 30, 24, 0),
+                child: Row(
+                  mainAxisSize: MainAxisSize.max,
+                  children: [
+                    Expanded(
+                      child: Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            colors: [
+                              Theme.of(context).brightness == Brightness.dark
+                                  ? const Color(0xFF2D3748)
+                                  : const Color(0xFFE3E8FF),
+                              Theme.of(context).brightness == Brightness.dark
+                                  ? const Color(0xFF1A202C)
+                                  : const Color(0xFFD1D9FF),
+                            ],
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                          ),
+                          borderRadius: BorderRadius.circular(12),
+                          boxShadow: [
+                            BoxShadow(
+                              color: Colors.black.withOpacity(0.05),
+                              blurRadius: 10,
+                              offset: const Offset(0, 4),
+                            ),
+                          ],
+                        ),
+                        child: Padding(
+                          padding: const EdgeInsetsDirectional.fromSTEB(0, 15, 0, 15),
+                          child: Column(
+                            mainAxisSize: MainAxisSize.max,
+                            children: [
+                              Padding(
+                                padding: const EdgeInsetsDirectional.fromSTEB(15, 0, 15, 0),
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.max,
+                                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                  children: [
+                                    Row(
+                                      children: [
+                                        Icon(
+                                          Theme.of(context).brightness == Brightness.dark
+                                              ? Icons.dark_mode_rounded
+                                              : Icons.light_mode_rounded,
+                                          color: Theme.of(context).brightness == Brightness.dark
+                                              ? const Color(0xFFFDB813)
+                                              : const Color(0xFF4B39EF),
+                                          size: 24,
+                                        ),
+                                        Padding(
+                                          padding: const EdgeInsetsDirectional.fromSTEB(10, 0, 0, 0),
+                                          child: Text(
+                                            'Appearance',
+                                            style: FlutterFlowTheme.of(context).bodyMedium.override(
+                                                  fontFamily: 'Google Sans',
+                                                  color: Theme.of(context).brightness == Brightness.dark
+                                                      ? Colors.white
+                                                      : const Color(0xFF4B39EF),
+                                                  fontSize: 20,
+                                                  letterSpacing: 0.0,
+                                                  fontWeight: FontWeight.w500,
+                                                  useGoogleFonts: false,
+                                                ),
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                    Consumer<ThemeProvider>(
+                                      builder: (context, themeProvider, _) {
+                                        return Switch(
+                                          value: themeProvider.isDarkMode,
+                                          onChanged: (value) {
+                                            themeProvider.toggleTheme();
+                                          },
+                                          activeColor: const Color(0xFF4B39EF),
+                                          activeTrackColor: const Color(0xFF8B7DFF),
+                                          inactiveThumbColor: Colors.white,
+                                          inactiveTrackColor: const Color(0xFFE0E3E7),
+                                        );
+                                      },
+                                    ),
+                                  ],
+                                ),
+                              ),
+                              Padding(
+                                padding: const EdgeInsetsDirectional.fromSTEB(15, 8, 15, 0),
+                                child: Row(
+                                  children: [
+                                    Expanded(
+                                      child: Text(
+                                        Theme.of(context).brightness == Brightness.dark
+                                            ? 'Dark mode is enabled'
+                                            : 'Light mode is enabled',
+                                        style: TextStyle(
+                                          fontFamily: 'Google Sans',
+                                          color: Theme.of(context).brightness == Brightness.dark
+                                              ? const Color(0xFFB0B0B0)
+                                              : const Color(0xFF6B7280),
+                                          fontSize: 14,
+                                          letterSpacing: 0.0,
+                                          fontWeight: FontWeight.w400,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
               !AppInfo.isAdmin && !AppInfo.isOwner
                   ? const Padding(
                       padding: EdgeInsets.only(top: 25, right: 20, left: 20),
@@ -138,7 +262,7 @@ class _SettingsPageState extends State<SettingsPage> {
                         children: [
                           Flexible(
                               child: Text(
-                            'Coming soon! Bringing features like dark mode, user panels, notification settings, etc!',
+                            'Coming soon! Bringing features like user panels, notification settings, etc!',
                             style: TextStyle(
                               color: Color(0xFFa6a6a6),
                               fontSize: 14,
