@@ -250,10 +250,14 @@ class _PinDetailScreenState extends State<PinDetailScreen> {
                           CircleAvatar(
                             radius: 24,
                             backgroundColor: AppTheme.lightBlue,
-                            backgroundImage: widget.pin.userPhotoUrl != null
+                            backgroundImage:
+                                (widget.pin.userPhotoUrl != null &&
+                                    widget.pin.userPhotoUrl!.isNotEmpty)
                                 ? NetworkImage(widget.pin.userPhotoUrl!)
                                 : null,
-                            child: widget.pin.userPhotoUrl == null
+                            child:
+                                (widget.pin.userPhotoUrl == null ||
+                                    widget.pin.userPhotoUrl!.isEmpty)
                                 ? Icon(
                                     Icons.person,
                                     color: AppTheme.primaryBlue,

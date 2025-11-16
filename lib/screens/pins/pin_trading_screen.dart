@@ -437,10 +437,14 @@ class _PinTradingScreenState extends State<PinTradingScreen>
                             backgroundColor: AppTheme.primaryBlue.withValues(
                               alpha: 0.1,
                             ),
-                            backgroundImage: pin.userPhotoUrl != null
+                            backgroundImage:
+                                (pin.userPhotoUrl != null &&
+                                    pin.userPhotoUrl!.isNotEmpty)
                                 ? NetworkImage(pin.userPhotoUrl!)
                                 : null,
-                            child: pin.userPhotoUrl == null
+                            child:
+                                (pin.userPhotoUrl == null ||
+                                    pin.userPhotoUrl!.isEmpty)
                                 ? Text(
                                     pin.userName[0].toUpperCase(),
                                     style: TextStyle(

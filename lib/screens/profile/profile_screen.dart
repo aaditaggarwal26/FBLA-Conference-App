@@ -5,6 +5,7 @@ import '../../services/admin_service.dart';
 import '../../models/user_model.dart';
 import '../../theme/app_theme.dart';
 import '../admin/admin_panel_screen.dart';
+import 'edit_profile_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -71,10 +72,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 Navigator.pop(context);
               }
             },
-            child: Text(
-              'Sign Out',
-              style: TextStyle(color: AppTheme.error),
-            ),
+            child: Text('Sign Out', style: TextStyle(color: AppTheme.error)),
           ),
         ],
       ),
@@ -86,9 +84,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     final user = _authService.currentUser;
 
     if (_isLoading) {
-      return const Scaffold(
-        body: Center(child: CircularProgressIndicator()),
-      );
+      return const Scaffold(body: Center(child: CircularProgressIndicator()));
     }
 
     if (user == null) {
@@ -143,14 +139,21 @@ class _ProfileScreenState extends State<ProfileScreen> {
               padding: const EdgeInsets.all(24),
               child: Column(
                 children: [
-                  // Profile Picture
+                  // Profile Picture - Use Firestore photoUrl first, then Firebase Auth photoURL
                   CircleAvatar(
                     radius: 50,
                     backgroundColor: AppTheme.lightBlue,
-                    backgroundImage: user.photoURL != null
-                        ? NetworkImage(user.photoURL!)
-                        : null,
-                    child: user.photoURL == null
+                    backgroundImage:
+                        (_userModel?.photoUrl != null &&
+                            _userModel!.photoUrl!.isNotEmpty)
+                        ? NetworkImage(_userModel!.photoUrl!)
+                        : (user.photoURL != null
+                              ? NetworkImage(user.photoURL!)
+                              : null),
+                    child:
+                        (_userModel?.photoUrl == null ||
+                                _userModel!.photoUrl!.isEmpty) &&
+                            user.photoURL == null
                         ? Icon(
                             Icons.person,
                             size: 50,
@@ -165,8 +168,8 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   Text(
                     _userModel?.name ?? user.displayName ?? 'User',
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
 
                   const SizedBox(height: 8),
@@ -174,31 +177,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   // Email
                   Text(
                     user.email ?? '',
-                    style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                          color: AppTheme.mediumGray,
-                        ),
+                    style: Theme.of(
+                      context,
+                    ).textTheme.bodyLarge?.copyWith(color: AppTheme.mediumGray),
                   ),
-
-                  if (_userModel?.organization != null) ...[
-                    const SizedBox(height: 16),
-                    Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: AppTheme.lightBlue,
-                        borderRadius: BorderRadius.circular(20),
-                      ),
-                      child: Text(
-                        _userModel!.organization!,
-                        style: TextStyle(
-                          color: AppTheme.darkBlue,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                  ],
                 ],
               ),
             ),
@@ -249,44 +231,40 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 iconColor: const Color(0xFF8B5CF6),
               ),
             ],
-            _buildMenuItem(
-              Icons.person_outline,
-              'Edit Profile',
-              () {
-                // TODO: Navigate to edit profile
-              },
-            ),
-            _buildDarkModeToggle(),
-            _buildMenuItem(
-              Icons.notifications_outlined,
-              'Notifications',
-              () {
-                // TODO: Navigate to notifications settings
-              },
-            ),
-            _buildMenuItem(
-              Icons.help_outline,
-              'Help & Support',
-              () {
-                // TODO: Navigate to help
-              },
-            ),
-            _buildMenuItem(
-              Icons.info_outline,
-              'About',
-              () {
-                showAboutDialog(
-                  context: context,
-                  applicationName: 'FBLA Conference App',
-                  applicationVersion: '1.0.0',
-                  applicationIcon: Icon(
-                    Icons.event_rounded,
-                    size: 48,
-                    color: AppTheme.primaryBlue,
+            _buildMenuItem(Icons.person_outline, 'Edit Profile', () async {
+              if (_userModel != null) {
+                final result = await Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) =>
+                        EditProfileScreen(userModel: _userModel!),
                   ),
                 );
-              },
-            ),
+                // Reload user data if profile was updated
+                if (result == true) {
+                  _loadUserData();
+                }
+              }
+            }),
+            _buildDarkModeToggle(),
+            _buildMenuItem(Icons.notifications_outlined, 'Notifications', () {
+              // TODO: Navigate to notifications settings
+            }),
+            _buildMenuItem(Icons.help_outline, 'Help & Support', () {
+              // TODO: Navigate to help
+            }),
+            _buildMenuItem(Icons.info_outline, 'About', () {
+              showAboutDialog(
+                context: context,
+                applicationName: 'FBLA Conference App',
+                applicationVersion: '1.0.0',
+                applicationIcon: Icon(
+                  Icons.event_rounded,
+                  size: 48,
+                  color: AppTheme.primaryBlue,
+                ),
+              );
+            }),
 
             const SizedBox(height: 24),
           ],
@@ -318,10 +296,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
           const SizedBox(height: 4),
           Text(
             label,
-            style: TextStyle(
-              fontSize: 12,
-              color: AppTheme.mediumGray,
-            ),
+            style: TextStyle(fontSize: 12, color: AppTheme.mediumGray),
             textAlign: TextAlign.center,
           ),
         ],
@@ -329,7 +304,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
     );
   }
 
-  Widget _buildMenuItem(IconData icon, String title, VoidCallback onTap, {Color? iconColor}) {
+  Widget _buildMenuItem(
+    IconData icon,
+    String title,
+    VoidCallback onTap, {
+    Color? iconColor,
+  }) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
@@ -337,16 +317,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
         color: isDark ? AppTheme.darkSurface : AppTheme.white,
         borderRadius: BorderRadius.circular(12),
         border: Border.all(
-          color: isDark ? AppTheme.darkCard.withValues(alpha: 0.3) : AppTheme.lightGray,
+          color: isDark
+              ? AppTheme.darkCard.withValues(alpha: 0.3)
+              : AppTheme.lightGray,
         ),
       ),
       child: ListTile(
         leading: Icon(icon, color: iconColor ?? AppTheme.primaryBlue),
         title: Text(title),
-        trailing: Icon(
-          Icons.chevron_right,
-          color: AppTheme.mediumGray,
-        ),
+        trailing: Icon(Icons.chevron_right, color: AppTheme.mediumGray),
         onTap: onTap,
       ),
     );
@@ -386,7 +365,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
             title: Text(
               'Dark Mode',
               style: TextStyle(
-                color: themeProvider.isDarkMode ? Colors.white : const Color(0xFF0F1113),
+                color: themeProvider.isDarkMode
+                    ? Colors.white
+                    : const Color(0xFF0F1113),
                 fontWeight: FontWeight.w600,
               ),
             ),
