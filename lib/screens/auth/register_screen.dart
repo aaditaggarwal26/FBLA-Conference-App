@@ -75,24 +75,6 @@ class _RegisterScreenState extends State<RegisterScreen> {
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
-                // Logo with rounded corners
-                Center(
-                  child: Material(
-                    elevation: 0,
-                    borderRadius: BorderRadius.circular(16),
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(16),
-                      clipBehavior: Clip.antiAlias,
-                      child: Image.asset(
-                        'assets/logo.png',
-                        height: 80,
-                        width: 80,
-                        fit: BoxFit.cover,
-                      ),
-                    ),
-                  ),
-                ),
-                const SizedBox(height: 24),
                 Text(
                   'Create Account',
                   style: Theme.of(context).textTheme.headlineLarge?.copyWith(

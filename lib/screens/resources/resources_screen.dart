@@ -42,9 +42,7 @@ class _ResourcesScreenState extends State<ResourcesScreen> {
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppTheme.offWhite,
-      appBar: AppBar(
-        title: const Text('Resources'),
-      ),
+      appBar: AppBar(title: const Text('Resources')),
       body: Column(
         children: [
           // Category Filter
@@ -162,8 +160,9 @@ class _ResourcesScreenState extends State<ResourcesScreen> {
                                     const SizedBox(height: 4),
                                     Text(
                                       resource.description,
-                                      style:
-                                          Theme.of(context).textTheme.bodyMedium,
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.bodyMedium,
                                       maxLines: 2,
                                       overflow: TextOverflow.ellipsis,
                                     ),

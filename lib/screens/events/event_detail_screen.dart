@@ -99,7 +99,8 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                   Navigator.push(
                     context,
                     MaterialPageRoute(
-                      builder: (context) => EventQRCodeScreen(event: widget.event),
+                      builder: (context) =>
+                          EventQRCodeScreen(event: widget.event),
                     ),
                   );
                 },
@@ -107,7 +108,8 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
               ),
             ],
             flexibleSpace: FlexibleSpaceBar(
-              background: widget.event.imageUrl != null &&
+              background:
+                  widget.event.imageUrl != null &&
                       widget.event.imageUrl!.isNotEmpty
                   ? Image.network(
                       widget.event.imageUrl!,
@@ -152,8 +154,8 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                   Text(
                     widget.event.title,
                     style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
 
                   const SizedBox(height: 24),
@@ -189,8 +191,8 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                   Text(
                     'About',
                     style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                          fontWeight: FontWeight.bold,
-                        ),
+                      fontWeight: FontWeight.bold,
+                    ),
                   ),
 
                   const SizedBox(height: 12),
@@ -206,31 +208,33 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                     Text(
                       'Speakers',
                       style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                            fontWeight: FontWeight.bold,
-                          ),
+                        fontWeight: FontWeight.bold,
+                      ),
                     ),
 
                     const SizedBox(height: 12),
 
-                    ...widget.event.speakers.map((speaker) => Padding(
-                          padding: const EdgeInsets.only(bottom: 8),
-                          child: Row(
-                            children: [
-                              CircleAvatar(
-                                backgroundColor: AppTheme.lightBlue,
-                                child: Icon(
-                                  Icons.person,
-                                  color: AppTheme.primaryBlue,
-                                ),
+                    ...widget.event.speakers.map(
+                      (speaker) => Padding(
+                        padding: const EdgeInsets.only(bottom: 8),
+                        child: Row(
+                          children: [
+                            CircleAvatar(
+                              backgroundColor: AppTheme.lightBlue,
+                              child: Icon(
+                                Icons.person,
+                                color: AppTheme.primaryBlue,
                               ),
-                              const SizedBox(width: 12),
-                              Text(
-                                speaker,
-                                style: Theme.of(context).textTheme.bodyLarge,
-                              ),
-                            ],
-                          ),
-                        )),
+                            ),
+                            const SizedBox(width: 12),
+                            Text(
+                              speaker,
+                              style: Theme.of(context).textTheme.bodyLarge,
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
                   ],
 
                   const SizedBox(height: 100),
@@ -246,8 +250,9 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
           child: ElevatedButton(
             onPressed: _isLoading ? null : _toggleRegistration,
             style: ElevatedButton.styleFrom(
-              backgroundColor:
-                  _isRegistered ? AppTheme.mediumGray : AppTheme.primaryBlue,
+              backgroundColor: _isRegistered
+                  ? AppTheme.mediumGray
+                  : AppTheme.primaryBlue,
               padding: const EdgeInsets.symmetric(vertical: 16),
             ),
             child: _isLoading
@@ -291,16 +296,16 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
             children: [
               Text(
                 label,
-                style: Theme.of(context).textTheme.bodySmall?.copyWith(
-                      color: AppTheme.mediumGray,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodySmall?.copyWith(color: AppTheme.mediumGray),
               ),
               const SizedBox(height: 4),
               Text(
                 value,
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      fontWeight: FontWeight.w500,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyLarge?.copyWith(fontWeight: FontWeight.w500),
               ),
             ],
           ),
@@ -313,11 +318,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
     return Container(
       color: AppTheme.lightBlue,
       child: Center(
-        child: Icon(
-          Icons.event_rounded,
-          size: 80,
-          color: AppTheme.primaryBlue,
-        ),
+        child: Icon(Icons.event_rounded, size: 80, color: AppTheme.primaryBlue),
       ),
     );
   }

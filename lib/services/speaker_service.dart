@@ -10,9 +10,11 @@ class SpeakerService {
         .collection('speakers')
         .orderBy('name')
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => SpeakerModel.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => SpeakerModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   // Get speaker by ID

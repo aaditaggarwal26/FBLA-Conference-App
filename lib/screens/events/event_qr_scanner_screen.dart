@@ -42,7 +42,7 @@ class _EventQRScannerScreenState extends State<EventQRScannerScreen> {
       // Parse QR code format: "event:EVENT_ID"
       if (code.startsWith('event:')) {
         final eventId = code.substring(6);
-        
+
         // Get event details
         final event = await _eventService.getEventById(eventId);
         if (event == null) {
@@ -85,10 +85,7 @@ class _EventQRScannerScreenState extends State<EventQRScannerScreen> {
   void _showSuccess(String message) {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(message),
-          backgroundColor: AppTheme.success,
-        ),
+        SnackBar(content: Text(message), backgroundColor: AppTheme.success),
       );
     }
   }
@@ -96,10 +93,7 @@ class _EventQRScannerScreenState extends State<EventQRScannerScreen> {
   void _showError(String message) {
     if (mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(message),
-          backgroundColor: AppTheme.error,
-        ),
+        SnackBar(content: Text(message), backgroundColor: AppTheme.error),
       );
     }
   }
@@ -117,16 +111,10 @@ class _EventQRScannerScreenState extends State<EventQRScannerScreen> {
       body: Stack(
         children: [
           // Scanner
-          MobileScanner(
-            controller: _controller,
-            onDetect: _handleBarcode,
-          ),
+          MobileScanner(controller: _controller, onDetect: _handleBarcode),
 
           // Overlay with cutout
-          CustomPaint(
-            painter: ScannerOverlayPainter(),
-            child: Container(),
-          ),
+          CustomPaint(painter: ScannerOverlayPainter(), child: Container()),
 
           // Instructions
           Positioned(
@@ -188,10 +176,7 @@ class _EventQRScannerScreenState extends State<EventQRScannerScreen> {
                 borderRadius: BorderRadius.circular(12),
                 child: Container(
                   padding: const EdgeInsets.all(12),
-                  child: Icon(
-                    Icons.flash_on_rounded,
-                    color: AppTheme.darkBlue,
-                  ),
+                  child: Icon(Icons.flash_on_rounded, color: AppTheme.darkBlue),
                 ),
               ),
             ),

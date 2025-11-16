@@ -21,7 +21,8 @@ class NotificationService {
       if (kDebugMode) {
         print('User granted permission');
       }
-    } else if (settings.authorizationStatus == AuthorizationStatus.provisional) {
+    } else if (settings.authorizationStatus ==
+        AuthorizationStatus.provisional) {
       if (kDebugMode) {
         print('User granted provisional permission');
       }
@@ -60,7 +61,9 @@ class NotificationService {
 
       if (message.notification != null) {
         if (kDebugMode) {
-          print('Message also contained a notification: ${message.notification}');
+          print(
+            'Message also contained a notification: ${message.notification}',
+          );
         }
         // TODO: Show local notification
       }

@@ -28,7 +28,7 @@ class _EventsScreenState extends State<EventsScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Scaffold(
       backgroundColor: isDark ? AppTheme.darkBackground : AppTheme.background,
       body: CustomScrollView(
@@ -39,10 +39,16 @@ class _EventsScreenState extends State<EventsScreen> {
             floating: false,
             pinned: true,
             elevation: 0,
-            backgroundColor: isDark ? AppTheme.darkBackground : AppTheme.background,
+            backgroundColor: isDark
+                ? AppTheme.darkBackground
+                : AppTheme.background,
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: false,
-              titlePadding: const EdgeInsets.only(left: 24, bottom: 16, right: 24),
+              titlePadding: const EdgeInsets.only(
+                left: 24,
+                bottom: 16,
+                right: 24,
+              ),
               title: Text(
                 'Events',
                 style: TextStyle(
@@ -91,7 +97,7 @@ class _EventsScreenState extends State<EventsScreen> {
                 itemBuilder: (context, index) {
                   final category = _categories[index];
                   final isSelected = _selectedCategory == category;
-                  
+
                   return Padding(
                     padding: const EdgeInsets.only(right: 8),
                     child: GestureDetector(
@@ -99,7 +105,10 @@ class _EventsScreenState extends State<EventsScreen> {
                         setState(() => _selectedCategory = category);
                       },
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 8,
+                        ),
                         decoration: BoxDecoration(
                           color: isSelected
                               ? AppTheme.primaryBlue
@@ -108,7 +117,9 @@ class _EventsScreenState extends State<EventsScreen> {
                           border: Border.all(
                             color: isSelected
                                 ? AppTheme.primaryBlue
-                                : (isDark ? Colors.white.withValues(alpha: 0.1) : Colors.grey.shade300),
+                                : (isDark
+                                      ? Colors.white.withValues(alpha: 0.1)
+                                      : Colors.grey.shade300),
                           ),
                         ),
                         child: Center(
@@ -117,8 +128,12 @@ class _EventsScreenState extends State<EventsScreen> {
                             style: TextStyle(
                               color: isSelected
                                   ? Colors.white
-                                  : (isDark ? Colors.white.withValues(alpha: 0.7) : Colors.grey.shade700),
-                              fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
+                                  : (isDark
+                                        ? Colors.white.withValues(alpha: 0.7)
+                                        : Colors.grey.shade700),
+                              fontWeight: isSelected
+                                  ? FontWeight.w600
+                                  : FontWeight.normal,
                               fontSize: 13,
                             ),
                           ),
@@ -152,13 +167,17 @@ class _EventsScreenState extends State<EventsScreen> {
                         Icon(
                           Icons.event_busy_rounded,
                           size: 64,
-                          color: isDark ? Colors.white.withValues(alpha: 0.3) : Colors.grey,
+                          color: isDark
+                              ? Colors.white.withValues(alpha: 0.3)
+                              : Colors.grey,
                         ),
                         const SizedBox(height: 16),
                         Text(
                           'No events found',
                           style: TextStyle(
-                            color: isDark ? Colors.white.withValues(alpha: 0.6) : Colors.grey,
+                            color: isDark
+                                ? Colors.white.withValues(alpha: 0.6)
+                                : Colors.grey,
                             fontSize: 16,
                           ),
                         ),
@@ -171,12 +190,9 @@ class _EventsScreenState extends State<EventsScreen> {
               return SliverPadding(
                 padding: const EdgeInsets.all(16),
                 sliver: SliverList(
-                  delegate: SliverChildBuilderDelegate(
-                    (context, index) {
-                      return EventCard(event: snapshot.data![index]);
-                    },
-                    childCount: snapshot.data!.length,
-                  ),
+                  delegate: SliverChildBuilderDelegate((context, index) {
+                    return EventCard(event: snapshot.data![index]);
+                  }, childCount: snapshot.data!.length),
                 ),
               );
             },
