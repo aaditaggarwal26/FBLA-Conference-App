@@ -11,9 +11,7 @@ class EventQRCodeScreen extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('Event QR Code'),
-      ),
+      appBar: AppBar(title: const Text('Event QR Code')),
       body: Center(
         child: Padding(
           padding: const EdgeInsets.all(24),
@@ -23,8 +21,8 @@ class EventQRCodeScreen extends StatelessWidget {
               Text(
                 'Check-in QR Code',
                 style: Theme.of(context).textTheme.headlineMedium?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                  fontWeight: FontWeight.bold,
+                ),
               ),
               const SizedBox(height: 24),
               Container(
@@ -51,17 +49,17 @@ class EventQRCodeScreen extends StatelessWidget {
               const SizedBox(height: 32),
               Text(
                 event.title,
-                style: Theme.of(context).textTheme.titleLarge?.copyWith(
-                      fontWeight: FontWeight.bold,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.bold),
                 textAlign: TextAlign.center,
               ),
               const SizedBox(height: 12),
               Text(
                 'Scan this QR code to check in',
-                style: Theme.of(context).textTheme.bodyLarge?.copyWith(
-                      color: AppTheme.mediumGray,
-                    ),
+                style: Theme.of(
+                  context,
+                ).textTheme.bodyLarge?.copyWith(color: AppTheme.mediumGray),
                 textAlign: TextAlign.center,
               ),
             ],

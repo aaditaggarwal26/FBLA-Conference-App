@@ -71,8 +71,10 @@ class AdminService {
     return _firestore
         .collection('admins')
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => AdminModel.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => AdminModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 }

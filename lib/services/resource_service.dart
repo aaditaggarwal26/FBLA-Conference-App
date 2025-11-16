@@ -10,9 +10,11 @@ class ResourceService {
         .collection('resources')
         .orderBy('uploadedAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => ResourceModel.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => ResourceModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   // Get resources by category
@@ -22,9 +24,11 @@ class ResourceService {
         .where('category', isEqualTo: category)
         .orderBy('uploadedAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => ResourceModel.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => ResourceModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   // Create resource

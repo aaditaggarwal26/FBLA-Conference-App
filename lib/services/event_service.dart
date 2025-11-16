@@ -10,8 +10,11 @@ class EventService {
         .collection('events')
         .orderBy('startTime')
         .snapshots()
-        .map((snapshot) =>
-            snapshot.docs.map((doc) => EventModel.fromFirestore(doc)).toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => EventModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   // Get upcoming events
@@ -22,8 +25,11 @@ class EventService {
         .orderBy('startTime')
         .limit(10)
         .snapshots()
-        .map((snapshot) =>
-            snapshot.docs.map((doc) => EventModel.fromFirestore(doc)).toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => EventModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   // Get featured events
@@ -33,8 +39,11 @@ class EventService {
         .where('isFeatured', isEqualTo: true)
         .orderBy('startTime')
         .snapshots()
-        .map((snapshot) =>
-            snapshot.docs.map((doc) => EventModel.fromFirestore(doc)).toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => EventModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   // Get event by ID
@@ -79,8 +88,11 @@ class EventService {
         .where('registeredUsers', arrayContains: userId)
         .orderBy('startTime')
         .snapshots()
-        .map((snapshot) =>
-            snapshot.docs.map((doc) => EventModel.fromFirestore(doc)).toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => EventModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   // Search events
@@ -92,9 +104,7 @@ class EventService {
           .where('title', isLessThanOrEqualTo: '$query\uf8ff')
           .get();
 
-      return snapshot.docs
-          .map((doc) => EventModel.fromFirestore(doc))
-          .toList();
+      return snapshot.docs.map((doc) => EventModel.fromFirestore(doc)).toList();
     } catch (e) {
       rethrow;
     }
@@ -107,7 +117,10 @@ class EventService {
         .where('category', isEqualTo: category)
         .orderBy('startTime')
         .snapshots()
-        .map((snapshot) =>
-            snapshot.docs.map((doc) => EventModel.fromFirestore(doc)).toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => EventModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 }

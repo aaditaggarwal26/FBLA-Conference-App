@@ -11,9 +11,11 @@ class AnnouncementService {
         .orderBy('isPinned', descending: true)
         .orderBy('postedAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => AnnouncementModel.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => AnnouncementModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   // Get pinned announcements
@@ -23,14 +25,18 @@ class AnnouncementService {
         .where('isPinned', isEqualTo: true)
         .orderBy('postedAt', descending: true)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => AnnouncementModel.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => AnnouncementModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   // Create announcement (admin only)
   Future<void> createAnnouncement(AnnouncementModel announcement) async {
-    await _firestore.collection('announcements').add(announcement.toFirestore());
+    await _firestore
+        .collection('announcements')
+        .add(announcement.toFirestore());
   }
 
   // Delete announcement (admin only)
