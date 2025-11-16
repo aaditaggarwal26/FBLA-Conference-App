@@ -9,62 +9,79 @@ import 'chat_screen.dart';
 class MessagesListScreen extends StatelessWidget {
   const MessagesListScreen({super.key});
 
-  Future<Map<String, String>> _getUserNames(List<String> userIds) async {
-    final Map<String, String> userNames = {};
-    
+  Future<Map<String, Map<String, String>>> _getUserInfo(
+    List<String> userIds,
+  ) async {
+    final Map<String, Map<String, String>> userInfo = {};
+
     for (final userId in userIds) {
       try {
         final userDoc = await FirebaseFirestore.instance
             .collection('users')
             .doc(userId)
             .get();
-        
+
         if (userDoc.exists) {
           final data = userDoc.data();
-          userNames[userId] = data?['name'] ?? data?['email'] ?? 'User';
+          userInfo[userId] = {
+            'name': data?['name'] ?? data?['email'] ?? 'User',
+            'photoUrl': data?['photoUrl'] ?? '',
+          };
+        } else {
+          userInfo[userId] = {'name': 'User', 'photoUrl': ''};
         }
       } catch (e) {
-        userNames[userId] = 'User';
+        userInfo[userId] = {'name': 'User', 'photoUrl': ''};
       }
     }
-    
-    return userNames;
+
+    return userInfo;
   }
 
   @override
   Widget build(BuildContext context) {
     final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+    final isDark = Theme.of(context).brightness == Brightness.dark;
 
     if (currentUserId == null) {
       return Scaffold(
-        backgroundColor: AppTheme.background,
+        backgroundColor: isDark ? AppTheme.darkBackground : AppTheme.background,
         appBar: AppBar(
           elevation: 0,
-          backgroundColor: AppTheme.white,
+          backgroundColor: isDark ? AppTheme.darkSurface : AppTheme.white,
           title: Text(
             'Messages',
             style: TextStyle(
               fontSize: 22,
               fontWeight: FontWeight.bold,
-              color: AppTheme.black,
+              color: isDark ? Colors.white : AppTheme.black,
             ),
           ),
         ),
-        body: const Center(child: Text('Please sign in to view messages')),
+        body: Center(
+          child: Text(
+            'Please sign in to view messages',
+            style: TextStyle(
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.7)
+                  : AppTheme.mediumGray,
+            ),
+          ),
+        ),
       );
     }
 
     return Scaffold(
-      backgroundColor: AppTheme.background,
+      backgroundColor: isDark ? AppTheme.darkBackground : AppTheme.background,
       appBar: AppBar(
         elevation: 0,
-        backgroundColor: AppTheme.white,
+        backgroundColor: isDark ? AppTheme.darkSurface : AppTheme.white,
         title: Text(
           'Messages',
           style: TextStyle(
             fontSize: 22,
             fontWeight: FontWeight.bold,
-            color: AppTheme.black,
+            color: isDark ? Colors.white : AppTheme.black,
           ),
         ),
       ),
@@ -82,6 +99,7 @@ class MessagesListScreen extends StatelessWidget {
           final chatRooms = snapshot.data ?? [];
 
           if (chatRooms.isEmpty) {
+            final isDark = Theme.of(context).brightness == Brightness.dark;
             return Center(
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
@@ -89,13 +107,15 @@ class MessagesListScreen extends StatelessWidget {
                   Container(
                     padding: const EdgeInsets.all(32),
                     decoration: BoxDecoration(
-                      color: AppTheme.lightBlue,
+                      color: isDark ? AppTheme.darkCard : AppTheme.lightBlue,
                       shape: BoxShape.circle,
                     ),
                     child: Icon(
                       Icons.chat_bubble_outline_rounded,
                       size: 60,
-                      color: AppTheme.primaryBlue,
+                      color: isDark
+                          ? AppTheme.darkPrimary
+                          : AppTheme.primaryBlue,
                     ),
                   ),
                   const SizedBox(height: 24),
@@ -104,7 +124,7 @@ class MessagesListScreen extends StatelessWidget {
                     style: TextStyle(
                       fontSize: 20,
                       fontWeight: FontWeight.bold,
-                      color: AppTheme.black,
+                      color: isDark ? Colors.white : AppTheme.black,
                     ),
                   ),
                   const SizedBox(height: 8),
@@ -112,7 +132,9 @@ class MessagesListScreen extends StatelessWidget {
                     'Start a conversation from pin details!',
                     style: TextStyle(
                       fontSize: 16,
-                      color: AppTheme.mediumGray,
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.7)
+                          : AppTheme.mediumGray,
                     ),
                   ),
                 ],
@@ -130,11 +152,14 @@ class MessagesListScreen extends StatelessWidget {
                 orElse: () => '',
               );
 
-              return FutureBuilder<Map<String, String>>(
-                future: _getUserNames([otherUserId]),
+              return FutureBuilder<Map<String, Map<String, String>>>(
+                future: _getUserInfo([otherUserId]),
                 builder: (context, userSnapshot) {
-                  final otherUserName =
-                      userSnapshot.data?[otherUserId] ?? 'User';
+                  final userData =
+                      userSnapshot.data?[otherUserId] ??
+                      {'name': 'User', 'photoUrl': ''};
+                  final otherUserName = userData['name'] ?? 'User';
+                  final otherUserPhotoUrl = userData['photoUrl'] ?? '';
                   final unreadCount = chatRoom.unreadCount[currentUserId] ?? 0;
 
                   return _buildChatRoomCard(
@@ -142,6 +167,7 @@ class MessagesListScreen extends StatelessWidget {
                     chatRoom,
                     otherUserId,
                     otherUserName,
+                    otherUserPhotoUrl,
                     unreadCount,
                   );
                 },
@@ -158,16 +184,20 @@ class MessagesListScreen extends StatelessWidget {
     ChatRoom chatRoom,
     String otherUserId,
     String otherUserName,
+    String otherUserPhotoUrl,
     int unreadCount,
   ) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Container(
       margin: const EdgeInsets.only(bottom: 12),
       decoration: BoxDecoration(
-        color: AppTheme.white,
+        color: isDark ? AppTheme.darkSurface : AppTheme.white,
         borderRadius: BorderRadius.circular(20),
         boxShadow: [
           BoxShadow(
-            color: AppTheme.primaryBlue.withOpacity(0.08),
+            color: (isDark ? AppTheme.darkPrimary : AppTheme.primaryBlue)
+                .withOpacity(isDark ? 0.2 : 0.08),
             blurRadius: 10,
             offset: const Offset(0, 4),
           ),
@@ -193,25 +223,28 @@ class MessagesListScreen extends StatelessWidget {
             child: Row(
               children: [
                 // User Avatar
-                Container(
-                  width: 56,
-                  height: 56,
-                  decoration: BoxDecoration(
-                    color: AppTheme.lightBlue,
-                    shape: BoxShape.circle,
-                  ),
-                  child: Center(
-                    child: Text(
-                      otherUserName.isNotEmpty
-                          ? otherUserName[0].toUpperCase()
-                          : 'U',
-                      style: TextStyle(
-                        fontSize: 24,
-                        fontWeight: FontWeight.bold,
-                        color: AppTheme.primaryBlue,
-                      ),
-                    ),
-                  ),
+                CircleAvatar(
+                  radius: 28,
+                  backgroundColor: isDark
+                      ? AppTheme.darkCard
+                      : AppTheme.lightBlue,
+                  backgroundImage: otherUserPhotoUrl.isNotEmpty
+                      ? NetworkImage(otherUserPhotoUrl)
+                      : null,
+                  child: otherUserPhotoUrl.isEmpty
+                      ? Text(
+                          otherUserName.isNotEmpty
+                              ? otherUserName[0].toUpperCase()
+                              : 'U',
+                          style: TextStyle(
+                            fontSize: 24,
+                            fontWeight: FontWeight.bold,
+                            color: isDark
+                                ? AppTheme.darkPrimary
+                                : AppTheme.primaryBlue,
+                          ),
+                        )
+                      : null,
                 ),
                 const SizedBox(width: 16),
 
@@ -229,7 +262,7 @@ class MessagesListScreen extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 17,
                                 fontWeight: FontWeight.bold,
-                                color: AppTheme.black,
+                                color: isDark ? Colors.white : AppTheme.black,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -239,7 +272,9 @@ class MessagesListScreen extends StatelessWidget {
                             _formatTimestamp(chatRoom.lastMessageTime),
                             style: TextStyle(
                               fontSize: 12,
-                              color: AppTheme.mediumGray,
+                              color: isDark
+                                  ? Colors.white.withValues(alpha: 0.6)
+                                  : AppTheme.mediumGray,
                             ),
                           ),
                         ],
@@ -254,7 +289,11 @@ class MessagesListScreen extends StatelessWidget {
                                   : chatRoom.lastMessage,
                               style: TextStyle(
                                 fontSize: 14,
-                                color: AppTheme.mediumGray,
+                                color: isDark
+                                    ? (unreadCount > 0
+                                          ? Colors.white.withValues(alpha: 0.9)
+                                          : Colors.white.withValues(alpha: 0.6))
+                                    : AppTheme.mediumGray,
                                 fontWeight: unreadCount > 0
                                     ? FontWeight.w600
                                     : FontWeight.normal,
@@ -271,7 +310,9 @@ class MessagesListScreen extends StatelessWidget {
                                 vertical: 2,
                               ),
                               decoration: BoxDecoration(
-                                color: AppTheme.primaryBlue,
+                                color: isDark
+                                    ? AppTheme.darkPrimary
+                                    : AppTheme.primaryBlue,
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Text(

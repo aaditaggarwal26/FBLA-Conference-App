@@ -9,7 +9,10 @@ class MessageService {
     final participants = [userId1, userId2]..sort();
     final chatRoomId = participants.join('_');
 
-    final chatRoomDoc = await _firestore.collection('chatRooms').doc(chatRoomId).get();
+    final chatRoomDoc = await _firestore
+        .collection('chatRooms')
+        .doc(chatRoomId)
+        .get();
 
     if (!chatRoomDoc.exists) {
       await _firestore.collection('chatRooms').doc(chatRoomId).set({
@@ -54,17 +57,19 @@ class MessageService {
     });
   }
 
-  // Get messages in a chat room
+  // Get messages in a chat room (ordered oldest to newest for display)
   Stream<List<MessageModel>> getMessages(String chatRoomId) {
     return _firestore
         .collection('chatRooms')
         .doc(chatRoomId)
         .collection('messages')
-        .orderBy('timestamp', descending: true)
+        .orderBy('timestamp', descending: false)
         .snapshots()
-        .map((snapshot) => snapshot.docs
-            .map((doc) => MessageModel.fromFirestore(doc))
-            .toList());
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => MessageModel.fromFirestore(doc))
+              .toList(),
+        );
   }
 
   // Get user's chat rooms
@@ -74,8 +79,10 @@ class MessageService {
         .where('participants', arrayContains: userId)
         .orderBy('lastMessageTime', descending: true)
         .snapshots()
-        .map((snapshot) =>
-            snapshot.docs.map((doc) => ChatRoom.fromFirestore(doc)).toList());
+        .map(
+          (snapshot) =>
+              snapshot.docs.map((doc) => ChatRoom.fromFirestore(doc)).toList(),
+        );
   }
 
   // Mark messages as read
