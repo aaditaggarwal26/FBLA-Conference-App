@@ -13,7 +13,8 @@ class PinTradingScreen extends StatefulWidget {
   State<PinTradingScreen> createState() => _PinTradingScreenState();
 }
 
-class _PinTradingScreenState extends State<PinTradingScreen> with SingleTickerProviderStateMixin {
+class _PinTradingScreenState extends State<PinTradingScreen>
+    with SingleTickerProviderStateMixin {
   final PinService _pinService = PinService();
   late TabController _tabController;
 
@@ -32,7 +33,7 @@ class _PinTradingScreenState extends State<PinTradingScreen> with SingleTickerPr
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Scaffold(
       backgroundColor: isDark ? AppTheme.darkBackground : AppTheme.background,
       body: CustomScrollView(
@@ -43,10 +44,16 @@ class _PinTradingScreenState extends State<PinTradingScreen> with SingleTickerPr
             floating: false,
             pinned: true,
             elevation: 0,
-            backgroundColor: isDark ? AppTheme.darkBackground : AppTheme.background,
+            backgroundColor: isDark
+                ? AppTheme.darkBackground
+                : AppTheme.background,
             flexibleSpace: FlexibleSpaceBar(
               centerTitle: false,
-              titlePadding: const EdgeInsets.only(left: 24, bottom: 60, right: 24),
+              titlePadding: const EdgeInsets.only(
+                left: 24,
+                bottom: 60,
+                right: 24,
+              ),
               title: Text(
                 'Pin Trading',
                 style: TextStyle(
@@ -70,7 +77,8 @@ class _PinTradingScreenState extends State<PinTradingScreen> with SingleTickerPr
                   color: isDark ? AppTheme.darkSurface : Colors.white,
                   borderRadius: BorderRadius.circular(12),
                   border: Border.all(
-                    color: (isDark ? AppTheme.darkCard : AppTheme.lightGray).withValues(alpha: 0.5),
+                    color: (isDark ? AppTheme.darkCard : AppTheme.lightGray)
+                        .withValues(alpha: 0.5),
                   ),
                 ),
                 child: TabBar(
@@ -82,7 +90,9 @@ class _PinTradingScreenState extends State<PinTradingScreen> with SingleTickerPr
                   ),
                   dividerColor: Colors.transparent,
                   labelColor: Colors.white,
-                  unselectedLabelColor: isDark ? Colors.white.withValues(alpha: 0.6) : AppTheme.darkGray,
+                  unselectedLabelColor: isDark
+                      ? Colors.white.withValues(alpha: 0.6)
+                      : AppTheme.darkGray,
                   labelStyle: const TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w700,
@@ -99,10 +109,7 @@ class _PinTradingScreenState extends State<PinTradingScreen> with SingleTickerPr
           SliverFillRemaining(
             child: TabBarView(
               controller: _tabController,
-              children: [
-                _buildExploreTab(),
-                const MyPinsScreen(),
-              ],
+              children: [_buildExploreTab(), const MyPinsScreen()],
             ),
           ),
         ],
@@ -111,9 +118,7 @@ class _PinTradingScreenState extends State<PinTradingScreen> with SingleTickerPr
         onPressed: () {
           Navigator.push(
             context,
-            MaterialPageRoute(
-              builder: (context) => const CreatePinScreen(),
-            ),
+            MaterialPageRoute(builder: (context) => const CreatePinScreen()),
           );
         },
         icon: const Icon(Icons.add_rounded),
@@ -125,7 +130,7 @@ class _PinTradingScreenState extends State<PinTradingScreen> with SingleTickerPr
 
   Widget _buildExploreTab() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return StreamBuilder<List<PinModel>>(
       stream: _pinService.getAllPins(),
       builder: (context, snapshot) {
@@ -135,9 +140,10 @@ class _PinTradingScreenState extends State<PinTradingScreen> with SingleTickerPr
 
         if (snapshot.hasError) {
           final errorMessage = snapshot.error.toString();
-          
+
           // Check if it's an index error
-          if (errorMessage.contains('index') || errorMessage.contains('requires an index')) {
+          if (errorMessage.contains('index') ||
+              errorMessage.contains('requires an index')) {
             return Center(
               child: Padding(
                 padding: const EdgeInsets.all(32),
@@ -171,7 +177,9 @@ class _PinTradingScreenState extends State<PinTradingScreen> with SingleTickerPr
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: 14,
-                        color: isDark ? Colors.white.withValues(alpha: 0.7) : AppTheme.darkGray,
+                        color: isDark
+                            ? Colors.white.withValues(alpha: 0.7)
+                            : AppTheme.darkGray,
                         height: 1.5,
                       ),
                     ),
@@ -192,7 +200,7 @@ class _PinTradingScreenState extends State<PinTradingScreen> with SingleTickerPr
               ),
             );
           }
-          
+
           // Other errors
           return Center(
             child: Padding(
@@ -220,7 +228,9 @@ class _PinTradingScreenState extends State<PinTradingScreen> with SingleTickerPr
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: 14,
-                      color: isDark ? Colors.white.withValues(alpha: 0.6) : AppTheme.darkGray,
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.6)
+                          : AppTheme.darkGray,
                     ),
                   ),
                   const SizedBox(height: 16),
@@ -247,7 +257,7 @@ class _PinTradingScreenState extends State<PinTradingScreen> with SingleTickerPr
           padding: const EdgeInsets.all(16),
           gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
             crossAxisCount: 2,
-            childAspectRatio: 0.75,
+            childAspectRatio: 0.65,
             crossAxisSpacing: 16,
             mainAxisSpacing: 16,
           ),
@@ -262,14 +272,12 @@ class _PinTradingScreenState extends State<PinTradingScreen> with SingleTickerPr
 
   Widget _buildPinCard(PinModel pin) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return GestureDetector(
       onTap: () {
         Navigator.push(
           context,
-          MaterialPageRoute(
-            builder: (context) => PinDetailScreen(pin: pin),
-          ),
+          MaterialPageRoute(builder: (context) => PinDetailScreen(pin: pin)),
         );
       },
       child: Hero(
@@ -279,7 +287,8 @@ class _PinTradingScreenState extends State<PinTradingScreen> with SingleTickerPr
             color: isDark ? AppTheme.darkSurface : Colors.white,
             borderRadius: BorderRadius.circular(20),
             border: Border.all(
-              color: (isDark ? AppTheme.darkCard : AppTheme.lightGray).withValues(alpha: 0.5),
+              color: (isDark ? AppTheme.darkCard : AppTheme.lightGray)
+                  .withValues(alpha: 0.5),
             ),
             boxShadow: [
               BoxShadow(
@@ -294,12 +303,14 @@ class _PinTradingScreenState extends State<PinTradingScreen> with SingleTickerPr
             children: [
               // Pin Image with subtle overlay
               Expanded(
-                flex: 3,
+                flex: 4,
                 child: Stack(
                   children: [
                     Container(
                       decoration: BoxDecoration(
-                        color: isDark ? Colors.white.withValues(alpha: 0.05) : AppTheme.lightBlue,
+                        color: isDark
+                            ? Colors.white.withValues(alpha: 0.05)
+                            : AppTheme.lightBlue,
                         borderRadius: const BorderRadius.only(
                           topLeft: Radius.circular(20),
                           topRight: Radius.circular(20),
@@ -316,13 +327,17 @@ class _PinTradingScreenState extends State<PinTradingScreen> with SingleTickerPr
                               child: Container(
                                 padding: const EdgeInsets.all(16),
                                 decoration: BoxDecoration(
-                                  color: AppTheme.primaryBlue.withValues(alpha: 0.1),
+                                  color: AppTheme.primaryBlue.withValues(
+                                    alpha: 0.1,
+                                  ),
                                   shape: BoxShape.circle,
                                 ),
                                 child: Icon(
                                   Icons.push_pin_rounded,
                                   size: 32,
-                                  color: AppTheme.primaryBlue.withValues(alpha: 0.5),
+                                  color: AppTheme.primaryBlue.withValues(
+                                    alpha: 0.5,
+                                  ),
                                 ),
                               ),
                             )
@@ -353,26 +368,35 @@ class _PinTradingScreenState extends State<PinTradingScreen> with SingleTickerPr
               ),
               // Pin Info
               Expanded(
-                flex: 2,
+                flex: 3,
                 child: Padding(
-                  padding: const EdgeInsets.all(14),
+                  padding: const EdgeInsets.all(12),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      Text(
-                        pin.pinName,
-                        style: TextStyle(
-                          fontSize: 15,
-                          fontWeight: FontWeight.bold,
-                          color: isDark ? Colors.white : AppTheme.black,
-                          height: 1.2,
+                      // Pin name with proper space allocation
+                      Flexible(
+                        flex: 2,
+                        fit: FlexFit.tight,
+                        child: Text(
+                          pin.pinName,
+                          style: TextStyle(
+                            fontSize: 15,
+                            fontWeight: FontWeight.bold,
+                            color: isDark ? Colors.white : AppTheme.black,
+                            height: 1.2,
+                          ),
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
                         ),
-                        maxLines: 2,
-                        overflow: TextOverflow.ellipsis,
                       ),
                       const SizedBox(height: 8),
+                      // Badge - fixed height
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 5),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 8,
+                          vertical: 4,
+                        ),
                         decoration: BoxDecoration(
                           color: AppTheme.warning.withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(6),
@@ -410,7 +434,9 @@ class _PinTradingScreenState extends State<PinTradingScreen> with SingleTickerPr
                         children: [
                           CircleAvatar(
                             radius: 12,
-                            backgroundColor: AppTheme.primaryBlue.withValues(alpha: 0.1),
+                            backgroundColor: AppTheme.primaryBlue.withValues(
+                              alpha: 0.1,
+                            ),
                             backgroundImage: pin.userPhotoUrl != null
                                 ? NetworkImage(pin.userPhotoUrl!)
                                 : null,
@@ -432,7 +458,9 @@ class _PinTradingScreenState extends State<PinTradingScreen> with SingleTickerPr
                               style: TextStyle(
                                 fontSize: 12,
                                 fontWeight: FontWeight.w600,
-                                color: isDark ? Colors.white.withValues(alpha: 0.7) : AppTheme.darkGray,
+                                color: isDark
+                                    ? Colors.white.withValues(alpha: 0.7)
+                                    : AppTheme.darkGray,
                               ),
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
@@ -453,7 +481,7 @@ class _PinTradingScreenState extends State<PinTradingScreen> with SingleTickerPr
 
   Widget _buildEmptyState() {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Center(
       child: Column(
         mainAxisAlignment: MainAxisAlignment.center,
@@ -491,7 +519,9 @@ class _PinTradingScreenState extends State<PinTradingScreen> with SingleTickerPr
             'Be the first to create a pin listing!',
             style: TextStyle(
               fontSize: 15,
-              color: isDark ? Colors.white.withValues(alpha: 0.6) : AppTheme.mediumGray,
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.6)
+                  : AppTheme.mediumGray,
             ),
           ),
           const SizedBox(height: 32),
