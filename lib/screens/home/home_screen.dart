@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../services/event_service.dart';
 import '../../services/announcement_service.dart';
+import '../../services/auth_service.dart';
 import '../../models/event_model.dart';
 import '../../models/announcement_model.dart';
 import '../../theme/app_theme.dart';
@@ -19,6 +20,14 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final EventService _eventService = EventService();
   final AnnouncementService _announcementService = AnnouncementService();
+  final AuthService _authService = AuthService();
+  late Future<String> _firstNameFuture;
+
+  @override
+  void initState() {
+    super.initState();
+    _firstNameFuture = _getFirstName();
+  }
 
   String _getGreeting() {
     final hour = DateTime.now().hour;
@@ -27,15 +36,27 @@ class _HomeScreenState extends State<HomeScreen> {
     return 'Good Evening';
   }
 
-  String _getFirstName() {
+  Future<String> _getFirstName() async {
     final user = FirebaseAuth.instance.currentUser;
-    if (user?.displayName != null && user!.displayName!.isNotEmpty) {
+    if (user == null) return 'Friend';
+
+    try {
+      final userData = await _authService.getUserData(user.uid);
+      if (userData != null && userData.name.isNotEmpty) {
+        return userData.name.split(' ').first;
+      }
+    } catch (e) {
+      print('Error fetching user data: $e');
+    }
+
+    if (user.displayName != null && user.displayName!.isNotEmpty) {
       return user.displayName!.split(' ').first;
     }
-    if (user?.email != null) {
-      // Get the part before @ in email
-      final emailName = user!.email!.split('@').first.split('.').first;
-      return emailName.isNotEmpty ? '${emailName[0].toUpperCase()}${emailName.substring(1)}' : 'Friend';
+    if (user.email != null) {
+      final emailName = user.email!.split('@').first.split('.').first;
+      return emailName.isNotEmpty
+          ? '${emailName[0].toUpperCase()}${emailName.substring(1)}'
+          : 'Friend';
     }
     return 'Friend';
   }
@@ -43,7 +64,7 @@ class _HomeScreenState extends State<HomeScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Scaffold(
       backgroundColor: isDark ? AppTheme.darkBackground : AppTheme.background,
       body: CustomScrollView(
@@ -55,12 +76,16 @@ class _HomeScreenState extends State<HomeScreen> {
             pinned: true,
             stretch: true,
             elevation: 0,
-            backgroundColor: isDark ? AppTheme.darkBackground : AppTheme.background,
+            backgroundColor: isDark
+                ? AppTheme.darkBackground
+                : AppTheme.background,
             flexibleSpace: LayoutBuilder(
               builder: (context, constraints) {
                 // Calculate if we're collapsed
-                final isCollapsed = constraints.biggest.height <= kToolbarHeight + MediaQuery.of(context).padding.top + 20;
-                
+                final isCollapsed =
+                    constraints.biggest.height <=
+                    kToolbarHeight + MediaQuery.of(context).padding.top + 20;
+
                 return FlexibleSpaceBar(
                   centerTitle: false,
                   titlePadding: EdgeInsets.only(
@@ -90,34 +115,63 @@ class _HomeScreenState extends State<HomeScreen> {
                           Text(
                             '${_getGreeting()},',
                             style: TextStyle(
-                              color: isDark ? Colors.white.withValues(alpha: 0.6) : AppTheme.mediumGray,
+                              color: isDark
+                                  ? Colors.white.withValues(alpha: 0.6)
+                                  : AppTheme.mediumGray,
                               fontSize: 16,
                               fontWeight: FontWeight.w500,
                               letterSpacing: 0.2,
                             ),
                           ),
                           const SizedBox(height: 4),
-                          Text(
-                            _getFirstName(),
-                            style: TextStyle(
-                              color: isDark ? Colors.white : AppTheme.black,
-                              fontSize: 32,
-                              fontWeight: FontWeight.w800,
-                              height: 1.2,
-                              letterSpacing: -0.5,
-                            ),
+                          FutureBuilder<String>(
+                            future: _firstNameFuture,
+                            builder: (context, snapshot) {
+                              if (snapshot.connectionState ==
+                                  ConnectionState.waiting) {
+                                return Text(
+                                  'Friend',
+                                  style: TextStyle(
+                                    color: isDark
+                                        ? Colors.white
+                                        : AppTheme.black,
+                                    fontSize: 32,
+                                    fontWeight: FontWeight.w800,
+                                    height: 1.2,
+                                    letterSpacing: -0.5,
+                                  ),
+                                );
+                              }
+                              return Text(
+                                snapshot.data ?? 'Friend',
+                                style: TextStyle(
+                                  color: isDark ? Colors.white : AppTheme.black,
+                                  fontSize: 32,
+                                  fontWeight: FontWeight.w800,
+                                  height: 1.2,
+                                  letterSpacing: -0.5,
+                                ),
+                              );
+                            },
                           ),
                           const SizedBox(height: 12),
                           // Date with subtle background
                           Container(
-                            padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 12,
+                              vertical: 6,
+                            ),
                             decoration: BoxDecoration(
-                              color: isDark 
+                              color: isDark
                                   ? AppTheme.darkSurface.withValues(alpha: 0.5)
                                   : Colors.white.withValues(alpha: 0.6),
                               borderRadius: BorderRadius.circular(8),
                               border: Border.all(
-                                color: (isDark ? AppTheme.darkCard : AppTheme.lightGray).withValues(alpha: 0.3),
+                                color:
+                                    (isDark
+                                            ? AppTheme.darkCard
+                                            : AppTheme.lightGray)
+                                        .withValues(alpha: 0.3),
                               ),
                             ),
                             child: Row(
@@ -126,13 +180,19 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Icon(
                                   Icons.calendar_today_rounded,
                                   size: 13,
-                                  color: isDark ? AppTheme.darkSecondary : AppTheme.primaryBlue,
+                                  color: isDark
+                                      ? AppTheme.darkSecondary
+                                      : AppTheme.primaryBlue,
                                 ),
                                 const SizedBox(width: 6),
                                 Text(
-                                  DateFormat('EEEE, MMMM d').format(DateTime.now()),
+                                  DateFormat(
+                                    'EEEE, MMMM d',
+                                  ).format(DateTime.now()),
                                   style: TextStyle(
-                                    color: isDark ? Colors.white.withValues(alpha: 0.8) : AppTheme.darkGray,
+                                    color: isDark
+                                        ? Colors.white.withValues(alpha: 0.8)
+                                        : AppTheme.darkGray,
                                     fontSize: 12,
                                     fontWeight: FontWeight.w600,
                                     letterSpacing: 0.2,
@@ -181,10 +241,14 @@ class _HomeScreenState extends State<HomeScreen> {
                     return Column(
                       children: snapshot.data!
                           .take(3)
-                          .map((announcement) => Padding(
-                                padding: const EdgeInsets.only(bottom: 12),
-                                child: AnnouncementCard(announcement: announcement),
-                              ))
+                          .map(
+                            (announcement) => Padding(
+                              padding: const EdgeInsets.only(bottom: 12),
+                              child: AnnouncementCard(
+                                announcement: announcement,
+                              ),
+                            ),
+                          )
                           .toList(),
                     );
                   },
@@ -225,7 +289,9 @@ class _HomeScreenState extends State<HomeScreen> {
                           return Container(
                             width: 320,
                             margin: EdgeInsets.only(
-                              right: index != snapshot.data!.length - 1 ? 16 : 0,
+                              right: index != snapshot.data!.length - 1
+                                  ? 16
+                                  : 0,
                             ),
                             child: EventCard(
                               event: snapshot.data![index],
@@ -247,8 +313,6 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-
-
   Widget _buildSectionHeader(String title, IconData icon, bool isDark) {
     return Row(
       children: [
@@ -258,11 +322,7 @@ class _HomeScreenState extends State<HomeScreen> {
             color: AppTheme.primaryBlue.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(8),
           ),
-          child: Icon(
-            icon,
-            color: AppTheme.primaryBlue,
-            size: 20,
-          ),
+          child: Icon(icon, color: AppTheme.primaryBlue, size: 20),
         ),
         const SizedBox(width: 12),
         Text(
@@ -306,7 +366,9 @@ class _HomeScreenState extends State<HomeScreen> {
         color: isDark ? AppTheme.darkSurface : Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: (isDark ? AppTheme.darkCard : AppTheme.lightGray).withValues(alpha: 0.5),
+          color: (isDark ? AppTheme.darkCard : AppTheme.lightGray).withValues(
+            alpha: 0.5,
+          ),
         ),
       ),
       child: Center(
