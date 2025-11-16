@@ -122,7 +122,7 @@ class _PinTradingScreenState extends State<PinTradingScreen>
           );
         },
         icon: const Icon(Icons.add_rounded),
-        label: const Text('Create Pin'),
+        label: const Text('Create Listing'),
         backgroundColor: AppTheme.primaryBlue,
       ),
     );
