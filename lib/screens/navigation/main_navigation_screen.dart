@@ -4,6 +4,7 @@ import '../events/events_screen.dart';
 import '../schedule/schedule_screen.dart';
 import '../pins/pin_trading_screen.dart';
 import '../profile/profile_screen.dart';
+import '../messages/messages_list_screen.dart';
 import '../../theme/app_theme.dart';
 
 class MainNavigationScreen extends StatefulWidget {
@@ -20,6 +21,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     HomeScreen(),
     EventsScreen(),
     PinTradingScreen(),
+    MessagesListScreen(),
     ScheduleScreen(),
     ProfileScreen(),
   ];
@@ -27,7 +29,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Scaffold(
       body: _screens[_currentIndex],
       bottomNavigationBar: Container(
@@ -35,7 +37,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
           color: isDark ? AppTheme.darkSurface : Colors.white,
           border: Border(
             top: BorderSide(
-              color: isDark ? Colors.white.withValues(alpha: 0.1) : Colors.black.withValues(alpha: 0.05),
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.1)
+                  : Colors.black.withValues(alpha: 0.05),
             ),
           ),
         ),
@@ -48,8 +52,14 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                 _buildNavItem(0, Icons.home_rounded, 'Home', isDark),
                 _buildNavItem(1, Icons.event_rounded, 'Events', isDark),
                 _buildNavItem(2, Icons.push_pin_rounded, 'Pins', isDark),
-                _buildNavItem(3, Icons.calendar_today_rounded, 'Schedule', isDark),
-                _buildNavItem(4, Icons.person_rounded, 'Profile', isDark),
+                _buildNavItem(3, Icons.chat_bubble_rounded, 'Messages', isDark),
+                _buildNavItem(
+                  4,
+                  Icons.calendar_today_rounded,
+                  'Schedule',
+                  isDark,
+                ),
+                _buildNavItem(5, Icons.person_rounded, 'Profile', isDark),
               ],
             ),
           ),
@@ -60,14 +70,16 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
   Widget _buildNavItem(int index, IconData icon, String label, bool isDark) {
     final isSelected = _currentIndex == index;
-    
+
     return GestureDetector(
       onTap: () => setState(() => _currentIndex = index),
       child: Container(
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
         decoration: BoxDecoration(
           color: isSelected
-              ? AppTheme.primaryBlue.withValues(alpha: 0.1)
+              ? (isDark
+                    ? AppTheme.darkPrimary.withValues(alpha: 0.2)
+                    : AppTheme.primaryBlue.withValues(alpha: 0.1))
               : Colors.transparent,
           borderRadius: BorderRadius.circular(12),
         ),
@@ -77,8 +89,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
             Icon(
               icon,
               color: isSelected
-                  ? AppTheme.primaryBlue
-                  : (isDark ? Colors.white.withValues(alpha: 0.5) : Colors.grey),
+                  ? (isDark ? AppTheme.darkPrimary : AppTheme.primaryBlue)
+                  : (isDark
+                        ? Colors.white.withValues(alpha: 0.5)
+                        : Colors.grey),
               size: 24,
             ),
             const SizedBox(height: 4),
@@ -86,8 +100,10 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
               label,
               style: TextStyle(
                 color: isSelected
-                    ? AppTheme.primaryBlue
-                    : (isDark ? Colors.white.withValues(alpha: 0.5) : Colors.grey),
+                    ? (isDark ? AppTheme.darkPrimary : AppTheme.primaryBlue)
+                    : (isDark
+                          ? Colors.white.withValues(alpha: 0.5)
+                          : Colors.grey),
                 fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
                 fontSize: 11,
               ),

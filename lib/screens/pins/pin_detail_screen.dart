@@ -25,7 +25,9 @@ class _PinDetailScreenState extends State<PinDetailScreen> {
       context: context,
       builder: (context) => AlertDialog(
         title: const Text('Mark as Traded'),
-        content: const Text('Are you sure you want to mark this pin as traded?'),
+        content: const Text(
+          'Are you sure you want to mark this pin as traded?',
+        ),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
@@ -33,9 +35,7 @@ class _PinDetailScreenState extends State<PinDetailScreen> {
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppTheme.success,
-            ),
+            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.success),
             child: const Text('Confirm'),
           ),
         ],
@@ -134,7 +134,9 @@ class _PinDetailScreenState extends State<PinDetailScreen> {
                                       child: Icon(
                                         Icons.broken_image_rounded,
                                         size: 60,
-                                        color: Colors.white.withValues(alpha: 0.5),
+                                        color: Colors.white.withValues(
+                                          alpha: 0.5,
+                                        ),
                                       ),
                                     ),
                                   );
@@ -171,12 +173,16 @@ class _PinDetailScreenState extends State<PinDetailScreen> {
                                     (index) => Container(
                                       width: 8,
                                       height: 8,
-                                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                                      margin: const EdgeInsets.symmetric(
+                                        horizontal: 4,
+                                      ),
                                       decoration: BoxDecoration(
                                         shape: BoxShape.circle,
                                         color: _currentImageIndex == index
                                             ? Colors.white
-                                            : Colors.white.withValues(alpha: 0.4),
+                                            : Colors.white.withValues(
+                                                alpha: 0.4,
+                                              ),
                                       ),
                                     ),
                                   ),
@@ -190,10 +196,7 @@ class _PinDetailScreenState extends State<PinDetailScreen> {
                           gradient: LinearGradient(
                             begin: Alignment.topLeft,
                             end: Alignment.bottomRight,
-                            colors: [
-                              AppTheme.primaryBlue,
-                              AppTheme.accentBlue,
-                            ],
+                            colors: [AppTheme.primaryBlue, AppTheme.accentBlue],
                           ),
                         ),
                         child: Center(
