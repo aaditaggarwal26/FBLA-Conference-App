@@ -94,14 +94,28 @@ class _HomeScreenState extends State<HomeScreen> {
                     right: 24,
                   ),
                   title: isCollapsed
-                      ? Text(
-                          'FBLA Conference',
-                          style: TextStyle(
-                            color: isDark ? Colors.white : AppTheme.black,
-                            fontSize: 18,
-                            fontWeight: FontWeight.w700,
-                            letterSpacing: 0.3,
-                          ),
+                      ? Row(
+                          children: [
+                            ClipRRect(
+                              borderRadius: BorderRadius.circular(8),
+                              child: Image.asset(
+                                'assets/logo.png',
+                                height: 28,
+                                width: 28,
+                                fit: BoxFit.contain,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            Text(
+                              'FBLA Conference',
+                              style: TextStyle(
+                                color: isDark ? Colors.white : AppTheme.black,
+                                fontSize: 18,
+                                fontWeight: FontWeight.w700,
+                                letterSpacing: 0.3,
+                              ),
+                            ),
+                          ],
                         )
                       : null,
                   background: SafeArea(
@@ -111,6 +125,17 @@ class _HomeScreenState extends State<HomeScreen> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisAlignment: MainAxisAlignment.end,
                         children: [
+                          // Logo with rounded corners
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(12),
+                            child: Image.asset(
+                              'assets/logo.png',
+                              height: 32,
+                              width: 32,
+                              fit: BoxFit.contain,
+                            ),
+                          ),
+                          const SizedBox(height: 8),
                           // Greeting
                           Text(
                             '${_getGreeting()},',
@@ -154,7 +179,7 @@ class _HomeScreenState extends State<HomeScreen> {
                               );
                             },
                           ),
-                          const SizedBox(height: 12),
+                          const SizedBox(height: 8),
                           // Date with subtle background
                           Container(
                             padding: const EdgeInsets.symmetric(

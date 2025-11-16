@@ -264,10 +264,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 context: context,
                 applicationName: 'FBLA Conference App',
                 applicationVersion: '1.0.0',
-                applicationIcon: Icon(
-                  Icons.event_rounded,
-                  size: 48,
-                  color: AppTheme.primaryBlue,
+                applicationIcon: ClipRRect(
+                  borderRadius: BorderRadius.circular(12),
+                  clipBehavior: Clip.antiAlias,
+                  child: Image.asset(
+                    'assets/logo.png',
+                    height: 48,
+                    width: 48,
+                    fit: BoxFit.cover,
+                  ),
                 ),
               );
             }),

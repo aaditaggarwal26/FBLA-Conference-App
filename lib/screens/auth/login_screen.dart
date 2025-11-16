@@ -66,10 +66,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString()),
-          backgroundColor: AppTheme.error,
-        ),
+        SnackBar(content: Text(e.toString()), backgroundColor: AppTheme.error),
       );
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -92,10 +89,7 @@ class _LoginScreenState extends State<LoginScreen> {
     } catch (e) {
       if (!mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.toString()),
-          backgroundColor: AppTheme.error,
-        ),
+        SnackBar(content: Text(e.toString()), backgroundColor: AppTheme.error),
       );
     } finally {
       if (mounted) setState(() => _isLoading = false);
@@ -116,18 +110,29 @@ class _LoginScreenState extends State<LoginScreen> {
                 mainAxisAlignment: MainAxisAlignment.center,
                 crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Logo/Header
-                  Icon(
-                    Icons.event_rounded,
-                    size: 80,
-                    color: AppTheme.primaryBlue,
+                  // Logo/Header with rounded corners
+                  Center(
+                    child: Material(
+                      elevation: 0,
+                      borderRadius: BorderRadius.circular(16),
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.circular(16),
+                        clipBehavior: Clip.antiAlias,
+                        child: Image.asset(
+                          'assets/logo.png',
+                          height: 80,
+                          width: 80,
+                          fit: BoxFit.cover,
+                        ),
+                      ),
+                    ),
                   ),
                   const SizedBox(height: 24),
                   Text(
                     'FBLA Conference',
                     style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                          color: AppTheme.primaryBlue,
-                        ),
+                      color: AppTheme.primaryBlue,
+                    ),
                     textAlign: TextAlign.center,
                   ),
                   const SizedBox(height: 8),
@@ -212,8 +217,9 @@ class _LoginScreenState extends State<LoginScreen> {
                             width: 20,
                             child: CircularProgressIndicator(
                               strokeWidth: 2,
-                              valueColor:
-                                  AlwaysStoppedAnimation<Color>(Colors.white),
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                Colors.white,
+                              ),
                             ),
                           )
                         : const Text('Sign In'),
