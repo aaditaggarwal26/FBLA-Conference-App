@@ -45,9 +45,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
         ),
         child: SafeArea(
           child: Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
+            padding: const EdgeInsets.symmetric(horizontal: 4, vertical: 8),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceAround,
+              mainAxisAlignment: MainAxisAlignment.spaceEvenly,
               children: [
                 _buildNavItem(0, Icons.home_rounded, 'Home', isDark),
                 _buildNavItem(1, Icons.event_rounded, 'Events', isDark),
@@ -71,44 +71,64 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
   Widget _buildNavItem(int index, IconData icon, String label, bool isDark) {
     final isSelected = _currentIndex == index;
 
-    return GestureDetector(
-      onTap: () => setState(() => _currentIndex = index),
-      child: Container(
-        padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        decoration: BoxDecoration(
-          color: isSelected
-              ? (isDark
-                    ? AppTheme.darkPrimary.withValues(alpha: 0.2)
-                    : AppTheme.primaryBlue.withValues(alpha: 0.1))
-              : Colors.transparent,
-          borderRadius: BorderRadius.circular(12),
-        ),
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Icon(
-              icon,
-              color: isSelected
-                  ? (isDark ? AppTheme.darkPrimary : AppTheme.primaryBlue)
-                  : (isDark
-                        ? Colors.white.withValues(alpha: 0.5)
-                        : Colors.grey),
-              size: 24,
-            ),
-            const SizedBox(height: 4),
-            Text(
-              label,
-              style: TextStyle(
+    return Flexible(
+      flex: isSelected ? 3 : 1,
+      child: GestureDetector(
+        onTap: () => setState(() => _currentIndex = index),
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 250),
+          curve: Curves.easeInOutCubic,
+          padding: EdgeInsets.symmetric(
+            horizontal: isSelected ? 12 : 4,
+            vertical: 8,
+          ),
+          decoration: BoxDecoration(
+            color: isSelected
+                ? (isDark
+                      ? AppTheme.darkPrimary.withValues(alpha: 0.2)
+                      : AppTheme.primaryBlue.withValues(alpha: 0.1))
+                : Colors.transparent,
+            borderRadius: BorderRadius.circular(12),
+          ),
+          child: Row(
+            mainAxisSize: MainAxisSize.min,
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: [
+              Icon(
+                icon,
                 color: isSelected
                     ? (isDark ? AppTheme.darkPrimary : AppTheme.primaryBlue)
                     : (isDark
                           ? Colors.white.withValues(alpha: 0.5)
                           : Colors.grey),
-                fontWeight: isSelected ? FontWeight.w600 : FontWeight.normal,
-                fontSize: 11,
+                size: isSelected ? 26 : 24,
               ),
-            ),
-          ],
+              if (isSelected) ...[
+                const SizedBox(width: 6),
+                AnimatedOpacity(
+                  opacity: isSelected ? 1.0 : 0.0,
+                  duration: const Duration(milliseconds: 200),
+                  child: AnimatedDefaultTextStyle(
+                    duration: const Duration(milliseconds: 200),
+                    style: TextStyle(
+                      color: isSelected
+                          ? (isDark
+                                ? AppTheme.darkPrimary
+                                : AppTheme.primaryBlue)
+                          : Colors.transparent,
+                      fontWeight: FontWeight.w600,
+                      fontSize: 12,
+                    ),
+                    child: Text(
+                      label,
+                      overflow: TextOverflow.ellipsis,
+                      maxLines: 1,
+                    ),
+                  ),
+                ),
+              ],
+            ],
+          ),
         ),
       ),
     );
