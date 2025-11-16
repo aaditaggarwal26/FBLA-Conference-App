@@ -16,6 +16,8 @@ class PinDetailScreen extends StatefulWidget {
 
 class _PinDetailScreenState extends State<PinDetailScreen> {
   final PinService _pinService = PinService();
+  final PageController _pageController = PageController();
+  int _currentImageIndex = 0;
   bool _isLoading = false;
 
   Future<void> _markAsTraded() async {
@@ -85,15 +87,22 @@ class _PinDetailScreenState extends State<PinDetailScreen> {
   }
 
   @override
+  void dispose() {
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final currentUserId = FirebaseAuth.instance.currentUser?.uid;
     final isOwner = currentUserId == widget.pin.userId;
+    final hasMultipleImages = widget.pin.imageUrls.length > 1;
 
     return Scaffold(
       backgroundColor: AppTheme.offWhite,
       body: CustomScrollView(
         slivers: [
-          // App Bar with Image
+          // App Bar with Image Gallery
           SliverAppBar(
             expandedHeight: 300,
             pinned: true,
@@ -101,30 +110,100 @@ class _PinDetailScreenState extends State<PinDetailScreen> {
             flexibleSpace: FlexibleSpaceBar(
               background: Hero(
                 tag: 'pin_${widget.pin.id}',
-                child: Container(
-                  decoration: BoxDecoration(
-                    gradient: LinearGradient(
-                      begin: Alignment.topLeft,
-                      end: Alignment.bottomRight,
-                      colors: [
-                        AppTheme.primaryBlue,
-                        AppTheme.accentBlue,
-                      ],
-                    ),
-                  ),
-                  child: widget.pin.imageUrls.isNotEmpty
-                      ? Image.network(
-                          widget.pin.imageUrls.first,
-                          fit: BoxFit.cover,
-                        )
-                      : Center(
+                child: widget.pin.imageUrls.isNotEmpty
+                    ? Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          PageView.builder(
+                            controller: _pageController,
+                            itemCount: widget.pin.imageUrls.length,
+                            physics: const PageScrollPhysics(),
+                            onPageChanged: (index) {
+                              setState(() {
+                                _currentImageIndex = index;
+                              });
+                            },
+                            itemBuilder: (context, index) {
+                              return Image.network(
+                                widget.pin.imageUrls[index],
+                                fit: BoxFit.cover,
+                                errorBuilder: (context, error, stackTrace) {
+                                  return Container(
+                                    color: AppTheme.primaryBlue,
+                                    child: Center(
+                                      child: Icon(
+                                        Icons.broken_image_rounded,
+                                        size: 60,
+                                        color: Colors.white.withValues(alpha: 0.5),
+                                      ),
+                                    ),
+                                  );
+                                },
+                              );
+                            },
+                          ),
+                          // Gradient overlay - ignore pointer events so PageView can receive touches
+                          IgnorePointer(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                gradient: LinearGradient(
+                                  begin: Alignment.topCenter,
+                                  end: Alignment.bottomCenter,
+                                  colors: [
+                                    Colors.transparent,
+                                    Colors.black.withValues(alpha: 0.3),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                          // Image indicator dots - ignore pointer events
+                          if (hasMultipleImages)
+                            Positioned(
+                              bottom: 16,
+                              left: 0,
+                              right: 0,
+                              child: IgnorePointer(
+                                child: Row(
+                                  mainAxisAlignment: MainAxisAlignment.center,
+                                  children: List.generate(
+                                    widget.pin.imageUrls.length,
+                                    (index) => Container(
+                                      width: 8,
+                                      height: 8,
+                                      margin: const EdgeInsets.symmetric(horizontal: 4),
+                                      decoration: BoxDecoration(
+                                        shape: BoxShape.circle,
+                                        color: _currentImageIndex == index
+                                            ? Colors.white
+                                            : Colors.white.withValues(alpha: 0.4),
+                                      ),
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ),
+                        ],
+                      )
+                    : Container(
+                        decoration: BoxDecoration(
+                          gradient: LinearGradient(
+                            begin: Alignment.topLeft,
+                            end: Alignment.bottomRight,
+                            colors: [
+                              AppTheme.primaryBlue,
+                              AppTheme.accentBlue,
+                            ],
+                          ),
+                        ),
+                        child: Center(
                           child: Icon(
                             Icons.push_pin_rounded,
                             size: 120,
-                            color: Colors.white.withOpacity(0.3),
+                            color: Colors.white.withValues(alpha: 0.3),
                           ),
                         ),
-                ),
+                      ),
               ),
             ),
           ),
@@ -143,7 +222,7 @@ class _PinDetailScreenState extends State<PinDetailScreen> {
                     borderRadius: BorderRadius.circular(24),
                     boxShadow: [
                       BoxShadow(
-                        color: AppTheme.primaryBlue.withOpacity(0.1),
+                        color: AppTheme.primaryBlue.withValues(alpha: 0.1),
                         blurRadius: 20,
                         offset: const Offset(0, 10),
                       ),
@@ -291,10 +370,10 @@ class _PinDetailScreenState extends State<PinDetailScreen> {
                         Container(
                           padding: const EdgeInsets.all(12),
                           decoration: BoxDecoration(
-                            color: AppTheme.success.withOpacity(0.1),
+                            color: AppTheme.success.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(12),
                             border: Border.all(
-                              color: AppTheme.success.withOpacity(0.3),
+                              color: AppTheme.success.withValues(alpha: 0.3),
                             ),
                           ),
                           child: Row(
@@ -333,7 +412,7 @@ class _PinDetailScreenState extends State<PinDetailScreen> {
                 color: AppTheme.white,
                 boxShadow: [
                   BoxShadow(
-                    color: Colors.black.withOpacity(0.05),
+                    color: Colors.black.withValues(alpha: 0.05),
                     blurRadius: 10,
                     offset: const Offset(0, -5),
                   ),
