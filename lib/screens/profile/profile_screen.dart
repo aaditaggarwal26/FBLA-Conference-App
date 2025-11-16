@@ -6,6 +6,7 @@ import '../../models/user_model.dart';
 import '../../theme/app_theme.dart';
 import '../admin/admin_panel_screen.dart';
 import 'edit_profile_screen.dart';
+import 'help_support_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -251,7 +252,12 @@ class _ProfileScreenState extends State<ProfileScreen> {
               // TODO: Navigate to notifications settings
             }),
             _buildMenuItem(Icons.help_outline, 'Help & Support', () {
-              // TODO: Navigate to help
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const HelpSupportScreen(),
+                ),
+              );
             }),
             _buildMenuItem(Icons.info_outline, 'About', () {
               showAboutDialog(
