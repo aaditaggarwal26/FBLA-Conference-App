@@ -175,16 +175,28 @@ class _CreatePinScreenState extends State<CreatePinScreen> {
           if (userDoc.exists) {
             final userData = userDoc.data();
             userName = userData?['name'] ?? user.displayName ?? 'Anonymous';
-            userPhotoUrl = userData?['photoUrl'] ?? user.photoURL;
+            // Prioritize Firestore photoUrl, then Firebase Auth photoURL
+            final firestorePhotoUrl = userData?['photoUrl'];
+            userPhotoUrl =
+                (firestorePhotoUrl != null &&
+                    firestorePhotoUrl.toString().isNotEmpty)
+                ? firestorePhotoUrl.toString()
+                : (user.photoURL != null && user.photoURL!.isNotEmpty
+                      ? user.photoURL
+                      : null);
           } else {
             // Fallback to displayName if user doc doesn't exist
             userName = user.displayName ?? 'Anonymous';
-            userPhotoUrl = user.photoURL;
+            userPhotoUrl = (user.photoURL != null && user.photoURL!.isNotEmpty)
+                ? user.photoURL
+                : null;
           }
         } catch (e) {
           // If there's an error fetching, use displayName as fallback
           userName = user.displayName ?? 'Anonymous';
-          userPhotoUrl = user.photoURL;
+          userPhotoUrl = (user.photoURL != null && user.photoURL!.isNotEmpty)
+              ? user.photoURL
+              : null;
         }
       }
 

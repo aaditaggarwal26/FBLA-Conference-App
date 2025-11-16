@@ -63,10 +63,7 @@ class AuthService {
 
   // Sign out
   Future<void> signOut() async {
-    await Future.wait([
-      _googleSignIn.signOut(),
-      _auth.signOut(),
-    ]);
+    await Future.wait([_googleSignIn.signOut(), _auth.signOut()]);
   }
 
   // Sign in with Google
@@ -120,8 +117,10 @@ class AuthService {
     const charset =
         '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
     final random = Random.secure();
-    return List.generate(length, (_) => charset[random.nextInt(charset.length)])
-        .join();
+    return List.generate(
+      length,
+      (_) => charset[random.nextInt(charset.length)],
+    ).join();
   }
 
   String sha256ofString(String input) {
@@ -143,10 +142,9 @@ class AuthService {
         nonce: nonce,
       );
 
-      final oauthCredential = OAuthProvider("apple.com").credential(
-        idToken: appleCredential.identityToken,
-        rawNonce: rawNonce,
-      );
+      final oauthCredential = OAuthProvider(
+        "apple.com",
+      ).credential(idToken: appleCredential.identityToken, rawNonce: rawNonce);
 
       final userCredential = await _auth.signInWithCredential(oauthCredential);
 
@@ -208,5 +206,24 @@ class AuthService {
   // Reset password
   Future<void> resetPassword(String email) async {
     await _auth.sendPasswordResetEmail(email: email);
+  }
+
+  // Delete account
+  Future<void> deleteAccount() async {
+    final user = _auth.currentUser;
+    if (user == null) {
+      throw Exception('No user is currently signed in');
+    }
+
+    // Delete user document from Firestore
+    try {
+      await _firestore.collection('users').doc(user.uid).delete();
+    } catch (e) {
+      // Continue even if Firestore delete fails
+      print('Error deleting user document: $e');
+    }
+
+    // Delete user from Firebase Auth
+    await user.delete();
   }
 }

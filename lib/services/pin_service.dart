@@ -17,8 +17,10 @@ class PinService {
         .where('isAvailable', isEqualTo: true)
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) =>
-            snapshot.docs.map((doc) => PinModel.fromFirestore(doc)).toList());
+        .map(
+          (snapshot) =>
+              snapshot.docs.map((doc) => PinModel.fromFirestore(doc)).toList(),
+        );
   }
 
   // Get pins by user
@@ -28,8 +30,10 @@ class PinService {
         .where('userId', isEqualTo: userId)
         .orderBy('createdAt', descending: true)
         .snapshots()
-        .map((snapshot) =>
-            snapshot.docs.map((doc) => PinModel.fromFirestore(doc)).toList());
+        .map(
+          (snapshot) =>
+              snapshot.docs.map((doc) => PinModel.fromFirestore(doc)).toList(),
+        );
   }
 
   // Search pins
@@ -41,9 +45,11 @@ class PinService {
 
     return snapshot.docs
         .map((doc) => PinModel.fromFirestore(doc))
-        .where((pin) =>
-            pin.pinName.toLowerCase().contains(query.toLowerCase()) ||
-            pin.description.toLowerCase().contains(query.toLowerCase()))
+        .where(
+          (pin) =>
+              pin.pinName.toLowerCase().contains(query.toLowerCase()) ||
+              pin.description.toLowerCase().contains(query.toLowerCase()),
+        )
         .toList();
   }
 
@@ -71,5 +77,25 @@ class PinService {
       return PinModel.fromFirestore(doc);
     }
     return null;
+  }
+
+  // Update all pins for a user (useful when profile picture or name changes)
+  Future<void> updateUserPins(
+    String userId,
+    Map<String, dynamic> updates,
+  ) async {
+    final snapshot = await _firestore
+        .collection('pins')
+        .where('userId', isEqualTo: userId)
+        .get();
+
+    final batch = _firestore.batch();
+    for (final doc in snapshot.docs) {
+      batch.update(doc.reference, updates);
+    }
+
+    if (snapshot.docs.isNotEmpty) {
+      await batch.commit();
+    }
   }
 }
