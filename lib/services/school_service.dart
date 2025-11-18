@@ -242,24 +242,40 @@ class SchoolService {
 
   // Create join request
   Future<String> createJoinRequest(SchoolJoinRequestModel request) async {
+    print('🔔 Creating join request for school: ${request.schoolId}');
+    print('🔔 User: ${request.userName} (${request.userId})');
+    
     final doc = await _firestore
         .collection('school_join_requests')
         .add(request.toFirestore());
+    
+    print('🔔 Join request created with ID: ${doc.id}');
     return doc.id;
   }
 
   // Get pending join requests for a school
   Stream<List<SchoolJoinRequestModel>> getPendingJoinRequests(String schoolId) {
+    print('🔍 Setting up stream for join requests, schoolId: $schoolId');
+    
     return _firestore
         .collection('school_join_requests')
         .where('schoolId', isEqualTo: schoolId)
         .where('status', isEqualTo: JoinRequestStatus.pending.name)
-        .orderBy('requestedAt', descending: true)
         .snapshots()
         .map(
-          (snapshot) => snapshot.docs
-              .map((doc) => SchoolJoinRequestModel.fromFirestore(doc))
-              .toList(),
+          (snapshot) {
+            print('🔍 Received ${snapshot.docs.length} join request docs');
+            final requests = snapshot.docs
+                .map((doc) {
+                  print('🔍 Request doc: ${doc.id} - ${doc.data()}');
+                  return SchoolJoinRequestModel.fromFirestore(doc);
+                })
+                .toList();
+            // Sort in-memory to avoid index requirement
+            requests.sort((a, b) => b.requestedAt.compareTo(a.requestedAt));
+            print('🔍 Returning ${requests.length} processed requests');
+            return requests;
+          },
         );
   }
 
@@ -327,12 +343,16 @@ class SchoolService {
     return _firestore
         .collection('school_events')
         .where('schoolId', isEqualTo: schoolId)
-        .orderBy('startTime', descending: false)
         .snapshots()
         .map(
-          (snapshot) => snapshot.docs
-              .map((doc) => SchoolEventModel.fromFirestore(doc))
-              .toList(),
+          (snapshot) {
+            final events = snapshot.docs
+                .map((doc) => SchoolEventModel.fromFirestore(doc))
+                .toList();
+            // Sort in-memory to avoid index requirement
+            events.sort((a, b) => a.startTime.compareTo(b.startTime));
+            return events;
+          },
         );
   }
 

@@ -253,8 +253,7 @@ service cloud.firestore {
     
     // School Join Requests collection
     match /school_join_requests/{requestId} {
-      function isSchoolAdminForRequest() {
-        let schoolId = resource.data.schoolId;
+      function isSchoolAdminForRequest(schoolId) {
         let school = get(/databases/$(database)/documents/schools/$(schoolId));
         return isSignedIn() && (
           school.data.ownerId == request.auth.uid ||
@@ -269,19 +268,20 @@ service cloud.firestore {
       // Anyone signed in can create a join request
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
       
-      // Request owner can read their own requests, school admins can read requests for their school
+      // Request owner can read their own requests
+      // For list queries by schoolId, allow if user is admin of that school
       allow read: if isSignedIn() && (
-        isRequestOwner() || 
-        isSchoolAdminForRequest()
+        resource.data.userId == request.auth.uid || 
+        isSchoolAdminForRequest(resource.data.schoolId)
       );
       
       // Only school admins can update (approve/reject) requests
-      allow update: if isSchoolAdminForRequest();
+      allow update: if isSignedIn() && isSchoolAdminForRequest(resource.data.schoolId);
       
       // Request owner or school admin can delete
       allow delete: if isSignedIn() && (
-        isRequestOwner() || 
-        isSchoolAdminForRequest()
+        resource.data.userId == request.auth.uid || 
+        isSchoolAdminForRequest(resource.data.schoolId)
       );
     }
     

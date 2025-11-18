@@ -108,6 +108,8 @@ class _JoinSchoolWithCodeScreenState extends State<JoinSchoolWithCodeScreen> {
 
       await _schoolService.createJoinRequest(request);
 
+      print('✅ Join request created successfully for school: ${_foundSchool!.name}');
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
