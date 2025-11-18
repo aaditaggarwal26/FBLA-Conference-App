@@ -93,5 +93,25 @@ service cloud.firestore {
       allow read: if isSignedIn();
       allow create, update, delete: if isAdmin();
     }
+    
+    // Test Results collection
+    match /test_results/{resultId} {
+      // Allow read (both get and list) if user owns the document or is admin
+      // For queries, Firestore will check this rule against each document in the result set
+      allow read: if isSignedIn() && (
+        resource.data.userId == request.auth.uid || 
+        isAdmin()
+      );
+      
+      // Allow create only if the userId in the new document matches the requesting user
+      allow create: if isSignedIn() && 
+        request.resource.data.userId == request.auth.uid;
+      
+      // Allow update and delete only if user owns the document or is admin
+      allow update, delete: if isSignedIn() && (
+        resource.data.userId == request.auth.uid || 
+        isAdmin()
+      );
+    }
   }
 }
