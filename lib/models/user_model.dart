@@ -7,6 +7,12 @@ enum UserRole {
   admin,
 }
 
+enum SchoolRole {
+  student,
+  teacher,
+  schoolAdmin,
+}
+
 class UserModel {
   final String id;
   final String email;
@@ -18,6 +24,9 @@ class UserModel {
   final DateTime createdAt;
   final UserRole role;
   final bool isApproved;
+  final String? schoolId;
+  final SchoolRole? schoolRole;
+  final bool isSchoolOwner;
 
   UserModel({
     required this.id,
@@ -30,11 +39,16 @@ class UserModel {
     required this.createdAt,
     this.role = UserRole.attendee,
     this.isApproved = true,
+    this.schoolId,
+    this.schoolRole,
+    this.isSchoolOwner = false,
   });
 
   bool get isAdmin => role == UserRole.admin;
   bool get isOrganizer => role == UserRole.organizer || role == UserRole.admin;
   bool get isSpeaker => role == UserRole.speaker || role == UserRole.organizer || role == UserRole.admin;
+  bool get hasSchool => schoolId != null && schoolId!.isNotEmpty;
+  bool get isSchoolAdminOrTeacher => schoolRole == SchoolRole.schoolAdmin || schoolRole == SchoolRole.teacher || isSchoolOwner;
 
   factory UserModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
@@ -49,6 +63,9 @@ class UserModel {
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       role: _roleFromString(data['role'] as String? ?? 'attendee'),
       isApproved: data['isApproved'] ?? true,
+      schoolId: data['schoolId'],
+      schoolRole: data['schoolRole'] != null ? _schoolRoleFromString(data['schoolRole']) : null,
+      isSchoolOwner: data['isSchoolOwner'] ?? false,
     );
   }
 
@@ -78,6 +95,30 @@ class UserModel {
     }
   }
 
+  static SchoolRole _schoolRoleFromString(String role) {
+    switch (role.toLowerCase()) {
+      case 'teacher':
+        return SchoolRole.teacher;
+      case 'schooladmin':
+      case 'school_admin':
+        return SchoolRole.schoolAdmin;
+      default:
+        return SchoolRole.student;
+    }
+  }
+
+  static String _schoolRoleToString(SchoolRole? role) {
+    if (role == null) return 'student';
+    switch (role) {
+      case SchoolRole.teacher:
+        return 'teacher';
+      case SchoolRole.schoolAdmin:
+        return 'schoolAdmin';
+      case SchoolRole.student:
+        return 'student';
+    }
+  }
+
   Map<String, dynamic> toFirestore() {
     return {
       'email': email,
@@ -89,6 +130,9 @@ class UserModel {
       'createdAt': Timestamp.fromDate(createdAt),
       'role': _roleToString(role),
       'isApproved': isApproved,
+      'schoolId': schoolId,
+      'schoolRole': _schoolRoleToString(schoolRole),
+      'isSchoolOwner': isSchoolOwner,
     };
   }
 
@@ -103,6 +147,9 @@ class UserModel {
     DateTime? createdAt,
     UserRole? role,
     bool? isApproved,
+    String? schoolId,
+    SchoolRole? schoolRole,
+    bool? isSchoolOwner,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -115,6 +162,9 @@ class UserModel {
       createdAt: createdAt ?? this.createdAt,
       role: role ?? this.role,
       isApproved: isApproved ?? this.isApproved,
+      schoolId: schoolId ?? this.schoolId,
+      schoolRole: schoolRole ?? this.schoolRole,
+      isSchoolOwner: isSchoolOwner ?? this.isSchoolOwner,
     );
   }
 }
