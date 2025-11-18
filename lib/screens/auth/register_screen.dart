@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../services/auth_service.dart';
 import '../../theme/app_theme.dart';
+import '../school/school_selection_screen.dart';
 
 class RegisterScreen extends StatefulWidget {
   const RegisterScreen({super.key});
@@ -20,6 +21,7 @@ class _RegisterScreenState extends State<RegisterScreen> {
   bool _isLoading = false;
   bool _obscurePassword = true;
   bool _obscureConfirmPassword = true;
+  String _accountType = 'student'; // 'student' or 'school_admin'
 
   @override
   void dispose() {
@@ -42,7 +44,19 @@ class _RegisterScreenState extends State<RegisterScreen> {
         _nameController.text.trim(),
       );
       if (mounted) {
-        Navigator.pop(context);
+        // Navigate to school selection after successful registration
+        // Only show if they selected an account type that needs school setup
+        if (_accountType == 'school_admin' || _accountType == 'student') {
+          await Navigator.push(
+            context,
+            MaterialPageRoute(
+              builder: (context) => const SchoolSelectionScreen(),
+            ),
+          );
+        }
+        if (mounted) {
+          Navigator.pop(context);
+        }
       }
     } on FirebaseAuthException catch (e) {
       if (!mounted) return;
@@ -122,7 +136,84 @@ class _RegisterScreenState extends State<RegisterScreen> {
                     return null;
                   },
                 ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 24),
+
+                // Account Type Selection
+                Text(
+                  'I am a',
+                  style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                    fontWeight: FontWeight.w600,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                Container(
+                  decoration: BoxDecoration(
+                    border: Border.all(color: AppTheme.lightGray),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Column(
+                    children: [
+                      RadioListTile<String>(
+                        value: 'student',
+                        groupValue: _accountType,
+                        onChanged: (value) {
+                          setState(() => _accountType = value!);
+                        },
+                        title: Row(
+                          children: [
+                            Icon(Icons.school_outlined, color: AppTheme.primaryBlue),
+                            const SizedBox(width: 12),
+                            const Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'Student',
+                                    style: TextStyle(fontWeight: FontWeight.w600),
+                                  ),
+                                  Text(
+                                    'Join your school and access resources',
+                                    style: TextStyle(fontSize: 12, color: AppTheme.mediumGray),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                      const Divider(height: 1),
+                      RadioListTile<String>(
+                        value: 'school_admin',
+                        groupValue: _accountType,
+                        onChanged: (value) {
+                          setState(() => _accountType = value!);
+                        },
+                        title: Row(
+                          children: [
+                            Icon(Icons.admin_panel_settings_outlined, color: AppTheme.secondaryBlue),
+                            const SizedBox(width: 12),
+                            const Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    'School Admin/Teacher',
+                                    style: TextStyle(fontWeight: FontWeight.w600),
+                                  ),
+                                  Text(
+                                    'Create and manage your school',
+                                    style: TextStyle(fontSize: 12, color: AppTheme.mediumGray),
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 24),
 
                 // Password Field
                 TextFormField(

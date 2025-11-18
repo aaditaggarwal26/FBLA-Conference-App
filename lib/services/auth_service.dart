@@ -203,6 +203,28 @@ class AuthService {
     await _firestore.collection('users').doc(uid).update(data);
   }
 
+  // Update user school information
+  Future<void> updateUserSchoolInfo(
+    String uid,
+    String schoolId, {
+    bool isOwner = false,
+    bool isAdmin = false,
+    bool isTeacher = false,
+  }) async {
+    String schoolRole = 'student';
+    if (isOwner || isAdmin) {
+      schoolRole = 'schoolAdmin';
+    } else if (isTeacher) {
+      schoolRole = 'teacher';
+    }
+
+    await _firestore.collection('users').doc(uid).update({
+      'schoolId': schoolId,
+      'schoolRole': schoolRole,
+      'isSchoolOwner': isOwner,
+    });
+  }
+
   // Reset password
   Future<void> resetPassword(String email) async {
     await _auth.sendPasswordResetEmail(email: email);
