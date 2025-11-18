@@ -8,11 +8,13 @@ import '../../services/auth_service.dart';
 import '../../models/event_model.dart';
 import '../../models/announcement_model.dart';
 import '../../models/school_announcement_model.dart';
+import '../../models/school_event_model.dart';
 import '../../models/user_model.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/event_card.dart';
 import '../../widgets/announcement_card.dart';
 import '../practice_tests/practice_tests_screen.dart';
+import '../school/school_calendar_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -453,6 +455,71 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 const SizedBox(height: 32),
 
+                // School Calendar Section (if user is in a school)
+                FutureBuilder<UserModel?>(
+                  future: _userDataFuture,
+                  builder: (context, userSnapshot) {
+                    if (!userSnapshot.hasData) {
+                      return const SizedBox.shrink();
+                    }
+
+                    final userData = userSnapshot.data!;
+                    final schoolId = userData.schoolId;
+
+                    if (schoolId == null || schoolId.isEmpty) {
+                      return const SizedBox.shrink();
+                    }
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Row(
+                          children: [
+                            Expanded(
+                              child: _buildSectionHeader(
+                                'Upcoming Events',
+                                Icons.event_rounded,
+                                isDark,
+                              ),
+                            ),
+                            TextButton(
+                              onPressed: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (context) => SchoolCalendarScreen(schoolId: schoolId),
+                                  ),
+                                );
+                              },
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                children: [
+                                  Text(
+                                    'View Calendar',
+                                    style: TextStyle(
+                                      color: isDark ? AppTheme.darkPrimary : AppTheme.primaryBlue,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  const SizedBox(width: 4),
+                                  Icon(
+                                    Icons.arrow_forward_rounded,
+                                    size: 16,
+                                    color: isDark ? AppTheme.darkPrimary : AppTheme.primaryBlue,
+                                  ),
+                                ],
+                              ),
+                            ),
+                          ],
+                        ),
+                        const SizedBox(height: 16),
+                        _buildUpcomingEvents(schoolId, isDark),
+                        const SizedBox(height: 32),
+                      ],
+                    );
+                  },
+                ),
+
                 // Featured Events Section
                 _buildSectionHeader(
                   'Featured Events',
@@ -512,23 +579,29 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildSectionHeader(String title, IconData icon, bool isDark) {
     return Row(
+      mainAxisAlignment: MainAxisAlignment.start, // Ensure alignment
       children: [
-        Container(
-          padding: const EdgeInsets.all(8),
-          decoration: BoxDecoration(
-            color: AppTheme.primaryBlue.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(8),
+        Flexible(
+          child: Container(
+            padding: const EdgeInsets.all(8),
+            decoration: BoxDecoration(
+              color: AppTheme.primaryBlue.withOpacity(0.1),
+              borderRadius: BorderRadius.circular(8),
+            ),
+            child: Icon(icon, color: AppTheme.primaryBlue, size: 20),
           ),
-          child: Icon(icon, color: AppTheme.primaryBlue, size: 20),
         ),
         const SizedBox(width: 12),
-        Text(
-          title,
-          style: TextStyle(
-            fontSize: 20,
-            fontWeight: FontWeight.bold,
-            color: isDark ? Colors.white : AppTheme.black,
-            letterSpacing: 0.3,
+        Flexible(
+          child: Text(
+            title,
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: isDark ? Colors.white : AppTheme.black,
+              letterSpacing: 0.3,
+            ),
+            overflow: TextOverflow.ellipsis, // Prevent overflow
           ),
         ),
       ],
@@ -809,6 +882,217 @@ class _HomeScreenState extends State<HomeScreen> {
           ),
         ],
       ),
+    );
+  }
+
+  Widget _buildUpcomingEvents(String schoolId, bool isDark) {
+    return StreamBuilder<List<SchoolEventModel>>(
+      stream: _schoolService.getSchoolEvents(schoolId),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting && !snapshot.hasData) {
+          return _buildLoadingShimmer(isDark);
+        }
+
+        if (!snapshot.hasData || snapshot.data!.isEmpty) {
+          return Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: isDark ? AppTheme.darkSurface : Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: (isDark ? AppTheme.darkCard : AppTheme.lightGray),
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.event_available_rounded,
+                  color: AppTheme.mediumGray.withValues(alpha: 0.5),
+                  size: 20,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'No upcoming events',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: isDark ? AppTheme.mediumGray : AppTheme.darkGray,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        // Get upcoming events (future events sorted by start time)
+        final now = DateTime.now();
+        final upcomingEvents = snapshot.data!
+            .where((event) => event.startTime.isAfter(now))
+            .toList()
+          ..sort((a, b) => a.startTime.compareTo(b.startTime));
+
+        if (upcomingEvents.isEmpty) {
+          return Container(
+            padding: const EdgeInsets.all(20),
+            decoration: BoxDecoration(
+              color: isDark ? AppTheme.darkSurface : Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: (isDark ? AppTheme.darkCard : AppTheme.lightGray),
+              ),
+            ),
+            child: Row(
+              children: [
+                Icon(
+                  Icons.event_available_rounded,
+                  color: AppTheme.mediumGray.withValues(alpha: 0.5),
+                  size: 20,
+                ),
+                const SizedBox(width: 12),
+                Expanded(
+                  child: Text(
+                    'No upcoming events',
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: isDark ? AppTheme.mediumGray : AppTheme.darkGray,
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          );
+        }
+
+        return Column(
+          children: upcomingEvents.take(3).map((event) {
+            final currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
+            final isRegistered = event.isUserRegistered(currentUserId);
+            
+            return Container(
+              margin: const EdgeInsets.only(bottom: 12),
+              padding: const EdgeInsets.all(16),
+              decoration: BoxDecoration(
+                color: isDark ? AppTheme.darkSurface : Colors.white,
+                borderRadius: BorderRadius.circular(12),
+                border: Border.all(
+                  color: isRegistered 
+                      ? AppTheme.success 
+                      : (isDark ? AppTheme.darkCard : AppTheme.lightGray),
+                  width: isRegistered ? 2 : 1,
+                ),
+              ),
+              child: Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        padding: const EdgeInsets.all(6),
+                        decoration: BoxDecoration(
+                          color: AppTheme.primaryBlue.withValues(alpha: 0.1),
+                          borderRadius: BorderRadius.circular(8),
+                        ),
+                        child: Icon(
+                          Icons.event_rounded,
+                          color: AppTheme.primaryBlue,
+                          size: 18,
+                        ),
+                      ),
+                      const SizedBox(width: 8),
+                      Expanded(
+                        flex: 3,
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              event.title,
+                              style: TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.bold,
+                                color: isDark ? Colors.white : AppTheme.black,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                            const SizedBox(height: 2),
+                            Row(
+                              children: [
+                                Icon(Icons.access_time_rounded, size: 10, color: AppTheme.mediumGray),
+                                const SizedBox(width: 2),
+                                Expanded(
+                                  child: Text(
+                                    event.isAllDay
+                                        ? DateFormat('MMM d').format(event.startTime)
+                                        : DateFormat('MMM d h:mm a').format(event.startTime),
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: AppTheme.mediumGray,
+                                    ),
+                                    maxLines: 1,
+                                    overflow: TextOverflow.ellipsis,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ],
+                        ),
+                      ),
+                      if (isRegistered)
+                        Container(
+                          padding: const EdgeInsets.all(4),
+                          decoration: BoxDecoration(
+                            color: AppTheme.success.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: const Icon(Icons.check_circle_rounded, size: 12, color: AppTheme.success),
+                        ),
+                    ],
+                  ),
+                  if (event.location.isNotEmpty) ...[
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Icon(Icons.location_on_outlined, size: 14, color: AppTheme.mediumGray),
+                        const SizedBox(width: 4),
+                        Expanded(
+                          child: Text(
+                            event.location,
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: isDark ? AppTheme.mediumGray : AppTheme.darkGray,
+                            ),
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                  if (event.maxAttendees != null) ...[
+                    const SizedBox(height: 8),
+                    Row(
+                      children: [
+                        Icon(Icons.people_rounded, size: 14, color: AppTheme.mediumGray),
+                        const SizedBox(width: 4),
+                        Text(
+                          '${event.attendeeIds.length}/${event.maxAttendees} registered',
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: event.isFull() ? AppTheme.error : AppTheme.mediumGray,
+                            fontWeight: event.isFull() ? FontWeight.bold : FontWeight.normal,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ],
+              ),
+            );
+          }).toList(),
+        );
+      },
     );
   }
 }

@@ -11,6 +11,7 @@ import '../../theme/app_theme.dart';
 import 'school_broadcast_screen.dart';
 import 'create_school_resource_screen.dart';
 import 'create_school_event_screen.dart';
+import 'school_calendar_screen.dart';
 
 class SchoolDashboardScreen extends StatefulWidget {
   final String schoolId;
@@ -429,6 +430,22 @@ class _SchoolDashboardScreenState extends State<SchoolDashboardScreen> {
               );
             },
           ),
+          const SizedBox(height: 12),
+          _buildActionButton(
+            'View Calendar',
+            'See all upcoming school events',
+            Icons.calendar_month_rounded,
+            AppTheme.success,
+            isDark,
+            () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => SchoolCalendarScreen(schoolId: school.id),
+                ),
+              );
+            },
+          ),
           
           const SizedBox(height: 24),
           
@@ -564,6 +581,13 @@ class _SchoolDashboardScreenState extends State<SchoolDashboardScreen> {
     return StreamBuilder<List<SchoolJoinRequestModel>>(
       stream: _schoolService.getPendingJoinRequests(school.id),
       builder: (context, snapshot) {
+        print('📥 Join requests stream - Connection: ${snapshot.connectionState}');
+        print('📥 Join requests stream - Has data: ${snapshot.hasData}');
+        print('📥 Join requests stream - Count: ${snapshot.data?.length ?? 0}');
+        if (snapshot.hasError) {
+          print('📥 Join requests stream - Error: ${snapshot.error}');
+        }
+        
         if (snapshot.connectionState == ConnectionState.waiting) {
           return const Center(child: CircularProgressIndicator());
         }
