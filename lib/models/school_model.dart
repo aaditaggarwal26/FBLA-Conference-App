@@ -16,6 +16,9 @@ class SchoolModel {
   final String? description;
   final String joinCode; // 6-digit code for students to join
   final bool requireApproval; // Whether join requests need admin approval
+  final String? websiteUrl;
+  final String? parentPortalUrl;
+  final Map<String, String> socialMediaLinks; // e.g., {'instagram': 'url', 'twitter': 'url', 'facebook': 'url'}
 
   SchoolModel({
     required this.id,
@@ -33,6 +36,9 @@ class SchoolModel {
     this.description,
     required this.joinCode,
     this.requireApproval = true,
+    this.websiteUrl,
+    this.parentPortalUrl,
+    this.socialMediaLinks = const {},
   });
 
   factory SchoolModel.fromFirestore(DocumentSnapshot doc) {
@@ -53,6 +59,9 @@ class SchoolModel {
       description: data['description'],
       joinCode: data['joinCode'] ?? '',
       requireApproval: data['requireApproval'] ?? true,
+      websiteUrl: data['websiteUrl'],
+      parentPortalUrl: data['parentPortalUrl'],
+      socialMediaLinks: Map<String, String>.from(data['socialMediaLinks'] ?? {}),
     );
   }
 
@@ -72,6 +81,9 @@ class SchoolModel {
       'description': description,
       'joinCode': joinCode,
       'requireApproval': requireApproval,
+      'websiteUrl': websiteUrl,
+      'parentPortalUrl': parentPortalUrl,
+      'socialMediaLinks': socialMediaLinks,
     };
   }
 
