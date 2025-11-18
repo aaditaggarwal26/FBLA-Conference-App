@@ -9,6 +9,7 @@ import '../../models/announcement_model.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/event_card.dart';
 import '../../widgets/announcement_card.dart';
+import '../practice_tests/practice_tests_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -281,6 +282,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 const SizedBox(height: 32),
 
+                // Practice Tests Section
+                _buildSectionHeader(
+                  'Practice Tests',
+                  Icons.quiz_rounded,
+                  isDark,
+                ),
+                const SizedBox(height: 16),
+                _buildPracticeTestsCard(isDark),
+
+                const SizedBox(height: 32),
+
                 // Featured Events Section
                 _buildSectionHeader(
                   'Featured Events',
@@ -429,6 +441,93 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+
+  Widget _buildPracticeTestsCard(bool isDark) {
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? AppTheme.darkSurface : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: (isDark ? AppTheme.darkCard : AppTheme.lightGray).withValues(
+            alpha: 0.5,
+          ),
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.06),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: () {
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder: (context) => const PracticeTestsScreen(),
+              ),
+            );
+          },
+          borderRadius: BorderRadius.circular(16),
+          child: Padding(
+            padding: const EdgeInsets.all(20),
+            child: Row(
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(16),
+                  decoration: BoxDecoration(
+                    color: AppTheme.primaryBlue.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(12),
+                  ),
+                  child: Icon(
+                    Icons.quiz_rounded,
+                    color: AppTheme.primaryBlue,
+                    size: 32,
+                  ),
+                ),
+                const SizedBox(width: 16),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Text(
+                        'Objective Test Practice',
+                        style: TextStyle(
+                          fontSize: 18,
+                          fontWeight: FontWeight.bold,
+                          color: isDark ? Colors.white : AppTheme.black,
+                        ),
+                      ),
+                      const SizedBox(height: 6),
+                      Text(
+                        'Practice tests for all FBLA objective test events',
+                        style: TextStyle(
+                          fontSize: 13,
+                          color: isDark
+                              ? Colors.white.withValues(alpha: 0.7)
+                              : AppTheme.darkGray,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                Icon(
+                  Icons.arrow_forward_ios_rounded,
+                  size: 20,
+                  color: isDark
+                      ? Colors.white.withValues(alpha: 0.5)
+                      : AppTheme.mediumGray,
+                ),
+              ],
+            ),
+          ),
         ),
       ),
     );
