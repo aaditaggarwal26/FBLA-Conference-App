@@ -1,284 +1,146 @@
 part of 'models.dart';
 
-/// [UserModel] encapsulates fields of a Firebase User Document found in the 'users' Collection
-/// It also contains many helpful static methods for user-related databse operations
-///
-/// Instantiate [UserModel] using a [DocumentSnapshot] with [UserModel.fromDocumentSnapshot] to easily
-/// read fields from the document. When an update to the document is required, use [toMap] to
-/// quickly transform the object into a [Map] and then write to the [DocumentReference]
+enum UserRole {
+  attendee,
+  speaker,
+  organizer,
+  admin,
+  student,
+  schoolAdmin,
+  superAdmin,
+}
+
 class UserModel {
-  /// the user's unique id
   final String id;
-
-  /// the user's email
   final String email;
-
-  /// link to user's profile picutre image
-  final String profilePic;
-
-  /// the username
   final String name;
-
-  /// user bio/description
-  String bio;
-
-  /// user phone number
-  String phone;
-
-  /// list of names of past events
-  final List<String> pastEvents;
-
-  /// list of names of current competitive events user is in
-  final List<String> compEvents;
-
-  // list of topics user has subscribed to (for notifs)
-  List<String> topicsSubscribed;
-
-  /// grade of the user
-  final int grade;
-
-  /// whether or not the user's account has been approved
-  final bool approved;
-
-  /// whether or not tutorial has been displayed
-  final bool openedAppSinceApproved;
-
-  /// whether or not the user is an exec officer
-  final bool isExec;
-
-  String currentChapter;
-  final List<String> chapters;
+  final String? photoUrl;
+  final String? organization;
+  final String? position;
+  final List<String> registeredEvents;
+  final DateTime createdAt;
+  final UserRole role;
+  final bool isApproved;
+  final String? schoolId; // Links user to their school
 
   UserModel({
     required this.id,
     required this.email,
-    required this.profilePic,
     required this.name,
-    this.bio = '',
-    this.phone = '',
-    required this.pastEvents,
-    required this.compEvents,
-    required this.grade,
-    required this.isExec,
-    required this.approved,
-    required this.openedAppSinceApproved,
-    required this.currentChapter,
-    required this.chapters,
-    required this.topicsSubscribed,
+    this.photoUrl,
+    this.organization,
+    this.position,
+    required this.registeredEvents,
+    required this.createdAt,
+    this.role = UserRole.attendee,
+    this.isApproved = true,
+    this.schoolId,
   });
 
-  /// Utility constructor to easily make a [UserModel] from a [DocumentSnapshot]
-  ///
-  /// Queries the [DocumentSnapshot] for each field and instantiates [UserModel] accordingly
-  UserModel.fromDocumentSnapshot(DocumentSnapshot<Object?> doc)
-      : id = doc.id,
-        email = doc.get('email') as String,
-        currentChapter = doc.get('currentChapter') as String,
-        profilePic = doc.get('profilePic') as String,
-        name = doc.get('name') as String,
-        bio = (doc.data() as Map).containsKey('bio') ? doc.get('bio') as String : '',
-        phone = (doc.data() as Map).containsKey('phone') ? doc.get('phone') as String : '',
-        pastEvents = (doc.get('pastEvents') as List).cast<String>(),
-        compEvents = (doc.get('compEvents') as List).cast<String>(),
-        grade = doc.get('grade') as int,
-        isExec = doc.get('isExec') as bool,
-        approved = doc.get('approved') as bool,
-        chapters = (doc.get('chapters') as List).cast<String>(),
-        topicsSubscribed = (doc.get('topicsSubscribed') as List).cast<String>(),
-        openedAppSinceApproved = doc.get('openedAppSinceApproved') as bool;
+  bool get isAdmin => role == UserRole.admin;
+  bool get isSchoolAdmin => role == UserRole.schoolAdmin;
+  bool get isSuperAdmin => role == UserRole.superAdmin;
+  bool get isStudent => role == UserRole.student;
+  bool get isOrganizer => role == UserRole.organizer || role == UserRole.admin || role == UserRole.superAdmin;
+  bool get isSpeaker => role == UserRole.speaker || role == UserRole.organizer || role == UserRole.admin || role == UserRole.superAdmin;
 
-  /// Utility method to easily make a [Map] from [UserModel]
-  ///
-  /// Invoke [toMap] when writing a [UserModel] object to a user's Firebase Document
-  Map<String, dynamic> toMap() {
-    return {
-      'id': id,
-      'email': email,
-      'profilePic': profilePic,
-      'name': name,
-      'bio': bio,
-      'phone': phone,
-      'pastEvents': pastEvents,
-      'compEvents': compEvents,
-      'grade': grade,
-      'isExec': isExec,
-      'approved': approved,
-      'chapters': chapters,
-      'openedAppSinceApproved': openedAppSinceApproved,
-      'currentChapter': currentChapter,
-      'topicsSubscribed': topicsSubscribed,
-    };
-  }
-
-  factory UserModel.fromMap(Map<String, dynamic> map) {
+  factory UserModel.fromFirestore(DocumentSnapshot doc) {
+    final data = doc.data() as Map<String, dynamic>;
     return UserModel(
-      id: map['id'],
-      email: map['email'],
-      profilePic: map['profilePic'],
-      name: map['name'],
-      pastEvents: map['pastEvents'],
-      compEvents: map['compEvents'],
-      grade: map['grade'],
-      isExec: map['isExec'],
-      approved: map['approved'],
-      openedAppSinceApproved: map['openedAppSinceApproved'],
-      currentChapter: map['currentChapter'],
-      chapters: map['chapters'],
-      topicsSubscribed: map['topicsSubscribed'],
+      id: doc.id,
+      email: data['email'] ?? '',
+      name: data['name'] ?? '',
+      photoUrl: data['photoUrl'],
+      organization: data['organization'],
+      position: data['position'],
+      registeredEvents: List<String>.from(data['registeredEvents'] ?? []),
+      createdAt: (data['createdAt'] as Timestamp).toDate(),
+      role: _roleFromString(data['role'] as String? ?? 'attendee'),
+      isApproved: data['isApproved'] ?? true,
+      schoolId: data['schoolId'],
     );
   }
 
-  /// Writes [UserModel] object to the database
-  ///
-  /// All fields will be replaced!
-  static Future<void> writeUser(UserModel user) async {
-    AppInfo.database.collection('users').doc(user.id).set(user.toMap());
-  }
-
-  static Future<void> addChapter(UserModel user, String chapterID) async {
-    AppInfo.database.collection("users").doc(user.id).update({
-      'chapters': FieldValue.arrayUnion([chapterID])
-    });
-  }
-
-  Future<void> addSubscribedTopic(String topicID) async {
-    AppInfo.currentUser.topicsSubscribed.add(topicID);
-    AppInfo.database.collection("users").doc(AppInfo.currentUser.id).update({
-      'topicsSubscribed': FieldValue.arrayUnion([topicID])
-    });
-  }
-
-  Future<void> removeSubscribedTopic(String topicID) async {
-    AppInfo.currentUser.topicsSubscribed.remove(topicID);
-    AppInfo.database.collection("users").doc(AppInfo.currentUser.id).update({
-      'topicsSubscribed': FieldValue.arrayRemove([topicID]),
-    });
-  }
-
-  /// Updates the user specified by the provided [id] with the updates
-  ///
-  /// Firebase will merge the target data with the incoming data
-  static Future<void> updateUserById(
-      String id, Map<String, dynamic> updates) async {
-    AppInfo.database.collection('users').doc(id).set(updates);
-  }
-
-  /// **⚠️UNDER CONTSTRUCTION⚠️**
-  /// deletes the user with the provided [userId] from the database
-  ///
-  /// Currently, this has the collections hard-coded. Needs
-  /// to be generalized for multi-chapter usage
-  static Future<void> deleteUserById(String userId) async {
-    AppInfo.database.collection('users').doc(userId).delete();
-    CollectionReference chapters = AppInfo.database.collection('chapters');
-    QuerySnapshot querySnapshot = await chapters.get();
-
-    for (QueryDocumentSnapshot doc in querySnapshot.docs) {
-      await chapters.doc(doc.id).update({
-        'users': FieldValue.arrayRemove([userId])
-      });
+  static UserRole _roleFromString(String role) {
+    switch (role.toLowerCase()) {
+      case 'admin':
+        return UserRole.admin;
+      case 'super_admin':
+      case 'superadmin':
+        return UserRole.superAdmin;
+      case 'school_admin':
+      case 'schooladmin':
+        return UserRole.schoolAdmin;
+      case 'student':
+        return UserRole.student;
+      case 'organizer':
+        return UserRole.organizer;
+      case 'speaker':
+        return UserRole.speaker;
+      default:
+        return UserRole.attendee;
     }
   }
 
-  /// Fetches a user's data by [id] and returns a [UserModel] for easy reading
-  ///
-  ///
-  static Future<UserModel> getUserById(String id) async {
-    DocumentSnapshot userInfo =
-        await AppInfo.database.collection('users').doc(id).get();
-    return UserModel.fromDocumentSnapshot(userInfo);
-  }
-
-  /// Queries the database to determine if a user exists with [email]
-  ///
-  ///
-  static Future<bool> userEmailExists(String email) async {
-    QuerySnapshot currentUsers = await AppInfo.database
-        .collection('users')
-        .where('email', isEqualTo: email)
-        .get();
-    return currentUsers.docs.isNotEmpty;
-  }
-
-  /// Queries the database to determine if a user exists with [name]
-  ///
-  ///
-  static Future<bool> userNameExists(String name) async {
-    QuerySnapshot currentUsers = await AppInfo.database
-        .collection('users')
-        .where('name', isEqualTo: name)
-        .get();
-    return currentUsers.docs.isNotEmpty;
-  }
-
-  /// Fetches the [List] of all users as [UserModel] objects
-  ///
-  ///
-  static Future<List<UserModel>> getUserList() async {
-    QuerySnapshot userQuery = await AppInfo.database
-        .collection('users')
-        .where(
-          'approved',
-          isEqualTo: true,
-        )
-        .get();
-    return userQuery.docs
-        .map((snapshot) => UserModel.fromDocumentSnapshot(snapshot))
-        .toList();
-  }
-
-  /// Fetches the [List] of unapproved users
-  ///
-  ///
-  static Future<List<UserModel>> getUnapprovedUsers() async {
-    QuerySnapshot userQuery = await AppInfo.database
-        .collection('users')
-        .where(
-          'approved',
-          isEqualTo: false,
-        )
-        .get();
-    return userQuery.docs
-        .map((snapshot) => UserModel.fromDocumentSnapshot(snapshot))
-        .toList();
-  }
-
-  /// **⚠️UNDER CONTSTRUCTION⚠️**
-  /// Associated with [ChatroomModel] which itself needs to be
-  /// re-implemented
-  ///
-  static Future<List<UserModel>> searchUsers(String search, int num) async {
-    QuerySnapshot userQuery = await AppInfo.database
-        .collection('users')
-        .where('name', isGreaterThanOrEqualTo: search)
-        .where('name', isLessThan: '${search}z')
-        .where(
-          'openedAppSinceApproved',
-          isEqualTo: true,
-        )
-        .orderBy('name')
-        .limit(num)
-        .get();
-
-    return userQuery.docs
-        .map((snapshot) => UserModel.fromDocumentSnapshot(snapshot))
-        .toList();
-  }
-
-  /// creates a collection of [UserModel] objects using docs found in [names] lookup from the database
-  ///
-  ///
-  static Future<List<UserModel>> getUsersFromNames(List<String> names) async {
-    List<UserModel> users = [];
-    for (int i = 0; i < names.length; i++) {
-      QuerySnapshot usersRef = await FirebaseFirestore.instance
-          .collection('users')
-          .where("name", isEqualTo: names[i])
-          .get();
-      for (QueryDocumentSnapshot user in usersRef.docs) {
-        users.add(UserModel.fromDocumentSnapshot(user));
-      }
+  static String _roleToString(UserRole role) {
+    switch (role) {
+      case UserRole.admin:
+        return 'admin';
+      case UserRole.superAdmin:
+        return 'super_admin';
+      case UserRole.schoolAdmin:
+        return 'school_admin';
+      case UserRole.student:
+        return 'student';
+      case UserRole.organizer:
+        return 'organizer';
+      case UserRole.speaker:
+        return 'speaker';
+      case UserRole.attendee:
+        return 'attendee';
     }
-    return users;
+  }
+
+  Map<String, dynamic> toFirestore() {
+    return {
+      'email': email,
+      'name': name,
+      'photoUrl': photoUrl,
+      'organization': organization,
+      'position': position,
+      'registeredEvents': registeredEvents,
+      'createdAt': Timestamp.fromDate(createdAt),
+      'role': _roleToString(role),
+      'isApproved': isApproved,
+      'schoolId': schoolId,
+    };
+  }
+
+  UserModel copyWith({
+    String? id,
+    String? email,
+    String? name,
+    String? photoUrl,
+    String? organization,
+    String? position,
+    List<String>? registeredEvents,
+    DateTime? createdAt,
+    UserRole? role,
+    bool? isApproved,
+    String? schoolId,
+  }) {
+    return UserModel(
+      id: id ?? this.id,
+      email: email ?? this.email,
+      name: name ?? this.name,
+      photoUrl: photoUrl ?? this.photoUrl,
+      organization: organization ?? this.organization,
+      position: position ?? this.position,
+      registeredEvents: registeredEvents ?? this.registeredEvents,
+      createdAt: createdAt ?? this.createdAt,
+      role: role ?? this.role,
+      isApproved: isApproved ?? this.isApproved,
+      schoolId: schoolId ?? this.schoolId,
+    );
   }
 }

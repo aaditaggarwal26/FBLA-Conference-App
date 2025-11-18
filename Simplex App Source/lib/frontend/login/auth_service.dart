@@ -9,6 +9,7 @@ import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:crypto/crypto.dart';
 import 'dart:convert';
+import '../../backend/models.dart';
 
 // import '../../app_info.dart';
 import '../../app_info.dart';
@@ -64,21 +65,19 @@ class AuthService {
           UserModel newUser = UserModel(
             id: userCredential!.user!.uid,
             email: userCredential!.user!.email ?? '',
-            profilePic: userCredential!.user!.photoURL ?? '',
+            photoUrl: userCredential!.user!.photoURL,
             name: fullName,
-            pastEvents: [],
-            compEvents: [],
-            grade: 12,
-            isExec: false,
-            approved: true,
-            openedAppSinceApproved: false,
-            currentChapter: '',
-            chapters: [],
-            topicsSubscribed: [],
+            registeredEvents: [],
+            createdAt: DateTime.now(),
+            role: UserRole.attendee,
+            isApproved: true,
           );
           dv.log('here');
 
-          UserModel.writeUser(newUser);
+          await FirebaseFirestore.instance
+              .collection('users')
+              .doc(newUser.id)
+              .set(newUser.toFirestore());
           AppInfo.currentUser = newUser;
           // Toasts.toast(
           //     "Account created! Tap \"Sign in with Google\" again to be signed in.",
@@ -225,22 +224,20 @@ class AuthService {
         UserModel newUser = UserModel(
           id: userCredential!.user!.uid,
           email: userCredential!.user!.email ?? '',
-          profilePic: userCredential!.user!.photoURL ?? '',
+          photoUrl: userCredential!.user!.photoURL,
           // name: userDoc.get('name') ?? 'User',
           // name should be "User " and then the first 5 characters of the ID
           name: name,
-          pastEvents: [],
-          compEvents: [],
-          grade: 12,
-          isExec: false,
-          approved: true,
-          openedAppSinceApproved: false,
-          currentChapter: '',
-          chapters: [],
-          topicsSubscribed: [],
+          registeredEvents: [],
+          createdAt: DateTime.now(),
+          role: UserRole.attendee,
+          isApproved: true,
         );
 
-        UserModel.writeUser(newUser);
+        await FirebaseFirestore.instance
+            .collection('users')
+            .doc(newUser.id)
+            .set(newUser.toFirestore());
         AppInfo.currentUser = newUser;
       }
 

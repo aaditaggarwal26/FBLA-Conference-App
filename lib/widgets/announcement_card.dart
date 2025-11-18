@@ -14,6 +14,12 @@ class AnnouncementCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final isSchoolAnnouncement = announcement.isSchool;
+    
+    // Different colors for school vs national announcements
+    final accentColor = isSchoolAnnouncement 
+        ? const Color(0xFF8B5CF6) // Purple for school
+        : const Color(0xFF3B82F6); // Blue for national
     
     return Container(
       margin: const EdgeInsets.only(bottom: 0),
@@ -21,11 +27,16 @@ class AnnouncementCard extends StatelessWidget {
         color: isDark ? AppTheme.darkSurface : Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: (isDark ? AppTheme.darkCard : AppTheme.lightGray).withValues(alpha: 0.5),
+          color: isSchoolAnnouncement
+              ? accentColor.withValues(alpha: 0.3)
+              : (isDark ? AppTheme.darkCard : AppTheme.lightGray).withValues(alpha: 0.5),
+          width: isSchoolAnnouncement ? 2 : 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
+            color: isSchoolAnnouncement
+                ? accentColor.withValues(alpha: 0.15)
+                : Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -36,6 +47,41 @@ class AnnouncementCard extends StatelessWidget {
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // School announcement banner
+            if (isSchoolAnnouncement)
+              Container(
+                width: double.infinity,
+                padding: const EdgeInsets.symmetric(vertical: 6, horizontal: 12),
+                decoration: BoxDecoration(
+                  gradient: LinearGradient(
+                    colors: [
+                      accentColor.withValues(alpha: 0.9),
+                      accentColor,
+                    ],
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    const Icon(
+                      Icons.school_rounded,
+                      size: 14,
+                      color: Colors.white,
+                    ),
+                    const SizedBox(width: 6),
+                    const Text(
+                      'School Announcement',
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 12,
+                        fontWeight: FontWeight.w700,
+                        letterSpacing: 0.5,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            
             // Image if available
             if (announcement.imageUrl != null && announcement.imageUrl!.isNotEmpty)
               Stack(

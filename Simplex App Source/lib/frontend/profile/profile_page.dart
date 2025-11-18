@@ -8,6 +8,7 @@ import 'package:simplex_chapter_x/frontend/login/auth_service.dart';
 import 'package:simplex_chapter_x/frontend/login/login_page.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:url_launcher/url_launcher_string.dart';
+import '../../backend/models.dart';
 
 import '../../app_info.dart';
 import '../../backend/models.dart';

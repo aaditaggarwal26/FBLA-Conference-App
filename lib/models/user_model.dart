@@ -5,6 +5,9 @@ enum UserRole {
   speaker,
   organizer,
   admin,
+  student,
+  schoolAdmin,
+  superAdmin,
 }
 
 class UserModel {
@@ -18,6 +21,7 @@ class UserModel {
   final DateTime createdAt;
   final UserRole role;
   final bool isApproved;
+  final String? schoolId; // Links user to their school
 
   UserModel({
     required this.id,
@@ -30,11 +34,15 @@ class UserModel {
     required this.createdAt,
     this.role = UserRole.attendee,
     this.isApproved = true,
+    this.schoolId,
   });
 
   bool get isAdmin => role == UserRole.admin;
-  bool get isOrganizer => role == UserRole.organizer || role == UserRole.admin;
-  bool get isSpeaker => role == UserRole.speaker || role == UserRole.organizer || role == UserRole.admin;
+  bool get isSchoolAdmin => role == UserRole.schoolAdmin;
+  bool get isSuperAdmin => role == UserRole.superAdmin;
+  bool get isStudent => role == UserRole.student;
+  bool get isOrganizer => role == UserRole.organizer || role == UserRole.admin || role == UserRole.superAdmin;
+  bool get isSpeaker => role == UserRole.speaker || role == UserRole.organizer || role == UserRole.admin || role == UserRole.superAdmin;
 
   factory UserModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
@@ -49,6 +57,7 @@ class UserModel {
       createdAt: (data['createdAt'] as Timestamp).toDate(),
       role: _roleFromString(data['role'] as String? ?? 'attendee'),
       isApproved: data['isApproved'] ?? true,
+      schoolId: data['schoolId'],
     );
   }
 
@@ -56,6 +65,14 @@ class UserModel {
     switch (role.toLowerCase()) {
       case 'admin':
         return UserRole.admin;
+      case 'super_admin':
+      case 'superadmin':
+        return UserRole.superAdmin;
+      case 'school_admin':
+      case 'schooladmin':
+        return UserRole.schoolAdmin;
+      case 'student':
+        return UserRole.student;
       case 'organizer':
         return UserRole.organizer;
       case 'speaker':
@@ -69,11 +86,17 @@ class UserModel {
     switch (role) {
       case UserRole.admin:
         return 'admin';
+      case UserRole.superAdmin:
+        return 'super_admin';
+      case UserRole.schoolAdmin:
+        return 'school_admin';
+      case UserRole.student:
+        return 'student';
       case UserRole.organizer:
         return 'organizer';
       case UserRole.speaker:
         return 'speaker';
-      case UserRole.attendee:
+      default:
         return 'attendee';
     }
   }
@@ -89,6 +112,7 @@ class UserModel {
       'createdAt': Timestamp.fromDate(createdAt),
       'role': _roleToString(role),
       'isApproved': isApproved,
+      'schoolId': schoolId,
     };
   }
 
@@ -103,6 +127,7 @@ class UserModel {
     DateTime? createdAt,
     UserRole? role,
     bool? isApproved,
+    String? schoolId,
   }) {
     return UserModel(
       id: id ?? this.id,
@@ -115,6 +140,7 @@ class UserModel {
       createdAt: createdAt ?? this.createdAt,
       role: role ?? this.role,
       isApproved: isApproved ?? this.isApproved,
+      schoolId: schoolId ?? this.schoolId,
     );
   }
 }

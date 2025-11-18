@@ -8,12 +8,16 @@ class EventCard extends StatelessWidget {
   final EventModel event;
   final bool isFeatured;
 
-  const EventCard({super.key, required this.event, this.isFeatured = false});
+  const EventCard({
+    super.key,
+    required this.event,
+    this.isFeatured = false,
+  });
 
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
-
+    
     return Container(
       margin: EdgeInsets.only(
         right: isFeatured ? 0 : 0,
@@ -23,9 +27,7 @@ class EventCard extends StatelessWidget {
         color: isDark ? AppTheme.darkSurface : Colors.white,
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
-          color: (isDark ? AppTheme.darkCard : AppTheme.lightGray).withValues(
-            alpha: 0.5,
-          ),
+          color: (isDark ? AppTheme.darkCard : AppTheme.lightGray).withValues(alpha: 0.5),
         ),
         boxShadow: [
           BoxShadow(
@@ -96,14 +98,9 @@ class EventCard extends StatelessWidget {
                     top: 12,
                     left: 12,
                     child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 12,
-                        vertical: 6,
-                      ),
+                      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                       decoration: BoxDecoration(
-                        color: _getCategoryColor(
-                          event.category,
-                        ).withValues(alpha: 0.95),
+                        color: _getCategoryColor(event.category).withValues(alpha: 0.95),
                         borderRadius: BorderRadius.circular(8),
                         boxShadow: [
                           BoxShadow(
@@ -189,9 +186,7 @@ class EventCard extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 11,
                                 fontWeight: FontWeight.w600,
-                                color: isDark
-                                    ? Colors.white.withValues(alpha: 0.7)
-                                    : AppTheme.darkGray,
+                                color: isDark ? Colors.white.withValues(alpha: 0.7) : AppTheme.darkGray,
                               ),
                             ),
                             Text(
@@ -209,16 +204,14 @@ class EventCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(10),
                           child: LinearProgressIndicator(
                             value: event.maxCapacity > 0
-                                ? event.registeredUsers.length /
-                                      event.maxCapacity
+                                ? event.registeredUsers.length / event.maxCapacity
                                 : 0,
                             backgroundColor: isDark
                                 ? Colors.white.withValues(alpha: 0.1)
                                 : AppTheme.lightBlue,
                             valueColor: AlwaysStoppedAnimation<Color>(
                               _getCapacityColor(
-                                event.registeredUsers.length /
-                                    event.maxCapacity,
+                                event.registeredUsers.length / event.maxCapacity,
                               ),
                             ),
                             minHeight: 6,
@@ -245,7 +238,11 @@ class EventCard extends StatelessWidget {
             color: AppTheme.primaryBlue.withValues(alpha: 0.1),
             borderRadius: BorderRadius.circular(6),
           ),
-          child: Icon(icon, size: 14, color: AppTheme.primaryBlue),
+          child: Icon(
+            icon,
+            size: 14,
+            color: AppTheme.primaryBlue,
+          ),
         ),
         const SizedBox(width: 8),
         Expanded(
@@ -254,9 +251,7 @@ class EventCard extends StatelessWidget {
             style: TextStyle(
               fontSize: 13,
               fontWeight: FontWeight.w500,
-              color: isDark
-                  ? Colors.white.withValues(alpha: 0.8)
-                  : AppTheme.darkGray,
+              color: isDark ? Colors.white.withValues(alpha: 0.8) : AppTheme.darkGray,
             ),
             maxLines: 1,
             overflow: TextOverflow.ellipsis,
@@ -305,17 +300,13 @@ class EventCard extends StatelessWidget {
       height: 100,
       width: double.infinity,
       decoration: BoxDecoration(
-        color: isDark
-            ? Colors.white.withValues(alpha: 0.05)
-            : AppTheme.lightBlue,
+        color: isDark ? Colors.white.withValues(alpha: 0.05) : AppTheme.lightBlue,
         borderRadius: BorderRadius.circular(10),
       ),
       child: Icon(
         Icons.event_rounded,
         size: 40,
-        color: isDark
-            ? Colors.white.withValues(alpha: 0.3)
-            : AppTheme.primaryBlue.withValues(alpha: 0.5),
+        color: isDark ? Colors.white.withValues(alpha: 0.3) : AppTheme.primaryBlue.withValues(alpha: 0.5),
       ),
     );
   }

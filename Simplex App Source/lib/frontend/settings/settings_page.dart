@@ -6,6 +6,9 @@ import '../../app_info.dart';
 import '../flutter_flow/flutter_flow_theme.dart';
 import '../flutter_flow/theme_provider.dart';
 import '../profile/user_profile_page.dart';
+import '../../screens/school/school_admin_dashboard.dart';
+import '../../screens/student/student_join_school_screen.dart';
+import '../../screens/admin/super_admin_panel.dart';
 
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
@@ -530,6 +533,331 @@ class _SettingsPageState extends State<SettingsPage> {
                         ],
                       ),
                     ),
+              // School Admin Panel
+              AppInfo.currentUser.isSchoolAdmin
+                  ? Padding(
+                      padding:
+                          const EdgeInsetsDirectional.fromSTEB(24, 30, 24, 0),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Expanded(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFE9D5FF),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsetsDirectional.fromSTEB(
+                                    0, 15, 0, 12),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    Padding(
+                                      padding:
+                                          const EdgeInsetsDirectional.fromSTEB(
+                                              15, 0, 0, 8),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.max,
+                                        children: [
+                                          const Icon(
+                                            Icons.school,
+                                            color: Color(0xFF8B5CF6),
+                                            size: 24,
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsetsDirectional
+                                                .fromSTEB(10, 0, 0, 0),
+                                            child: Text(
+                                              'School Admin Panel',
+                                              style: FlutterFlowTheme.of(
+                                                      context)
+                                                  .bodyMedium
+                                                  .override(
+                                                    fontFamily: 'Google Sans',
+                                                    color:
+                                                        const Color(0xFF8B5CF6),
+                                                    fontSize: 20,
+                                                    letterSpacing: 0.0,
+                                                    fontWeight: FontWeight.w500,
+                                                    useGoogleFonts: false,
+                                                  ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const Divider(
+                                      thickness: 1.5,
+                                      color: Color(0x5B8B5CF6),
+                                    ),
+                                    InkWell(
+                                      onTap: () {
+                                        if (AppInfo.currentUser.schoolId != null) {
+                                          Navigator.push(
+                                            context,
+                                            MaterialPageRoute(
+                                                builder: (context) =>
+                                                    SchoolAdminDashboard(
+                                                      schoolId: AppInfo.currentUser.schoolId!,
+                                                    )),
+                                          );
+                                        }
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsetsDirectional
+                                            .fromSTEB(15, 5, 18, 5),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.max,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Row(
+                                              mainAxisSize: MainAxisSize.max,
+                                              children: [
+                                                const Padding(
+                                                  padding: EdgeInsetsDirectional
+                                                      .fromSTEB(0, 0, 5, 0),
+                                                  child: Icon(
+                                                    Icons.dashboard,
+                                                    color: Color(0xFF8B5CF6),
+                                                    size: 19,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  'School Dashboard',
+                                                  style: FlutterFlowTheme.of(
+                                                          context)
+                                                      .bodyMedium
+                                                      .override(
+                                                        fontFamily:
+                                                            'Google Sans',
+                                                        color: const Color(
+                                                            0xFF8B5CF6),
+                                                        fontSize: 16,
+                                                        letterSpacing: 0.0,
+                                                        fontWeight:
+                                                            FontWeight.normal,
+                                                        useGoogleFonts: false,
+                                                      ),
+                                                ),
+                                              ],
+                                            ),
+                                            const Icon(
+                                              Icons.arrow_forward_ios_rounded,
+                                              color: Color(0xFF8B5CF6),
+                                              size: 18,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : const SizedBox(),
+              // Student Join School
+              !AppInfo.currentUser.isSchoolAdmin && !AppInfo.currentUser.isSuperAdmin && AppInfo.currentUser.schoolId == null
+                  ? Padding(
+                      padding:
+                          const EdgeInsetsDirectional.fromSTEB(24, 30, 24, 0),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Expanded(
+                            child: InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                      builder: (context) =>
+                                          StudentJoinSchoolScreen()),
+                                );
+                              },
+                              child: Container(
+                                decoration: BoxDecoration(
+                                  color: const Color(0xFFE9D5FF),
+                                  borderRadius: BorderRadius.circular(12),
+                                ),
+                                child: Padding(
+                                  padding: const EdgeInsetsDirectional.fromSTEB(
+                                      15, 20, 15, 20),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.max,
+                                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          const Icon(
+                                            Icons.qr_code_scanner,
+                                            color: Color(0xFF8B5CF6),
+                                            size: 24,
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsetsDirectional
+                                                .fromSTEB(10, 0, 0, 0),
+                                            child: Text(
+                                              'Join Your School',
+                                              style: FlutterFlowTheme.of(
+                                                      context)
+                                                  .bodyMedium
+                                                  .override(
+                                                    fontFamily: 'Google Sans',
+                                                    color:
+                                                        const Color(0xFF8B5CF6),
+                                                    fontSize: 18,
+                                                    letterSpacing: 0.0,
+                                                    fontWeight: FontWeight.w500,
+                                                    useGoogleFonts: false,
+                                                  ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                      const Icon(
+                                        Icons.arrow_forward_ios_rounded,
+                                        color: Color(0xFF8B5CF6),
+                                        size: 18,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : const SizedBox(),
+              // Super Admin Panel
+              AppInfo.currentUser.isSuperAdmin
+                  ? Padding(
+                      padding:
+                          const EdgeInsetsDirectional.fromSTEB(24, 30, 24, 0),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        children: [
+                          Expanded(
+                            child: Container(
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFFFE4E6),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsetsDirectional.fromSTEB(
+                                    0, 15, 0, 12),
+                                child: Column(
+                                  mainAxisSize: MainAxisSize.max,
+                                  children: [
+                                    Padding(
+                                      padding:
+                                          const EdgeInsetsDirectional.fromSTEB(
+                                              15, 0, 0, 8),
+                                      child: Row(
+                                        mainAxisSize: MainAxisSize.max,
+                                        children: [
+                                          const Icon(
+                                            Icons.admin_panel_settings,
+                                            color: Color(0xFFDC2626),
+                                            size: 24,
+                                          ),
+                                          Padding(
+                                            padding: const EdgeInsetsDirectional
+                                                .fromSTEB(10, 0, 0, 0),
+                                            child: Text(
+                                              'Super Admin Panel',
+                                              style: FlutterFlowTheme.of(
+                                                      context)
+                                                  .bodyMedium
+                                                  .override(
+                                                    fontFamily: 'Google Sans',
+                                                    color:
+                                                        const Color(0xFFDC2626),
+                                                    fontSize: 20,
+                                                    letterSpacing: 0.0,
+                                                    fontWeight: FontWeight.w500,
+                                                    useGoogleFonts: false,
+                                                  ),
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const Divider(
+                                      thickness: 1.5,
+                                      color: Color(0x5BDC2626),
+                                    ),
+                                    InkWell(
+                                      onTap: () {
+                                        Navigator.push(
+                                          context,
+                                          MaterialPageRoute(
+                                              builder: (context) =>
+                                                  SuperAdminPanel()),
+                                        );
+                                      },
+                                      child: Padding(
+                                        padding: const EdgeInsetsDirectional
+                                            .fromSTEB(15, 5, 18, 5),
+                                        child: Row(
+                                          mainAxisSize: MainAxisSize.max,
+                                          mainAxisAlignment:
+                                              MainAxisAlignment.spaceBetween,
+                                          children: [
+                                            Row(
+                                              mainAxisSize: MainAxisSize.max,
+                                              children: [
+                                                const Padding(
+                                                  padding: EdgeInsetsDirectional
+                                                      .fromSTEB(0, 0, 5, 0),
+                                                  child: Icon(
+                                                    Icons.security,
+                                                    color: Color(0xFFDC2626),
+                                                    size: 19,
+                                                  ),
+                                                ),
+                                                Text(
+                                                  'System Control',
+                                                  style: FlutterFlowTheme.of(
+                                                          context)
+                                                      .bodyMedium
+                                                      .override(
+                                                        fontFamily:
+                                                            'Google Sans',
+                                                        color: const Color(
+                                                            0xFFDC2626),
+                                                        fontSize: 16,
+                                                        letterSpacing: 0.0,
+                                                        fontWeight:
+                                                            FontWeight.normal,
+                                                        useGoogleFonts: false,
+                                                      ),
+                                                ),
+                                              ],
+                                            ),
+                                            const Icon(
+                                              Icons.arrow_forward_ios_rounded,
+                                              color: Color(0xFFDC2626),
+                                              size: 18,
+                                            ),
+                                          ],
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    )
+                  : const SizedBox(),
               const SizedBox(height: 90),
             ],
           ),

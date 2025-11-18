@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../services/message_service.dart';
+import '../../services/url_preview_service.dart';
 import '../../models/message_model.dart';
 import '../../theme/app_theme.dart';
 
@@ -335,6 +336,19 @@ class _ChatScreenState extends State<ChatScreen> {
                     : (isDark ? Colors.white : AppTheme.black),
                 height: 1.4,
               ),
+            ),
+            // URL Preview
+            Builder(
+              builder: (context) {
+                final urls = URLPreviewService.extractUrls(message.message);
+                if (urls.isNotEmpty) {
+                  return Padding(
+                    padding: const EdgeInsets.only(top: 8),
+                    child: CompactURLPreview(url: urls.first),
+                  );
+                }
+                return const SizedBox.shrink();
+              },
             ),
             const SizedBox(height: 4),
             Text(

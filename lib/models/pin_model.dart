@@ -6,13 +6,12 @@ class PinModel {
   final String userName;
   final String? userPhotoUrl;
   final String pinName;
-  final String description;
   final List<String> imageUrls;
-  final String wantInReturn; // What they want to trade for
-  final bool isOpenToOffers; // If they're open to any offer
+  final String? wantInReturn;
+  final bool isOpenToOffers;
+  final bool isAvailableForTrade;
+  final List<String> interestedUserIds;
   final DateTime createdAt;
-  final bool isAvailable;
-  final Map<String, dynamic> contactInfo; // User-controlled visibility
 
   PinModel({
     required this.id,
@@ -20,30 +19,33 @@ class PinModel {
     required this.userName,
     this.userPhotoUrl,
     required this.pinName,
-    required this.description,
-    required this.imageUrls,
-    required this.wantInReturn,
-    this.isOpenToOffers = true,
-    required this.createdAt,
-    this.isAvailable = true,
-    this.contactInfo = const {},
-  });
+    this.imageUrls = const [],
+    this.wantInReturn,
+    this.isOpenToOffers = false,
+    this.isAvailableForTrade = false,
+    this.interestedUserIds = const [],
+    DateTime? createdAt,
+  }) : createdAt = createdAt ?? DateTime.now();
+
+  // Backwards compatibility
+  String get name => pinName;
+  String get ownerId => userId;
+  String get ownerName => userName;
 
   factory PinModel.fromFirestore(DocumentSnapshot doc) {
     final data = doc.data() as Map<String, dynamic>;
     return PinModel(
       id: doc.id,
-      userId: data['userId'] ?? '',
-      userName: data['userName'] ?? '',
+      userId: data['userId'] ?? data['ownerId'] ?? '',
+      userName: data['userName'] ?? data['ownerName'] ?? '',
       userPhotoUrl: data['userPhotoUrl'],
-      pinName: data['pinName'] ?? '',
-      description: data['description'] ?? '',
+      pinName: data['pinName'] ?? data['name'] ?? '',
       imageUrls: List<String>.from(data['imageUrls'] ?? []),
-      wantInReturn: data['wantInReturn'] ?? '',
-      isOpenToOffers: data['isOpenToOffers'] ?? true,
-      createdAt: (data['createdAt'] as Timestamp).toDate(),
-      isAvailable: data['isAvailable'] ?? true,
-      contactInfo: Map<String, dynamic>.from(data['contactInfo'] ?? {}),
+      wantInReturn: data['wantInReturn'],
+      isOpenToOffers: data['isOpenToOffers'] ?? false,
+      isAvailableForTrade: data['isAvailableForTrade'] ?? false,
+      interestedUserIds: List<String>.from(data['interestedUserIds'] ?? []),
+      createdAt: (data['createdAt'] as Timestamp?)?.toDate() ?? DateTime.now(),
     );
   }
 
@@ -53,13 +55,40 @@ class PinModel {
       'userName': userName,
       'userPhotoUrl': userPhotoUrl,
       'pinName': pinName,
-      'description': description,
       'imageUrls': imageUrls,
       'wantInReturn': wantInReturn,
       'isOpenToOffers': isOpenToOffers,
+      'isAvailableForTrade': isAvailableForTrade,
+      'interestedUserIds': interestedUserIds,
       'createdAt': Timestamp.fromDate(createdAt),
-      'isAvailable': isAvailable,
-      'contactInfo': contactInfo,
     };
+  }
+
+  PinModel copyWith({
+    String? id,
+    String? userId,
+    String? userName,
+    String? userPhotoUrl,
+    String? pinName,
+    List<String>? imageUrls,
+    String? wantInReturn,
+    bool? isOpenToOffers,
+    bool? isAvailableForTrade,
+    List<String>? interestedUserIds,
+    DateTime? createdAt,
+  }) {
+    return PinModel(
+      id: id ?? this.id,
+      userId: userId ?? this.userId,
+      userName: userName ?? this.userName,
+      userPhotoUrl: userPhotoUrl ?? this.userPhotoUrl,
+      pinName: pinName ?? this.pinName,
+      imageUrls: imageUrls ?? this.imageUrls,
+      wantInReturn: wantInReturn ?? this.wantInReturn,
+      isOpenToOffers: isOpenToOffers ?? this.isOpenToOffers,
+      isAvailableForTrade: isAvailableForTrade ?? this.isAvailableForTrade,
+      interestedUserIds: interestedUserIds ?? this.interestedUserIds,
+      createdAt: createdAt ?? this.createdAt,
+    );
   }
 }

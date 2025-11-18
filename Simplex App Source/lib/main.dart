@@ -15,6 +15,7 @@ import 'frontend/flutter_flow/theme_provider.dart';
 import 'firebase_options.dart';
 import 'app_info.dart';
 import 'package:firebase_crashlytics/firebase_crashlytics.dart';
+import 'setup_admin.dart'; // Import setup admin
 
 void main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -39,6 +40,10 @@ void main() async {
   await SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
   ]);
+
+  // SETUP SUPER ADMIN - Run once to create ncfbla@gmail.com as super admin
+  // Uncomment the line below, run the app once, then comment it again
+  // await setupSuperAdmin();
 
   runApp(
     ChangeNotifierProvider(

@@ -13,8 +13,7 @@ class PinTradingPage extends StatefulWidget {
   State<PinTradingPage> createState() => _PinTradingPageState();
 }
 
-class _PinTradingPageState extends State<PinTradingPage>
-    with SingleTickerProviderStateMixin {
+class _PinTradingPageState extends State<PinTradingPage> with SingleTickerProviderStateMixin {
   final PinService _pinService = PinService();
   final TextEditingController _searchController = TextEditingController();
   late TabController _tabController;
@@ -133,12 +132,10 @@ class _PinTradingPageState extends State<PinTradingPage>
                           fontFamily: 'Google Sans',
                           color: Colors.grey[400],
                         ),
-                        prefixIcon:
-                            const Icon(Icons.search, color: Color(0xFF3B58F4)),
+                        prefixIcon: const Icon(Icons.search, color: Color(0xFF3B58F4)),
                         suffixIcon: _searchController.text.isNotEmpty
                             ? IconButton(
-                                icon:
-                                    const Icon(Icons.clear, color: Colors.grey),
+                                icon: const Icon(Icons.clear, color: Colors.grey),
                                 onPressed: () {
                                   _searchController.clear();
                                   _searchPins('');
@@ -146,8 +143,7 @@ class _PinTradingPageState extends State<PinTradingPage>
                               )
                             : null,
                         border: InputBorder.none,
-                        contentPadding:
-                            const EdgeInsets.symmetric(vertical: 15),
+                        contentPadding: const EdgeInsets.symmetric(vertical: 15),
                       ),
                     ),
                   ),
@@ -287,8 +283,7 @@ class _PinTradingPageState extends State<PinTradingPage>
         final pins = snapshot.data ?? [];
 
         if (pins.isEmpty) {
-          return _buildEmptyState(
-              'No pins available yet', 'Be the first to create one!');
+          return _buildEmptyState('No pins available yet', 'Be the first to create one!');
         }
 
         return GridView.builder(
@@ -327,8 +322,7 @@ class _PinTradingPageState extends State<PinTradingPage>
         final pins = snapshot.data ?? [];
 
         if (pins.isEmpty) {
-          return _buildEmptyState(
-              'No pins yet', 'Create your first pin listing!');
+          return _buildEmptyState('No pins yet', 'Create your first pin listing!');
         }
 
         return ListView.builder(

@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
-import '../../services/auth_service.dart';
 import '../../theme/app_theme.dart';
 
 class ForgotPasswordScreen extends StatefulWidget {
@@ -13,9 +12,7 @@ class ForgotPasswordScreen extends StatefulWidget {
 class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
   final _formKey = GlobalKey<FormState>();
   final _emailController = TextEditingController();
-  final _authService = AuthService();
   bool _isLoading = false;
-  bool _emailSent = false;
 
   @override
   void dispose() {
@@ -23,47 +20,48 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
     super.dispose();
   }
 
-  Future<void> _sendResetEmail() async {
+  Future<void> _resetPassword() async {
     if (!_formKey.currentState!.validate()) return;
 
     setState(() => _isLoading = true);
 
     try {
-      await _authService.resetPassword(_emailController.text.trim());
-      if (!mounted) return;
-      setState(() {
-        _emailSent = true;
-        _isLoading = false;
-      });
+      await FirebaseAuth.instance.sendPasswordResetEmail(
+        email: _emailController.text.trim(),
+      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(content: Text('Password reset email sent!')),
+        );
+        Navigator.of(context).pop();
+      }
     } on FirebaseAuthException catch (e) {
-      if (!mounted) return;
-      setState(() => _isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(e.message ?? 'An error occurred'),
-          backgroundColor: AppTheme.error,
-        ),
-      );
-    } catch (e) {
-      if (!mounted) return;
-      setState(() => _isLoading = false);
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(content: Text(e.toString()), backgroundColor: AppTheme.error),
-      );
+      String message = 'Failed to send reset email';
+      if (e.code == 'user-not-found') {
+        message = 'No user found with this email';
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(message)),
+        );
+      }
+    } finally {
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
     return Scaffold(
-      backgroundColor: AppTheme.white,
+      backgroundColor: isDark ? AppTheme.darkBackground : AppTheme.offWhite,
       appBar: AppBar(
-        backgroundColor: AppTheme.white,
+        title: const Text('Reset Password'),
+        backgroundColor: Colors.transparent,
         elevation: 0,
-        leading: IconButton(
-          icon: Icon(Icons.arrow_back, color: AppTheme.primaryBlue),
-          onPressed: () => Navigator.of(context).pop(),
-        ),
       ),
       body: SafeArea(
         child: Center(
@@ -73,135 +71,75 @@ class _ForgotPasswordScreenState extends State<ForgotPasswordScreen> {
               key: _formKey,
               child: Column(
                 mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.stretch,
                 children: [
-                  // Icon
-                  Icon(
-                    Icons.lock_reset_outlined,
+                  const Icon(
+                    Icons.lock_reset,
                     size: 80,
                     color: AppTheme.primaryBlue,
                   ),
-                  const SizedBox(height: 24),
-
-                  // Title
+                  const SizedBox(height: 20),
                   Text(
-                    _emailSent ? 'Check Your Email' : 'Forgot Password?',
-                    style: Theme.of(context).textTheme.headlineLarge?.copyWith(
-                      color: AppTheme.primaryBlue,
+                    'Forgot Password?',
+                    style: TextStyle(
+                      fontSize: 28,
+                      fontWeight: FontWeight.bold,
+                      color: isDark ? Colors.white : AppTheme.black,
                     ),
-                    textAlign: TextAlign.center,
                   ),
-                  const SizedBox(height: 8),
-
-                  // Subtitle
+                  const SizedBox(height: 12),
                   Text(
-                    _emailSent
-                        ? 'We\'ve sent a password reset link to\n${_emailController.text.trim()}'
-                        : 'Enter your email address and we\'ll send you a link to reset your password.',
-                    style: Theme.of(context).textTheme.bodyLarge,
+                    'Enter your email to receive a password reset link',
                     textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: isDark ? Colors.white70 : AppTheme.mediumGray,
+                    ),
                   ),
-                  const SizedBox(height: 48),
-
-                  if (!_emailSent) ...[
-                    // Email Field
-                    TextFormField(
-                      controller: _emailController,
-                      keyboardType: TextInputType.emailAddress,
-                      enabled: !_isLoading,
-                      decoration: const InputDecoration(
-                        labelText: 'Email',
-                        prefixIcon: Icon(Icons.email_outlined),
-                        hintText: 'Enter your email address',
-                      ),
-                      validator: (value) {
-                        if (value == null || value.isEmpty) {
-                          return 'Please enter your email';
-                        }
-                        if (!value.contains('@')) {
-                          return 'Please enter a valid email';
-                        }
-                        return null;
-                      },
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Send Reset Link Button
-                    ElevatedButton(
-                      onPressed: _isLoading ? null : _sendResetEmail,
-                      child: _isLoading
-                          ? const SizedBox(
-                              height: 20,
-                              width: 20,
-                              child: CircularProgressIndicator(
-                                strokeWidth: 2,
-                                valueColor: AlwaysStoppedAnimation<Color>(
-                                  Colors.white,
-                                ),
-                              ),
-                            )
-                          : const Text('Send Reset Link'),
-                    ),
-                  ] else ...[
-                    // Success Message Icon
-                    Icon(
-                      Icons.check_circle_outline,
-                      size: 60,
-                      color: Colors.green,
-                    ),
-                    const SizedBox(height: 24),
-
-                    // Instructions
-                    Container(
-                      padding: const EdgeInsets.all(16),
-                      decoration: BoxDecoration(
-                        color: AppTheme.lightGray.withOpacity(0.3),
+                  const SizedBox(height: 40),
+                  TextFormField(
+                    controller: _emailController,
+                    keyboardType: TextInputType.emailAddress,
+                    decoration: InputDecoration(
+                      labelText: 'Email',
+                      prefixIcon: const Icon(Icons.email),
+                      border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(12),
                       ),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            'Next steps:',
-                            style: Theme.of(context).textTheme.titleMedium
-                                ?.copyWith(fontWeight: FontWeight.bold),
-                          ),
-                          const SizedBox(height: 8),
-                          Text(
-                            '1. Check your email inbox\n'
-                            '2. Click on the reset password link\n'
-                            '3. Create a new password\n'
-                            '4. Sign in with your new password',
-                            style: Theme.of(context).textTheme.bodyMedium,
-                          ),
-                        ],
+                    ),
+                    validator: (value) {
+                      if (value == null || value.isEmpty) {
+                        return 'Please enter your email';
+                      }
+                      if (!value.contains('@')) {
+                        return 'Please enter a valid email';
+                      }
+                      return null;
+                    },
+                  ),
+                  const SizedBox(height: 24),
+                  SizedBox(
+                    width: double.infinity,
+                    height: 50,
+                    child: ElevatedButton(
+                      onPressed: _isLoading ? null : _resetPassword,
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: AppTheme.primaryBlue,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(12),
+                        ),
                       ),
+                      child: _isLoading
+                          ? const CircularProgressIndicator(color: Colors.white)
+                          : const Text(
+                              'Send Reset Link',
+                              style: TextStyle(
+                                fontSize: 16,
+                                fontWeight: FontWeight.bold,
+                                color: Colors.white,
+                              ),
+                            ),
                     ),
-                    const SizedBox(height: 24),
-
-                    // Resend Email Button
-                    OutlinedButton(
-                      onPressed: () {
-                        setState(() {
-                          _emailSent = false;
-                          _emailController.clear();
-                        });
-                      },
-                      child: const Text('Resend Email'),
-                    ),
-                    const SizedBox(height: 12),
-
-                    // Back to Login Button
-                    TextButton(
-                      onPressed: () {
-                        Navigator.of(context).pop();
-                      },
-                      child: Text(
-                        'Back to Login',
-                        style: TextStyle(color: AppTheme.primaryBlue),
-                      ),
-                    ),
-                  ],
+                  ),
                 ],
               ),
             ),

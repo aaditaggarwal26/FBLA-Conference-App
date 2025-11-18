@@ -122,7 +122,7 @@ class _PinTradingScreenState extends State<PinTradingScreen>
           );
         },
         icon: const Icon(Icons.add_rounded),
-        label: const Text('Create Listing'),
+        label: const Text('Create Pin'),
         backgroundColor: AppTheme.primaryBlue,
       ),
     );
@@ -415,7 +415,7 @@ class _PinTradingScreenState extends State<PinTradingScreen>
                             const SizedBox(width: 4),
                             Flexible(
                               child: Text(
-                                pin.wantInReturn,
+                                pin.wantInReturn ?? 'Any offers',
                                 style: TextStyle(
                                   fontSize: 11,
                                   color: AppTheme.warning,
@@ -437,14 +437,10 @@ class _PinTradingScreenState extends State<PinTradingScreen>
                             backgroundColor: AppTheme.primaryBlue.withValues(
                               alpha: 0.1,
                             ),
-                            backgroundImage:
-                                (pin.userPhotoUrl != null &&
-                                    pin.userPhotoUrl!.isNotEmpty)
+                            backgroundImage: pin.userPhotoUrl != null
                                 ? NetworkImage(pin.userPhotoUrl!)
                                 : null,
-                            child:
-                                (pin.userPhotoUrl == null ||
-                                    pin.userPhotoUrl!.isEmpty)
+                            child: pin.userPhotoUrl == null
                                 ? Text(
                                     pin.userName[0].toUpperCase(),
                                     style: TextStyle(

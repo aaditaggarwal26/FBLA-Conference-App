@@ -4,29 +4,39 @@ class EventModel {
   final String id;
   final String title;
   final String description;
-  final String location;
-  final String? imageUrl;
   final DateTime startTime;
   final DateTime endTime;
+  final String location;
+  final String? imageUrl;
   final String category;
   final List<String> speakers;
-  final int maxCapacity;
-  final List<String> registeredUsers;
-  final bool isFeatured;
+  final List<String> attendeeIds;
+  final int capacity;
+
+  // Aliases for backwards compatibility
+  List<String> get registeredUsers => attendeeIds;
+  int get maxCapacity => capacity;
+  final String organizerId;
+  final String? qrCode;
+  final bool isRequired;
+  final Map<String, dynamic>? metadata;
 
   EventModel({
     required this.id,
     required this.title,
     required this.description,
-    required this.location,
-    this.imageUrl,
     required this.startTime,
     required this.endTime,
-    required this.category,
-    required this.speakers,
-    required this.maxCapacity,
-    required this.registeredUsers,
-    this.isFeatured = false,
+    required this.location,
+    this.imageUrl,
+    this.category = 'General',
+    this.speakers = const [],
+    this.attendeeIds = const [],
+    this.capacity = 100,
+    required this.organizerId,
+    this.qrCode,
+    this.isRequired = false,
+    this.metadata,
   });
 
   factory EventModel.fromFirestore(DocumentSnapshot doc) {
@@ -35,15 +45,18 @@ class EventModel {
       id: doc.id,
       title: data['title'] ?? '',
       description: data['description'] ?? '',
+      startTime: (data['startTime'] as Timestamp?)?.toDate() ?? DateTime.now(),
+      endTime: (data['endTime'] as Timestamp?)?.toDate() ?? DateTime.now(),
       location: data['location'] ?? '',
       imageUrl: data['imageUrl'],
-      startTime: (data['startTime'] as Timestamp).toDate(),
-      endTime: (data['endTime'] as Timestamp).toDate(),
       category: data['category'] ?? 'General',
       speakers: List<String>.from(data['speakers'] ?? []),
-      maxCapacity: data['maxCapacity'] ?? 0,
-      registeredUsers: List<String>.from(data['registeredUsers'] ?? []),
-      isFeatured: data['isFeatured'] ?? false,
+      attendeeIds: List<String>.from(data['attendeeIds'] ?? []),
+      capacity: data['capacity'] ?? 100,
+      organizerId: data['organizerId'] ?? '',
+      qrCode: data['qrCode'],
+      isRequired: data['isRequired'] ?? false,
+      metadata: data['metadata'] as Map<String, dynamic>?,
     );
   }
 
@@ -51,19 +64,61 @@ class EventModel {
     return {
       'title': title,
       'description': description,
-      'location': location,
-      'imageUrl': imageUrl,
       'startTime': Timestamp.fromDate(startTime),
       'endTime': Timestamp.fromDate(endTime),
+      'location': location,
+      'imageUrl': imageUrl,
       'category': category,
       'speakers': speakers,
-      'maxCapacity': maxCapacity,
-      'registeredUsers': registeredUsers,
-      'isFeatured': isFeatured,
+      'attendeeIds': attendeeIds,
+      'capacity': capacity,
+      'organizerId': organizerId,
+      'qrCode': qrCode,
+      'isRequired': isRequired,
+      'metadata': metadata,
     };
   }
 
-  bool get isFull => registeredUsers.length >= maxCapacity;
-  
-  int get availableSpots => maxCapacity - registeredUsers.length;
+  bool get isFull => attendeeIds.length >= capacity;
+  bool get isUpcoming => startTime.isAfter(DateTime.now());
+  bool get isOngoing => 
+      DateTime.now().isAfter(startTime) && 
+      DateTime.now().isBefore(endTime);
+  bool get isPast => endTime.isBefore(DateTime.now());
+
+  EventModel copyWith({
+    String? id,
+    String? title,
+    String? description,
+    DateTime? startTime,
+    DateTime? endTime,
+    String? location,
+    String? imageUrl,
+    String? category,
+    List<String>? speakers,
+    List<String>? attendeeIds,
+    int? capacity,
+    String? organizerId,
+    String? qrCode,
+    bool? isRequired,
+    Map<String, dynamic>? metadata,
+  }) {
+    return EventModel(
+      id: id ?? this.id,
+      title: title ?? this.title,
+      description: description ?? this.description,
+      startTime: startTime ?? this.startTime,
+      endTime: endTime ?? this.endTime,
+      location: location ?? this.location,
+      imageUrl: imageUrl ?? this.imageUrl,
+      category: category ?? this.category,
+      speakers: speakers ?? this.speakers,
+      attendeeIds: attendeeIds ?? this.attendeeIds,
+      capacity: capacity ?? this.capacity,
+      organizerId: organizerId ?? this.organizerId,
+      qrCode: qrCode ?? this.qrCode,
+      isRequired: isRequired ?? this.isRequired,
+      metadata: metadata ?? this.metadata,
+    );
+  }
 }

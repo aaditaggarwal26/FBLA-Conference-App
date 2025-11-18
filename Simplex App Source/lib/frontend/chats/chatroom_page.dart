@@ -9,6 +9,7 @@ import 'package:cloud_functions/cloud_functions.dart';
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import '../../backend/models.dart';
 import 'package:simplex_chapter_x/frontend/toast.dart';
 import 'package:url_launcher/url_launcher.dart';
 

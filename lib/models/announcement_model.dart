@@ -1,5 +1,10 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 
+enum AnnouncementType {
+  national, // From FBLA nationals
+  school, // From specific school
+}
+
 class AnnouncementModel {
   final String id;
   final String title;
@@ -9,6 +14,8 @@ class AnnouncementModel {
   final String postedBy;
   final bool isPinned;
   final String category;
+  final AnnouncementType type;
+  final String? schoolId; // Only set if type is school
 
   AnnouncementModel({
     required this.id,
@@ -19,6 +26,8 @@ class AnnouncementModel {
     required this.postedBy,
     this.isPinned = false,
     required this.category,
+    this.type = AnnouncementType.national,
+    this.schoolId,
   });
 
   factory AnnouncementModel.fromFirestore(DocumentSnapshot doc) {
@@ -32,6 +41,8 @@ class AnnouncementModel {
       postedBy: data['postedBy'] ?? '',
       isPinned: data['isPinned'] ?? false,
       category: data['category'] ?? 'General',
+      type: data['type'] == 'school' ? AnnouncementType.school : AnnouncementType.national,
+      schoolId: data['schoolId'],
     );
   }
 
@@ -44,6 +55,11 @@ class AnnouncementModel {
       'postedBy': postedBy,
       'isPinned': isPinned,
       'category': category,
+      'type': type == AnnouncementType.school ? 'school' : 'national',
+      'schoolId': schoolId,
     };
   }
+
+  bool get isNational => type == AnnouncementType.national;
+  bool get isSchool => type == AnnouncementType.school;
 }

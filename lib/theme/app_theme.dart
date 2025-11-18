@@ -39,14 +39,14 @@ class AppTheme {
   static const Color darkBlue = Color(0xFF1E40AF);
   static const Color lightBlue = Color(0xFFDEEBFF);
   static const Color accentBlue = Color(0xFF60A5FA);
-
+  
   // Dark Mode Colors - Improved for visual appeal
   static const Color darkPrimary = Color(0xFF60A5FA); // Brighter blue
   static const Color darkSecondary = Color(0xFF818CF8); // Softer indigo
   static const Color darkBackground = Color(0xFF0F172A); // Deep slate
   static const Color darkSurface = Color(0xFF1E293B); // Elevated slate
   static const Color darkCard = Color(0xFF334155); // Card background
-
+  
   // Neutral Colors
   static const Color white = Color(0xFFFFFFFF);
   static const Color offWhite = Color(0xFFF8FAFC);
@@ -55,12 +55,12 @@ class AppTheme {
   static const Color mediumGray = Color(0xFF94A3B8);
   static const Color darkGray = Color(0xFF334155);
   static const Color black = Color(0xFF0F172A);
-
+  
   // Status Colors
   static const Color success = Color(0xFF10B981);
   static const Color warning = Color(0xFFF59E0B);
   static const Color error = Color(0xFFEF4444);
-
+  
   static ThemeData get lightTheme {
     return ThemeData(
       useMaterial3: true,
@@ -105,7 +105,10 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          textStyle: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
@@ -116,7 +119,10 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          textStyle: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -138,19 +144,15 @@ class AppTheme {
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: error),
         ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 14,
-        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       ),
       chipTheme: ChipThemeData(
         backgroundColor: lightBlue,
-        labelStyle: const TextStyle(
-          color: darkBlue,
-          fontWeight: FontWeight.w500,
-        ),
+        labelStyle: const TextStyle(color: darkBlue, fontWeight: FontWeight.w500),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: primaryBlue,
@@ -246,7 +248,10 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          textStyle: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
@@ -257,7 +262,10 @@ class AppTheme {
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),
           ),
-          textStyle: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+          textStyle: const TextStyle(
+            fontSize: 16,
+            fontWeight: FontWeight.w600,
+          ),
         ),
       ),
       inputDecorationTheme: InputDecorationTheme(
@@ -279,19 +287,15 @@ class AppTheme {
           borderRadius: BorderRadius.circular(12),
           borderSide: const BorderSide(color: error),
         ),
-        contentPadding: const EdgeInsets.symmetric(
-          horizontal: 16,
-          vertical: 14,
-        ),
+        contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
       ),
       chipTheme: ChipThemeData(
         backgroundColor: darkCard,
-        labelStyle: const TextStyle(
-          color: darkSecondary,
-          fontWeight: FontWeight.w500,
-        ),
+        labelStyle: const TextStyle(color: darkSecondary, fontWeight: FontWeight.w500),
         padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: RoundedRectangleBorder(
+          borderRadius: BorderRadius.circular(20),
+        ),
       ),
       floatingActionButtonTheme: const FloatingActionButtonThemeData(
         backgroundColor: darkPrimary,
