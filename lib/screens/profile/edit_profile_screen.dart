@@ -4,8 +4,13 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'dart:io';
 import '../../services/auth_service.dart';
 import '../../services/pin_service.dart';
+import '../../services/school_service.dart';
 import '../../models/user_model.dart';
+import '../../models/school_model.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/school_badge.dart';
+import '../school/school_selection_screen.dart';
+import '../school/school_admin_dashboard_new.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final UserModel userModel;
@@ -21,6 +26,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   final _nameController = TextEditingController();
   final AuthService _authService = AuthService();
   final PinService _pinService = PinService();
+  final SchoolService _schoolService = SchoolService();
   final ImagePicker _imagePicker = ImagePicker();
 
   File? _selectedImage;
@@ -475,6 +481,223 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     ],
                   ),
                 ),
+
+                const SizedBox(height: 32),
+
+                // School Section
+                Text(
+                  'School',
+                  style: TextStyle(
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
+                    color: isDark ? Colors.white : AppTheme.black,
+                  ),
+                ),
+                const SizedBox(height: 12),
+                if (widget.userModel.hasSchool)
+                  FutureBuilder<SchoolModel?>(
+                    future: _schoolService.getSchool(widget.userModel.schoolId!),
+                    builder: (context, snapshot) {
+                      if (snapshot.connectionState == ConnectionState.waiting) {
+                        return Container(
+                          padding: const EdgeInsets.all(16),
+                          decoration: BoxDecoration(
+                            color: isDark ? AppTheme.darkSurface : Colors.white,
+                            borderRadius: BorderRadius.circular(12),
+                            border: Border.all(
+                              color: isDark ? AppTheme.darkCard : AppTheme.lightGray,
+                            ),
+                          ),
+                          child: const Center(
+                            child: CircularProgressIndicator(),
+                          ),
+                        );
+                      }
+
+                      final school = snapshot.data;
+                      if (school == null) {
+                        return const SizedBox.shrink();
+                      }
+
+                      return Container(
+                        padding: const EdgeInsets.all(16),
+                        decoration: BoxDecoration(
+                          color: isDark ? AppTheme.darkSurface : Colors.white,
+                          borderRadius: BorderRadius.circular(12),
+                          border: Border.all(
+                            color: isDark ? AppTheme.darkCard : AppTheme.lightGray,
+                          ),
+                        ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Row(
+                              children: [
+                                Icon(
+                                  Icons.school_rounded,
+                                  color: isDark ? AppTheme.darkPrimary : AppTheme.primaryBlue,
+                                ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Column(
+                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    children: [
+                                      Row(
+                                        children: [
+                                          Flexible(
+                                            child: Text(
+                                              school.name,
+                                              style: TextStyle(
+                                                fontSize: 16,
+                                                fontWeight: FontWeight.w600,
+                                                color: isDark ? Colors.white : AppTheme.black,
+                                              ),
+                                            ),
+                                          ),
+                                          const SizedBox(width: 8),
+                                          SchoolBadge(
+                                            school: school,
+                                            isOwner: widget.userModel.isSchoolOwner,
+                                            fontSize: 10,
+                                          ),
+                                        ],
+                                      ),
+                                      const SizedBox(height: 4),
+                                      Text(
+                                        widget.userModel.schoolRole == 'schoolAdmin'
+                                            ? 'School Admin'
+                                            : widget.userModel.schoolRole == 'teacher'
+                                                ? 'Teacher'
+                                                : 'Student',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          color: AppTheme.mediumGray,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                            if (widget.userModel.isSchoolAdminOrTeacher) ...[
+                              const SizedBox(height: 12),
+                              SizedBox(
+                                width: double.infinity,
+                                child: OutlinedButton.icon(
+                                  onPressed: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => SchoolAdminDashboardNew(
+                                          schoolId: school.id,
+                                        ),
+                                      ),
+                                    );
+                                  },
+                                  icon: const Icon(Icons.dashboard_outlined),
+                                  label: const Text('Manage School'),
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor: isDark
+                                        ? AppTheme.darkPrimary
+                                        : AppTheme.primaryBlue,
+                                  ),
+                                ),
+                              ),
+                            ],
+                            const SizedBox(height: 8),
+                            SizedBox(
+                              width: double.infinity,
+                              child: OutlinedButton.icon(
+                                onPressed: () async {
+                                  final confirmed = await showDialog<bool>(
+                                    context: context,
+                                    builder: (context) => AlertDialog(
+                                      title: const Text('Leave School'),
+                                      content: Text(
+                                        'Are you sure you want to leave ${school.name}?',
+                                      ),
+                                      actions: [
+                                        TextButton(
+                                          onPressed: () => Navigator.pop(context, false),
+                                          child: const Text('Cancel'),
+                                        ),
+                                        TextButton(
+                                          onPressed: () => Navigator.pop(context, true),
+                                          style: TextButton.styleFrom(
+                                            foregroundColor: AppTheme.error,
+                                          ),
+                                          child: const Text('Leave'),
+                                        ),
+                                      ],
+                                    ),
+                                  );
+
+                                  if (confirmed == true && context.mounted) {
+                                    try {
+                                      await _schoolService.leaveSchool(
+                                        school.id,
+                                        widget.userModel.id,
+                                      );
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          const SnackBar(
+                                            content: Text('Left school successfully'),
+                                            backgroundColor: AppTheme.success,
+                                          ),
+                                        );
+                                        Navigator.pop(context, true);
+                                      }
+                                    } catch (e) {
+                                      if (context.mounted) {
+                                        ScaffoldMessenger.of(context).showSnackBar(
+                                          SnackBar(
+                                            content: Text('Error leaving school: $e'),
+                                            backgroundColor: AppTheme.error,
+                                          ),
+                                        );
+                                      }
+                                    }
+                                  }
+                                },
+                                icon: const Icon(Icons.exit_to_app_rounded),
+                                label: const Text('Leave School'),
+                                style: OutlinedButton.styleFrom(
+                                  foregroundColor: AppTheme.error,
+                                  side: const BorderSide(color: AppTheme.error),
+                                ),
+                              ),
+                            ),
+                          ],
+                        ),
+                      );
+                    },
+                  )
+                else
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton.icon(
+                      onPressed: () async {
+                        final result = await Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const SchoolSelectionScreen(),
+                          ),
+                        );
+                        if (result == true && context.mounted) {
+                          // Refresh profile to show new school
+                          Navigator.pop(context, true);
+                        }
+                      },
+                      icon: const Icon(Icons.add_rounded),
+                      label: const Text('Join or Create School'),
+                      style: OutlinedButton.styleFrom(
+                        padding: const EdgeInsets.symmetric(vertical: 16),
+                        foregroundColor: isDark
+                            ? AppTheme.darkPrimary
+                            : AppTheme.primaryBlue,
+                      ),
+                    ),
+                  ),
 
                 const SizedBox(height: 32),
 

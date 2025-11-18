@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../services/message_service.dart';
+import '../../services/url_preview_service.dart';
 import '../../models/message_model.dart';
 import '../../theme/app_theme.dart';
+import '../../widgets/compact_url_preview.dart';
 
 class ChatScreen extends StatefulWidget {
   final String otherUserId;
@@ -296,6 +298,10 @@ class _ChatScreenState extends State<ChatScreen> {
 
   Widget _buildMessageBubble(MessageModel message, bool isMe) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
+    final containsUrl = URLPreviewService.containsUrl(message.message);
+    final urls = containsUrl
+        ? URLPreviewService.detectUrls(message.message)
+        : <String>[];
 
     return Align(
       alignment: isMe ? Alignment.centerRight : Alignment.centerLeft,
@@ -336,6 +342,67 @@ class _ChatScreenState extends State<ChatScreen> {
                 height: 1.4,
               ),
             ),
+            // URL Preview
+            if (urls.isNotEmpty)
+              FutureBuilder<URLPreviewData?>(
+                future: URLPreviewService.fetchPreview(urls.first),
+                builder: (context, snapshot) {
+                  if (snapshot.connectionState == ConnectionState.waiting) {
+                    return Container(
+                      margin: const EdgeInsets.only(top: 8),
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: isMe
+                            ? Colors.white.withValues(alpha: 0.2)
+                            : (isDark
+                                  ? AppTheme.darkCard.withValues(alpha: 0.5)
+                                  : AppTheme.lightGray.withValues(
+                                      alpha: 0.3,
+                                    )),
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          SizedBox(
+                            width: 12,
+                            height: 12,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                isMe
+                                    ? Colors.white.withValues(alpha: 0.7)
+                                    : (isDark
+                                          ? AppTheme.darkPrimary
+                                          : AppTheme.primaryBlue),
+                              ),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Text(
+                            'Loading preview...',
+                            style: TextStyle(
+                              fontSize: 11,
+                              color: isMe
+                                  ? Colors.white.withValues(alpha: 0.7)
+                                  : (isDark
+                                        ? Colors.white.withValues(alpha: 0.7)
+                                        : AppTheme.darkGray),
+                            ),
+                          ),
+                        ],
+                      ),
+                    );
+                  }
+                  if (snapshot.hasData && snapshot.data != null) {
+                    return CompactURLPreview(
+                      previewData: snapshot.data!,
+                      isFromCurrentUser: isMe,
+                    );
+                  }
+                  return const SizedBox.shrink();
+                },
+              ),
             const SizedBox(height: 4),
             Text(
               _formatTimestamp(message.timestamp),

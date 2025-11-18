@@ -5,6 +5,7 @@ import '../../services/message_service.dart';
 import '../../models/message_model.dart';
 import '../../theme/app_theme.dart';
 import 'chat_screen.dart';
+import 'start_conversation_screen.dart';
 
 class MessagesListScreen extends StatelessWidget {
   const MessagesListScreen({super.key});
@@ -84,6 +85,22 @@ class MessagesListScreen extends StatelessWidget {
             color: isDark ? Colors.white : AppTheme.black,
           ),
         ),
+        actions: [
+          IconButton(
+            icon: Icon(
+              Icons.edit_square,
+              color: isDark ? AppTheme.darkPrimary : AppTheme.primaryBlue,
+            ),
+            onPressed: () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const StartConversationScreen(),
+                ),
+              );
+            },
+          ),
+        ],
       ),
       body: StreamBuilder<List<ChatRoom>>(
         stream: MessageService().getUserChatRooms(currentUserId),
