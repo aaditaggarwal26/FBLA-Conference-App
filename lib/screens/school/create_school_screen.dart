@@ -4,7 +4,7 @@ import '../../services/school_service.dart';
 import '../../services/auth_service.dart';
 import '../../models/school_model.dart';
 import '../../theme/app_theme.dart';
-import 'school_admin_dashboard_new.dart';
+import 'school_dashboard_screen.dart';
 import 'dart:math';
 
 class CreateSchoolScreen extends StatefulWidget {
@@ -95,7 +95,7 @@ class _CreateSchoolScreenState extends State<CreateSchoolScreen> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => SchoolAdminDashboardNew(schoolId: schoolId),
+            builder: (context) => SchoolDashboardScreen(schoolId: schoolId),
           ),
         );
       }
