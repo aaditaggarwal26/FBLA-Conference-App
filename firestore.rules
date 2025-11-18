@@ -176,7 +176,7 @@ service cloud.firestore {
     }
     
     // School Announcements (top-level collection for queries)
-    match /schoolAnnouncements/{announcementId} {
+    match /school_announcements/{announcementId} {
       function getUserSchoolId() {
         return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.schoolId;
       }
@@ -190,16 +190,32 @@ service cloud.firestore {
         );
       }
       
-      // Users can read announcements from their school
-      allow read: if isSignedIn() && resource.data.schoolId == getUserSchoolId();
+      function canCreateAnnouncement() {
+        let schoolId = request.resource.data.schoolId;
+        let school = get(/databases/$(database)/documents/schools/$(schoolId));
+        return isSignedIn() && (
+          school.data.ownerId == request.auth.uid ||
+          request.auth.uid in school.data.adminIds
+        );
+      }
       
-      // Only school admins/owners can create/update/delete
-      allow create: if isSignedIn();
+      function isSchoolMember() {
+        let userSchoolId = getUserSchoolId();
+        return userSchoolId != null && resource.data.schoolId == userSchoolId;
+      }
+      
+      // Users can read announcements from their school (both get and list)
+      allow read: if isSignedIn() && isSchoolMember();
+      
+      // Only school admins/owners can create announcements
+      allow create: if isSignedIn() && canCreateAnnouncement();
+      
+      // Only school admins/owners can update/delete
       allow update, delete: if isSchoolAdminForAnnouncement();
     }
     
     // School Resources (top-level collection for queries)
-    match /schoolResources/{resourceId} {
+    match /school_resources/{resourceId} {
       function getUserSchoolId() {
         return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.schoolId;
       }
@@ -213,11 +229,25 @@ service cloud.firestore {
         );
       }
       
-      // Users can read resources from their school
-      allow read: if isSignedIn() && resource.data.schoolId == getUserSchoolId();
+      function canCreateResource() {
+        let schoolId = request.resource.data.schoolId;
+        let school = get(/databases/$(database)/documents/schools/$(schoolId));
+        return isSignedIn() && (
+          school.data.ownerId == request.auth.uid ||
+          request.auth.uid in school.data.adminIds
+        );
+      }
+      
+      function isSchoolMember() {
+        let userSchoolId = getUserSchoolId();
+        return userSchoolId != null && resource.data.schoolId == userSchoolId;
+      }
+      
+      // Users can read resources from their school (both get and list)
+      allow read: if isSignedIn() && isSchoolMember();
       
       // Only school admins/owners can create/update/delete
-      allow create: if isSignedIn();
+      allow create: if isSignedIn() && canCreateResource();
       allow update, delete: if isSchoolAdminForResource();
     }
     
@@ -252,6 +282,51 @@ service cloud.firestore {
       allow delete: if isSignedIn() && (
         isRequestOwner() || 
         isSchoolAdminForRequest()
+      );
+    }
+    
+    // School Events collection
+    match /school_events/{eventId} {
+      function getUserSchoolId() {
+        return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.schoolId;
+      }
+      
+      function isSchoolAdminForEvent() {
+        let schoolId = resource.data.schoolId;
+        let school = get(/databases/$(database)/documents/schools/$(schoolId));
+        return isSignedIn() && (
+          school.data.ownerId == request.auth.uid ||
+          request.auth.uid in school.data.adminIds
+        );
+      }
+      
+      function canCreateEvent() {
+        let schoolId = request.resource.data.schoolId;
+        let school = get(/databases/$(database)/documents/schools/$(schoolId));
+        return isSignedIn() && (
+          school.data.ownerId == request.auth.uid ||
+          request.auth.uid in school.data.adminIds
+        );
+      }
+      
+      function isSchoolMemberForEvent() {
+        let userSchoolId = getUserSchoolId();
+        return userSchoolId != null && resource.data.schoolId == userSchoolId;
+      }
+      
+      // Members can read events from their school (both get and list)
+      allow read: if isSignedIn() && isSchoolMemberForEvent();
+      
+      // Only school admins/owners can create events
+      allow create: if isSignedIn() && canCreateEvent();
+      
+      // Only school admins/owners can delete events
+      allow delete: if isSchoolAdminForEvent();
+      
+      // Admins can update anything, members can update attendeeIds (register/unregister)
+      allow update: if isSignedIn() && (
+        isSchoolAdminForEvent() ||
+        (isSchoolMemberForEvent() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['attendeeIds']))
       );
     }
   }

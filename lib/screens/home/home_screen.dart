@@ -3,9 +3,12 @@ import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../services/event_service.dart';
 import '../../services/announcement_service.dart';
+import '../../services/school_service.dart';
 import '../../services/auth_service.dart';
 import '../../models/event_model.dart';
 import '../../models/announcement_model.dart';
+import '../../models/school_announcement_model.dart';
+import '../../models/user_model.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/event_card.dart';
 import '../../widgets/announcement_card.dart';
@@ -21,13 +24,27 @@ class HomeScreen extends StatefulWidget {
 class _HomeScreenState extends State<HomeScreen> {
   final EventService _eventService = EventService();
   final AnnouncementService _announcementService = AnnouncementService();
+  final SchoolService _schoolService = SchoolService();
   final AuthService _authService = AuthService();
   late Future<String> _firstNameFuture;
+  late Future<UserModel?> _userDataFuture;
 
   @override
   void initState() {
     super.initState();
     _firstNameFuture = _getFirstName();
+    _userDataFuture = _fetchUserData();
+  }
+
+  Future<UserModel?> _fetchUserData() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return null;
+    try {
+      return await _authService.getUserData(user.uid);
+    } catch (e) {
+      debugPrint('Error fetching user data: $e');
+      return null;
+    }
   }
 
   String _getGreeting() {
@@ -248,6 +265,149 @@ class _HomeScreenState extends State<HomeScreen> {
                   isDark,
                 ),
                 const SizedBox(height: 16),
+                
+                // School Announcements (if user is in a school)
+                FutureBuilder<UserModel?> (
+                  future: _userDataFuture,
+                  builder: (context, userSnapshot) {
+                    if (userSnapshot.connectionState == ConnectionState.waiting) {
+                      return _buildLoadingShimmer(isDark);
+                    }
+
+                    if (userSnapshot.hasError) {
+                      return _buildEmptyState(
+                        'Unable to load school info',
+                        'Please try again later',
+                        Icons.error_outline,
+                        isDark,
+                      );
+                    }
+
+                    if (!userSnapshot.hasData) {
+                      return const SizedBox.shrink();
+                    }
+
+                    final userData = userSnapshot.data!;
+                    final schoolId = userData.schoolId;
+
+                    if (schoolId == null || schoolId.isEmpty) {
+                      return const SizedBox.shrink();
+                    }
+
+                    return Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        // School announcements header
+                        Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                          decoration: BoxDecoration(
+                            color: AppTheme.success.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(8),
+                            border: Border.all(color: AppTheme.success.withValues(alpha: 0.3)),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(Icons.school_rounded, size: 16, color: AppTheme.success),
+                              const SizedBox(width: 6),
+                              Text(
+                                'Your School',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppTheme.success,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        const SizedBox(height: 12),
+                        StreamBuilder<List<SchoolAnnouncementModel>>(
+                          stream: _schoolService.getSchoolAnnouncements(schoolId),
+                          builder: (context, schoolSnapshot) {
+                            // Only show loading on initial wait
+                            if (schoolSnapshot.connectionState == ConnectionState.waiting && !schoolSnapshot.hasData) {
+                              return _buildLoadingShimmer(isDark);
+                            }
+
+                            if (!schoolSnapshot.hasData || schoolSnapshot.data!.isEmpty) {
+                              return Container(
+                                padding: const EdgeInsets.all(20),
+                                decoration: BoxDecoration(
+                                  color: isDark ? AppTheme.darkSurface : Colors.white,
+                                  borderRadius: BorderRadius.circular(12),
+                                  border: Border.all(
+                                    color: AppTheme.success.withValues(alpha: 0.3),
+                                  ),
+                                ),
+                                child: Row(
+                                  children: [
+                                    Icon(
+                                      Icons.school_rounded,
+                                      color: AppTheme.success.withValues(alpha: 0.5),
+                                      size: 20,
+                                    ),
+                                    const SizedBox(width: 12),
+                                    Expanded(
+                                      child: Text(
+                                        'No school announcements yet',
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          color: isDark ? AppTheme.mediumGray : AppTheme.darkGray,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }
+
+                            return Column(
+                              children: schoolSnapshot.data!
+                                  .take(3)
+                                  .map(
+                                    (announcement) => Padding(
+                                      padding: const EdgeInsets.only(bottom: 12),
+                                      child: _buildSchoolAnnouncementCard(announcement, isDark),
+                                    ),
+                                  )
+                                  .toList(),
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 24),
+                      ],
+                    );
+                  },
+                ),
+                
+                // FBLA announcements header
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: AppTheme.primaryBlue.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                    border: Border.all(color: AppTheme.primaryBlue.withValues(alpha: 0.3)),
+                  ),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.account_balance_rounded, size: 16, color: AppTheme.primaryBlue),
+                      const SizedBox(width: 6),
+                      Text(
+                        'FBLA Conference',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.primaryBlue,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(height: 12),
+                
+                // FBLA Announcements
                 StreamBuilder<List<AnnouncementModel>>(
                   stream: _announcementService.getAnnouncements(),
                   builder: (context, snapshot) {
@@ -529,6 +689,125 @@ class _HomeScreenState extends State<HomeScreen> {
             ),
           ),
         ),
+      ),
+    );
+  }
+
+  Widget _buildSchoolAnnouncementCard(SchoolAnnouncementModel announcement, bool isDark) {
+    return Container(
+      padding: const EdgeInsets.all(20),
+      decoration: BoxDecoration(
+        color: isDark ? AppTheme.darkSurface : Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(
+          color: AppTheme.success.withValues(alpha: 0.3),
+          width: 1.5,
+        ),
+        boxShadow: [
+          BoxShadow(
+            color: AppTheme.success.withValues(alpha: 0.1),
+            blurRadius: 12,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              Container(
+                padding: const EdgeInsets.all(8),
+                decoration: BoxDecoration(
+                  color: AppTheme.success.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Icon(
+                  Icons.school_rounded,
+                  color: AppTheme.success,
+                  size: 20,
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Text(
+                      announcement.title,
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.bold,
+                        color: isDark ? Colors.white : AppTheme.black,
+                      ),
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      'By ${announcement.authorName}',
+                      style: TextStyle(
+                        fontSize: 12,
+                        color: AppTheme.success,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+              if (announcement.isPinned)
+                Container(
+                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  decoration: BoxDecoration(
+                    color: AppTheme.success.withValues(alpha: 0.2),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: const Row(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      Icon(Icons.push_pin, size: 12, color: AppTheme.success),
+                      SizedBox(width: 4),
+                      Text(
+                        'Pinned',
+                        style: TextStyle(
+                          fontSize: 10,
+                          fontWeight: FontWeight.bold,
+                          color: AppTheme.success,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Text(
+            announcement.content,
+            style: TextStyle(
+              fontSize: 14,
+              color: isDark ? AppTheme.mediumGray : AppTheme.darkGray,
+              height: 1.5,
+            ),
+            maxLines: 3,
+            overflow: TextOverflow.ellipsis,
+          ),
+          const SizedBox(height: 12),
+          Row(
+            children: [
+              Icon(
+                Icons.access_time_rounded,
+                size: 14,
+                color: isDark ? AppTheme.mediumGray : AppTheme.darkGray,
+              ),
+              const SizedBox(width: 6),
+              Text(
+                DateFormat('MMM d, y • h:mm a').format(announcement.createdAt),
+                style: TextStyle(
+                  fontSize: 12,
+                  color: isDark ? AppTheme.mediumGray : AppTheme.darkGray,
+                ),
+              ),
+            ],
+          ),
+        ],
       ),
     );
   }

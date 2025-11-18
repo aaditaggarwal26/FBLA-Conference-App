@@ -3,6 +3,7 @@ import '../models/school_model.dart';
 import '../models/school_announcement_model.dart';
 import '../models/school_resource_model.dart';
 import '../models/school_join_request_model.dart';
+import '../models/school_event_model.dart';
 import 'auth_service.dart';
 
 class SchoolService {
@@ -311,5 +312,76 @@ class SchoolService {
         .get();
 
     return snapshot.docs.isNotEmpty;
+  }
+
+  // ==================== SCHOOL EVENTS ====================
+
+  // Create school event
+  Future<String> createSchoolEvent(SchoolEventModel event) async {
+    final doc = await _firestore.collection('school_events').add(event.toFirestore());
+    return doc.id;
+  }
+
+  // Get school events
+  Stream<List<SchoolEventModel>> getSchoolEvents(String schoolId) {
+    return _firestore
+        .collection('school_events')
+        .where('schoolId', isEqualTo: schoolId)
+        .orderBy('startTime', descending: false)
+        .snapshots()
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => SchoolEventModel.fromFirestore(doc))
+              .toList(),
+        );
+  }
+
+  // Get upcoming school events
+  Stream<List<SchoolEventModel>> getUpcomingSchoolEvents(String schoolId) {
+    return _firestore
+        .collection('school_events')
+        .where('schoolId', isEqualTo: schoolId)
+        .where('startTime', isGreaterThanOrEqualTo: Timestamp.now())
+        .orderBy('startTime', descending: false)
+        .limit(10)
+        .snapshots()
+        .map(
+          (snapshot) => snapshot.docs
+              .map((doc) => SchoolEventModel.fromFirestore(doc))
+              .toList(),
+        );
+  }
+
+  // Get single event
+  Future<SchoolEventModel?> getSchoolEvent(String eventId) async {
+    final doc = await _firestore.collection('school_events').doc(eventId).get();
+    if (doc.exists) {
+      return SchoolEventModel.fromFirestore(doc);
+    }
+    return null;
+  }
+
+  // Update school event
+  Future<void> updateSchoolEvent(String eventId, Map<String, dynamic> updates) async {
+    await _firestore.collection('school_events').doc(eventId).update(updates);
+  }
+
+  // Delete school event
+  Future<void> deleteSchoolEvent(String eventId) async {
+    await _firestore.collection('school_events').doc(eventId).delete();
+  }
+
+  // Register for event
+  Future<void> registerForEvent(String eventId, String userId) async {
+    await _firestore.collection('school_events').doc(eventId).update({
+      'attendeeIds': FieldValue.arrayUnion([userId]),
+    });
+  }
+
+  // Unregister from event
+  Future<void> unregisterFromEvent(String eventId, String userId) async {
+    await _firestore.collection('school_events').doc(eventId).update({
+      'attendeeIds': FieldValue.arrayRemove([userId]),
+    });
   }
 }

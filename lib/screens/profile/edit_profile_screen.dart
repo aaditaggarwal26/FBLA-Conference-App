@@ -10,7 +10,7 @@ import '../../models/school_model.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/school_badge.dart';
 import '../school/school_selection_screen.dart';
-import '../school/school_admin_dashboard_new.dart';
+import '../school/school_dashboard_screen.dart';
 
 class EditProfileScreen extends StatefulWidget {
   final UserModel userModel;
@@ -588,7 +588,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => SchoolAdminDashboardNew(
+                                        builder: (context) => SchoolDashboardScreen(
                                           schoolId: school.id,
                                         ),
                                       ),

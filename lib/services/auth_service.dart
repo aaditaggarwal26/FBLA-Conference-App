@@ -198,6 +198,20 @@ class AuthService {
     }
   }
 
+  // Get user data stream for real-time updates
+  Stream<UserModel?> getUserStream(String uid) {
+    return _firestore
+        .collection('users')
+        .doc(uid)
+        .snapshots()
+        .map((doc) {
+          if (doc.exists) {
+            return UserModel.fromFirestore(doc);
+          }
+          return null;
+        });
+  }
+
   // Update user profile
   Future<void> updateUserProfile(String uid, Map<String, dynamic> data) async {
     await _firestore.collection('users').doc(uid).update(data);
