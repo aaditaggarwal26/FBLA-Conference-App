@@ -1,11 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../services/school_service.dart';
+import '../../services/auth_service.dart';
 import '../../models/school_model.dart';
 import '../../models/school_join_request_model.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/school_badge.dart';
+import 'school_broadcast_screen.dart';
 
 class SchoolAdminDashboardNew extends StatefulWidget {
   final String schoolId;
@@ -280,6 +283,53 @@ class _SchoolAdminDashboardNewState extends State<SchoolAdminDashboardNew> with 
             ],
           ),
           const SizedBox(height: 24),
+          
+          // Quick Actions
+          Text(
+            'Quick Actions',
+            style: TextStyle(
+              fontSize: 20,
+              fontWeight: FontWeight.bold,
+              color: isDark ? Colors.white : AppTheme.black,
+            ),
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              Expanded(
+                child: _buildActionCard(
+                  'Send Announcement',
+                  'Broadcast to all members',
+                  Icons.campaign_rounded,
+                  AppTheme.success,
+                  isDark,
+                  () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => SchoolBroadcastScreen(schoolId: school.id),
+                      ),
+                    );
+                  },
+                ),
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: _buildActionCard(
+                  'Manage Members',
+                  'View and edit members',
+                  Icons.people_rounded,
+                  AppTheme.primaryBlue,
+                  isDark,
+                  () {
+                    _tabController.animateTo(2); // Switch to Members tab
+                  },
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 24),
+          
           // School Info
           Text(
             'School Information',
@@ -423,13 +473,450 @@ class _SchoolAdminDashboardNewState extends State<SchoolAdminDashboardNew> with 
   }
 
   Widget _buildMembersTab(SchoolModel school, bool isDark, bool isOwner) {
-    // Placeholder for members list
-    return Center(
-      child: Text(
-        'Members list - ${school.memberIds.length} total',
-        style: TextStyle(color: isDark ? Colors.white : AppTheme.black),
+    return FutureBuilder<List<Map<String, dynamic>>>(
+      future: _getMembersWithDetails(school),
+      builder: (context, snapshot) {
+        if (snapshot.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+
+        final members = snapshot.data ?? [];
+        
+        return Column(
+          children: [
+            // Search bar
+            Padding(
+              padding: const EdgeInsets.all(16),
+              child: TextField(
+                onChanged: (value) {
+                  setState(() {});
+                },
+                decoration: InputDecoration(
+                  hintText: 'Search members...',
+                  prefixIcon: const Icon(Icons.search_rounded),
+                  border: OutlineInputBorder(
+                    borderRadius: BorderRadius.circular(12),
+                    borderSide: BorderSide(color: isDark ? AppTheme.darkCard : AppTheme.lightGray),
+                  ),
+                  filled: true,
+                  fillColor: isDark ? AppTheme.darkSurface : Colors.white,
+                ),
+              ),
+            ),
+            
+            // Stats row
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Row(
+                children: [
+                  _buildMemberStat('Total', members.length.toString(), isDark),
+                  const SizedBox(width: 12),
+                  _buildMemberStat('Admins', school.adminIds.length.toString(), isDark),
+                  const SizedBox(width: 12),
+                  _buildMemberStat('Students', (members.length - school.adminIds.length).toString(), isDark),
+                ],
+              ),
+            ),
+            
+            const SizedBox(height: 16),
+            
+            // Members list
+            Expanded(
+              child: members.isEmpty
+                  ? Center(
+                      child: Text(
+                        'No members yet',
+                        style: TextStyle(color: isDark ? Colors.white : AppTheme.black),
+                      ),
+                    )
+                  : ListView.builder(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      itemCount: members.length,
+                      itemBuilder: (context, index) {
+                        final member = members[index];
+                        final userId = member['id'] as String;
+                        final isAdmin = school.adminIds.contains(userId);
+                        final isMemberOwner = school.ownerId == userId;
+                        
+                        return _buildMemberCard(
+                          member,
+                          isAdmin,
+                          isMemberOwner,
+                          isOwner,
+                          school.id,
+                          isDark,
+                        );
+                      },
+                    ),
+            ),
+          ],
+        );
+      },
+    );
+  }
+
+  Widget _buildMemberStat(String label, String value, bool isDark) {
+    return Expanded(
+      child: Container(
+        padding: const EdgeInsets.all(12),
+        decoration: BoxDecoration(
+          color: isDark ? AppTheme.darkSurface : Colors.white,
+          borderRadius: BorderRadius.circular(8),
+          border: Border.all(color: isDark ? AppTheme.darkCard : AppTheme.lightGray),
+        ),
+        child: Column(
+          children: [
+            Text(
+              value,
+              style: TextStyle(
+                fontSize: 20,
+                fontWeight: FontWeight.bold,
+                color: isDark ? Colors.white : AppTheme.black,
+              ),
+            ),
+            Text(
+              label,
+              style: TextStyle(fontSize: 12, color: AppTheme.mediumGray),
+            ),
+          ],
+        ),
       ),
     );
+  }
+
+  Widget _buildMemberCard(
+    Map<String, dynamic> member,
+    bool isAdmin,
+    bool isMemberOwner,
+    bool isCurrentUserOwner,
+    String schoolId,
+    bool isDark,
+  ) {
+    final userId = member['id'] as String;
+    final name = member['name'] as String? ?? 'Unknown';
+    final email = member['email'] as String? ?? '';
+    final photoUrl = member['photoUrl'] as String?;
+    
+    // Don't show action buttons for owner or if current user is not owner
+    final showActions = !isMemberOwner && isCurrentUserOwner;
+    
+    return Container(
+      margin: const EdgeInsets.only(bottom: 12),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: isDark ? AppTheme.darkSurface : Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(
+          color: isAdmin 
+              ? AppTheme.primaryBlue.withValues(alpha: 0.3)
+              : (isDark ? AppTheme.darkCard : AppTheme.lightGray),
+        ),
+      ),
+      child: Column(
+        children: [
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 24,
+                backgroundColor: isDark ? AppTheme.darkCard : AppTheme.lightGray,
+                backgroundImage: photoUrl != null ? NetworkImage(photoUrl) : null,
+                child: photoUrl == null
+                    ? Icon(Icons.person, color: isDark ? Colors.white : AppTheme.darkGray)
+                    : null,
+              ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    Row(
+                      children: [
+                        Flexible(
+                          child: Text(
+                            name,
+                            style: TextStyle(
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              color: isDark ? Colors.white : AppTheme.black,
+                            ),
+                          ),
+                        ),
+                        if (isMemberOwner) ...[
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: const Color(0xFFFFD700).withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(color: const Color(0xFFFFD700)),
+                            ),
+                            child: const Text(
+                              'OWNER',
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                color: Color(0xFFFFD700),
+                              ),
+                            ),
+                          ),
+                        ] else if (isAdmin) ...[
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                            decoration: BoxDecoration(
+                              color: AppTheme.primaryBlue.withValues(alpha: 0.2),
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(color: AppTheme.primaryBlue),
+                            ),
+                            child: const Text(
+                              'ADMIN',
+                              style: TextStyle(
+                                fontSize: 10,
+                                fontWeight: FontWeight.bold,
+                                color: AppTheme.primaryBlue,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ],
+                    ),
+                    const SizedBox(height: 2),
+                    Text(
+                      email,
+                      style: TextStyle(fontSize: 13, color: AppTheme.mediumGray),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+          if (showActions) ...[
+            const SizedBox(height: 12),
+            Row(
+              children: [
+                if (isAdmin)
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () => _demoteAdmin(schoolId, userId, name),
+                      icon: const Icon(Icons.remove_moderator_rounded, size: 18),
+                      label: const Text('Remove Admin'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppTheme.warning,
+                        side: const BorderSide(color: AppTheme.warning),
+                      ),
+                    ),
+                  )
+                else
+                  Expanded(
+                    child: OutlinedButton.icon(
+                      onPressed: () => _promoteToAdmin(schoolId, userId, name),
+                      icon: const Icon(Icons.admin_panel_settings_rounded, size: 18),
+                      label: const Text('Make Admin'),
+                      style: OutlinedButton.styleFrom(
+                        foregroundColor: AppTheme.primaryBlue,
+                        side: const BorderSide(color: AppTheme.primaryBlue),
+                      ),
+                    ),
+                  ),
+                const SizedBox(width: 8),
+                Expanded(
+                  child: OutlinedButton.icon(
+                    onPressed: () => _removeMember(schoolId, userId, name),
+                    icon: const Icon(Icons.person_remove_rounded, size: 18),
+                    label: const Text('Remove'),
+                    style: OutlinedButton.styleFrom(
+                      foregroundColor: AppTheme.error,
+                      side: const BorderSide(color: AppTheme.error),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+          ],
+        ],
+      ),
+    );
+  }
+
+  Future<List<Map<String, dynamic>>> _getMembersWithDetails(SchoolModel school) async {
+    final members = <Map<String, dynamic>>[];
+    
+    // Filter out super admins
+    final authService = AuthService();
+    
+    for (final memberId in school.memberIds) {
+      try {
+        final userData = await authService.getUserData(memberId);
+        if (userData != null) {
+          // Check if user is a super admin (FBLA admin)
+          final isSuperAdmin = await _isSuperAdmin(memberId);
+          if (!isSuperAdmin) {
+            members.add({
+              'id': memberId,
+              'name': userData.name,
+              'email': userData.email,
+              'photoUrl': userData.photoUrl,
+            });
+          }
+        }
+      } catch (e) {
+        print('Error fetching member $memberId: $e');
+      }
+    }
+    
+    // Sort: owner first, then admins, then students
+    members.sort((a, b) {
+      final aId = a['id'] as String;
+      final bId = b['id'] as String;
+      
+      if (school.ownerId == aId) return -1;
+      if (school.ownerId == bId) return 1;
+      
+      final aIsAdmin = school.adminIds.contains(aId);
+      final bIsAdmin = school.adminIds.contains(bId);
+      
+      if (aIsAdmin && !bIsAdmin) return -1;
+      if (!aIsAdmin && bIsAdmin) return 1;
+      
+      return 0;
+    });
+    
+    return members;
+  }
+
+  Future<bool> _isSuperAdmin(String userId) async {
+    try {
+      final doc = await FirebaseFirestore.instance.collection('admins').doc(userId).get();
+      return doc.exists;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  Future<void> _promoteToAdmin(String schoolId, String userId, String userName) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Promote to Admin'),
+        content: Text('Make $userName a school administrator? They will be able to manage announcements, resources, and members.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.primaryBlue),
+            child: const Text('Promote'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      try {
+        await _schoolService.addAdmin(schoolId, userId);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('$userName is now an admin'),
+              backgroundColor: AppTheme.success,
+            ),
+          );
+          setState(() {});
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: $e'), backgroundColor: AppTheme.error),
+          );
+        }
+      }
+    }
+  }
+
+  Future<void> _demoteAdmin(String schoolId, String userId, String userName) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Remove Admin Role'),
+        content: Text('Remove $userName as administrator? They will remain a member but lose admin privileges.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.warning),
+            child: const Text('Remove Admin'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      try {
+        await _schoolService.removeAdmin(schoolId, userId);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('$userName is no longer an admin'),
+              backgroundColor: AppTheme.warning,
+            ),
+          );
+          setState(() {});
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: $e'), backgroundColor: AppTheme.error),
+          );
+        }
+      }
+    }
+  }
+
+  Future<void> _removeMember(String schoolId, String userId, String userName) async {
+    final confirm = await showDialog<bool>(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Remove Member'),
+        content: Text('Remove $userName from the school? This action cannot be undone.'),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(backgroundColor: AppTheme.error),
+            child: const Text('Remove'),
+          ),
+        ],
+      ),
+    );
+
+    if (confirm == true) {
+      try {
+        await _schoolService.removeMember(schoolId, userId);
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('$userName removed from school'),
+              backgroundColor: AppTheme.error,
+            ),
+          );
+          setState(() {});
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(content: Text('Error: $e'), backgroundColor: AppTheme.error),
+          );
+        }
+      }
+    }
   }
 
   Widget _buildSettingsTab(SchoolModel school, bool isDark) {
@@ -480,8 +967,34 @@ class _SchoolAdminDashboardNewState extends State<SchoolAdminDashboardNew> with 
                     ),
                     Switch(
                       value: school.requireApproval,
-                      onChanged: (value) {
-                        // TODO: Update school settings
+                      onChanged: (value) async {
+                        try {
+                          await _schoolService.updateSchool(widget.schoolId, {
+                            'requireApproval': value,
+                          });
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  value
+                                      ? 'Join approval now required'
+                                      : 'Join approval disabled - students can join automatically',
+                                ),
+                                backgroundColor: AppTheme.success,
+                              ),
+                            );
+                            setState(() {});
+                          }
+                        } catch (e) {
+                          if (mounted) {
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text('Error: $e'),
+                                backgroundColor: AppTheme.error,
+                              ),
+                            );
+                          }
+                        }
                       },
                       activeColor: AppTheme.success,
                     ),
@@ -543,6 +1056,63 @@ class _SchoolAdminDashboardNewState extends State<SchoolAdminDashboardNew> with 
             _buildInfoRow(Icons.description_outlined, school.description!, isDark),
           ],
         ],
+      ),
+    );
+  }
+
+  Widget _buildActionCard(
+    String title,
+    String subtitle,
+    IconData icon,
+    Color color,
+    bool isDark,
+    VoidCallback onTap,
+  ) {
+    return Container(
+      decoration: BoxDecoration(
+        color: isDark ? AppTheme.darkSurface : Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: color.withValues(alpha: 0.3)),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: BorderRadius.circular(12),
+          child: Padding(
+            padding: const EdgeInsets.all(16),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Container(
+                  padding: const EdgeInsets.all(10),
+                  decoration: BoxDecoration(
+                    color: color.withValues(alpha: 0.1),
+                    borderRadius: BorderRadius.circular(8),
+                  ),
+                  child: Icon(icon, color: color, size: 24),
+                ),
+                const SizedBox(height: 12),
+                Text(
+                  title,
+                  style: TextStyle(
+                    fontSize: 16,
+                    fontWeight: FontWeight.bold,
+                    color: isDark ? Colors.white : AppTheme.black,
+                  ),
+                ),
+                const SizedBox(height: 4),
+                Text(
+                  subtitle,
+                  style: TextStyle(
+                    fontSize: 12,
+                    color: AppTheme.mediumGray,
+                  ),
+                ),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }
