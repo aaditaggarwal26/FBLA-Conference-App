@@ -271,8 +271,8 @@ class _NCCCEventGroupPageState extends State<NCCCEventGroupPage> {
                   // Admin indicator
                   if (widget.isAdmin)
                     Positioned(
-                      top: 0,
-                      right: 0,
+                      top: 4,
+                      right: 4,
                       child: Container(
                         padding: const EdgeInsets.symmetric(
                           horizontal: 8,

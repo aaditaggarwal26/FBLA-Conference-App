@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../../models/parsed_event_model.dart';
 import '../../services/event_import_service.dart';
 import 'nccc_event_group_page.dart';
@@ -24,6 +25,7 @@ class _NCCCEventDetailScreenState extends State<NCCCEventDetailScreen>
   late TabController _tabController;
   String _searchQuery = '';
   bool _showOnlyMyEvents = false;
+  bool _hasCheckedForUserEvents = false;
 
   final List<String> _eventCategories = [
     'All Events',
@@ -53,8 +55,204 @@ class _NCCCEventDetailScreenState extends State<NCCCEventDetailScreen>
         // Auto-import events on first load
         await _eventService.importNCCC2025Events(widget.schoolId);
       }
+      
+      // Check for user's events by name matching
+      if (!_hasCheckedForUserEvents && widget.currentUserName != null) {
+        _checkForUserEvents();
+      }
     } catch (e) {
       print('Error checking/importing events: $e');
+    }
+  }
+
+  Future<void> _checkForUserEvents() async {
+    setState(() => _hasCheckedForUserEvents = true);
+    
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) return;
+
+      // Get all events where user's name appears
+      final eventsSnapshot = await FirebaseFirestore.instance
+          .collection('parsed_events')
+          .where('schoolId', isEqualTo: widget.schoolId)
+          .get();
+
+      final matchingEvents = <ParsedEventModel>[];
+      for (final doc in eventsSnapshot.docs) {
+        final event = ParsedEventModel.fromFirestore(doc);
+        // Check if user's name matches exactly (case-insensitive)
+        final hasExactMatch = event.participants.any(
+          (participant) => 
+            participant.trim().toLowerCase() == widget.currentUserName!.trim().toLowerCase()
+        );
+        
+        if (hasExactMatch) {
+          matchingEvents.add(event);
+        }
+      }
+
+      if (matchingEvents.isNotEmpty && mounted) {
+        _showEventClaimDialog(matchingEvents);
+      }
+    } catch (e) {
+      print('Error checking for user events: $e');
+    }
+  }
+
+  Future<void> _showEventClaimDialog(List<ParsedEventModel> events) async {
+    final result = await showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => AlertDialog(
+        title: const Row(
+          children: [
+            Icon(Icons.event_available, color: Colors.green),
+            SizedBox(width: 12),
+            Expanded(child: Text('Your Events Found!')),
+          ],
+        ),
+        content: Column(
+          mainAxisSize: MainAxisSize.min,
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Text(
+              'We found ${events.length} event(s) with your name "${widget.currentUserName}":',
+              style: const TextStyle(fontWeight: FontWeight.w500),
+            ),
+            const SizedBox(height: 12),
+            Container(
+              constraints: const BoxConstraints(maxHeight: 200),
+              child: ListView.builder(
+                shrinkWrap: true,
+                itemCount: events.length,
+                itemBuilder: (context, index) {
+                  final event = events[index];
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Row(
+                      children: [
+                        const Icon(Icons.check_circle, size: 16, color: Colors.green),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                event.eventName,
+                                style: const TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                              Text(
+                                'Room ${event.location} - ${event.startTime.hour}:${event.startTime.minute.toString().padLeft(2, '0')}',
+                                style: TextStyle(
+                                  fontSize: 11,
+                                  color: Colors.grey[600],
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+            ),
+            const SizedBox(height: 16),
+            const Text(
+              'Would you like to add these to your profile and receive notifications?',
+              style: TextStyle(fontSize: 13),
+            ),
+          ],
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('No Thanks'),
+          ),
+          ElevatedButton(
+            onPressed: () => Navigator.pop(context, true),
+            style: ElevatedButton.styleFrom(
+              backgroundColor: Colors.green,
+            ),
+            child: const Text('Yes, Add to Profile'),
+          ),
+        ],
+      ),
+    );
+
+    if (result == true && mounted) {
+      await _claimEvents(events);
+    }
+  }
+
+  Future<void> _claimEvents(List<ParsedEventModel> events) async {
+    try {
+      final user = FirebaseAuth.instance.currentUser;
+      if (user == null) return;
+
+      // Get user document
+      final userDoc = await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .get();
+
+      if (!userDoc.exists) return;
+
+      // Get current registered events
+      final currentEvents = List<String>.from(userDoc.data()?['registeredEvents'] ?? []);
+
+      // Add event IDs to user's registered events
+      final eventIds = events.map((e) => e.id).toSet();
+      final updatedEvents = {...currentEvents, ...eventIds}.toList();
+
+      // Update user document
+      await FirebaseFirestore.instance
+          .collection('users')
+          .doc(user.uid)
+          .update({
+        'registeredEvents': updatedEvents,
+      });
+
+      // Enable notifications for each event (you can implement notification logic here)
+      // For now, we'll just update a field in the event document
+      for (final event in events) {
+        await FirebaseFirestore.instance
+            .collection('parsed_events')
+            .doc(event.id)
+            .update({
+          'notifyUsers': FieldValue.arrayUnion([user.uid]),
+        });
+      }
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('✅ Added ${events.length} event(s) to your profile!'),
+            backgroundColor: Colors.green,
+            action: SnackBarAction(
+              label: 'View',
+              textColor: Colors.white,
+              onPressed: () {
+                setState(() => _showOnlyMyEvents = true);
+              },
+            ),
+          ),
+        );
+      }
+    } catch (e) {
+      print('Error claiming events: $e');
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error adding events: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
   }
 
@@ -171,10 +369,15 @@ class _NCCCEventDetailScreenState extends State<NCCCEventDetailScreen>
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0A0E27) : const Color(0xFFF5F5F5),
+      backgroundColor: isDark ? const Color(0xFF121212) : Colors.white,
       appBar: AppBar(
-        title: const Text('NCCC 2025 - Event Schedule'),
-        backgroundColor: isDark ? const Color(0xFF001231) : const Color(0xFF001231),
+        title: Text(
+          'NCCC 2025 - Event Schedule',
+          style: TextStyle(color: isDark ? Colors.white : Colors.black87),
+        ),
+        backgroundColor: isDark ? const Color(0xFF121212) : Colors.white,
+        iconTheme: IconThemeData(color: isDark ? Colors.white : Colors.black87),
+        elevation: 0,
         bottom: PreferredSize(
           preferredSize: const Size.fromHeight(110),
           child: Column(
@@ -194,7 +397,7 @@ class _NCCCEventDetailScreenState extends State<NCCCEventDetailScreen>
                             )
                           : null,
                       filled: true,
-                      fillColor: isDark ? const Color(0xFF1E2744) : Colors.white,
+                      fillColor: isDark ? const Color(0xFF1E1E1E) : const Color(0xFFF5F5F5),
                       hintStyle: TextStyle(color: isDark ? Colors.white54 : Colors.grey),
                       border: OutlineInputBorder(
                         borderRadius: BorderRadius.circular(30),
@@ -210,7 +413,7 @@ class _NCCCEventDetailScreenState extends State<NCCCEventDetailScreen>
                 isScrollable: true,
                 indicatorColor: const Color(0xFF4A90E2),
                 labelColor: const Color(0xFF4A90E2),
-                unselectedLabelColor: isDark ? Colors.white60 : Colors.white70,
+                unselectedLabelColor: isDark ? Colors.white60 : Colors.black54,
                 onTap: (_) => setState(() {}),
                 tabs: _eventCategories
                     .map((category) => Tab(text: category))
