@@ -294,26 +294,49 @@ class SchoolService {
 
   // Approve join request
   Future<void> approveJoinRequest(String requestId, String adminId) async {
-    final request = await _firestore
-        .collection('school_join_requests')
-        .doc(requestId)
-        .get();
+    try {
+      final request = await _firestore
+          .collection('school_join_requests')
+          .doc(requestId)
+          .get();
 
-    if (!request.exists) throw Exception('Request not found');
+      if (!request.exists) throw Exception('Request not found');
 
-    final data = request.data() as Map<String, dynamic>;
-    final userId = data['userId'];
-    final schoolId = data['schoolId'];
+      final data = request.data() as Map<String, dynamic>;
+      final userId = data['userId'];
+      final schoolId = data['schoolId'];
 
-    // Add user to school
-    await joinSchool(schoolId, userId);
+      // Verify admin has permission
+      final school = await getSchool(schoolId);
+      if (school == null) throw Exception('School not found');
+      
+      if (!school.isAdmin(adminId) && !school.isOwner(adminId)) {
+        throw Exception('You do not have permission to approve this request');
+      }
 
-    // Update request status
-    await _firestore.collection('school_join_requests').doc(requestId).update({
-      'status': JoinRequestStatus.approved.name,
-      'reviewedBy': adminId,
-      'reviewedAt': Timestamp.now(),
-    });
+      // Add user to school's member list
+      await _firestore.collection('schools').doc(schoolId).update({
+        'memberIds': FieldValue.arrayUnion([userId]),
+      });
+
+      // Update user's schoolIds array
+      await _firestore.collection('users').doc(userId).update({
+        'schoolIds': FieldValue.arrayUnion([schoolId]),
+        'schoolId': schoolId, // For backwards compatibility
+      });
+
+      // Update request status
+      await _firestore.collection('school_join_requests').doc(requestId).update({
+        'status': JoinRequestStatus.approved.name,
+        'reviewedBy': adminId,
+        'reviewedAt': Timestamp.now(),
+      });
+
+      print('✅ Join request approved successfully');
+    } catch (e) {
+      print('❌ Error approving join request: $e');
+      rethrow;
+    }
   }
 
   // Reject join request
