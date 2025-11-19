@@ -38,7 +38,10 @@ class _NCCCEventDetailScreenState extends State<NCCCEventDetailScreen>
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(length: _eventCategories.length, vsync: this);
+    _tabController = TabController(
+      length: _eventCategories.length,
+      vsync: this,
+    );
     _checkAndImportEvents();
   }
 
@@ -55,7 +58,7 @@ class _NCCCEventDetailScreenState extends State<NCCCEventDetailScreen>
         // Auto-import events on first load
         await _eventService.importNCCC2025Events(widget.schoolId);
       }
-      
+
       // Check for user's events by name matching
       if (!_hasCheckedForUserEvents && widget.currentUserName != null) {
         _checkForUserEvents();
@@ -67,7 +70,7 @@ class _NCCCEventDetailScreenState extends State<NCCCEventDetailScreen>
 
   Future<void> _checkForUserEvents() async {
     setState(() => _hasCheckedForUserEvents = true);
-    
+
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) return;
@@ -83,10 +86,11 @@ class _NCCCEventDetailScreenState extends State<NCCCEventDetailScreen>
         final event = ParsedEventModel.fromFirestore(doc);
         // Check if user's name matches exactly (case-insensitive)
         final hasExactMatch = event.participants.any(
-          (participant) => 
-            participant.trim().toLowerCase() == widget.currentUserName!.trim().toLowerCase()
+          (participant) =>
+              participant.trim().toLowerCase() ==
+              widget.currentUserName!.trim().toLowerCase(),
         );
-        
+
         if (hasExactMatch) {
           matchingEvents.add(event);
         }
@@ -121,46 +125,91 @@ class _NCCCEventDetailScreenState extends State<NCCCEventDetailScreen>
               style: const TextStyle(fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 12),
-            Container(
-              constraints: const BoxConstraints(maxHeight: 200),
-              child: ListView.builder(
-                shrinkWrap: true,
-                itemCount: events.length,
-                itemBuilder: (context, index) {
-                  final event = events[index];
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(vertical: 4),
-                    child: Row(
-                      children: [
-                        const Icon(Icons.check_circle, size: 16, color: Colors.green),
-                        const SizedBox(width: 8),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Text(
-                                event.eventName,
-                                style: const TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                ),
+            events.length <= 3
+                ? Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: events.map((event) {
+                      return Padding(
+                        padding: const EdgeInsets.symmetric(vertical: 4),
+                        child: Row(
+                          children: [
+                            const Icon(
+                              Icons.check_circle,
+                              size: 16,
+                              color: Colors.green,
+                            ),
+                            const SizedBox(width: 8),
+                            Expanded(
+                              child: Column(
+                                crossAxisAlignment: CrossAxisAlignment.start,
+                                children: [
+                                  Text(
+                                    event.eventName,
+                                    style: const TextStyle(
+                                      fontSize: 13,
+                                      fontWeight: FontWeight.w600,
+                                    ),
+                                  ),
+                                  Text(
+                                    'Room ${event.location} - ${event.startTime.hour}:${event.startTime.minute.toString().padLeft(2, '0')}',
+                                    style: TextStyle(
+                                      fontSize: 11,
+                                      color: Colors.grey[600],
+                                    ),
+                                  ),
+                                ],
                               ),
-                              Text(
-                                'Room ${event.location} - ${event.startTime.hour}:${event.startTime.minute.toString().padLeft(2, '0')}',
-                                style: TextStyle(
-                                  fontSize: 11,
-                                  color: Colors.grey[600],
+                            ),
+                          ],
+                        ),
+                      );
+                    }).toList(),
+                  )
+                : SizedBox(
+                    height: 200,
+                    child: ListView.builder(
+                      shrinkWrap: true,
+                      physics: const AlwaysScrollableScrollPhysics(),
+                      itemCount: events.length,
+                      itemBuilder: (context, index) {
+                        final event = events[index];
+                        return Padding(
+                          padding: const EdgeInsets.symmetric(vertical: 4),
+                          child: Row(
+                            children: [
+                              const Icon(
+                                Icons.check_circle,
+                                size: 16,
+                                color: Colors.green,
+                              ),
+                              const SizedBox(width: 8),
+                              Expanded(
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  children: [
+                                    Text(
+                                      event.eventName,
+                                      style: const TextStyle(
+                                        fontSize: 13,
+                                        fontWeight: FontWeight.w600,
+                                      ),
+                                    ),
+                                    Text(
+                                      'Room ${event.location} - ${event.startTime.hour}:${event.startTime.minute.toString().padLeft(2, '0')}',
+                                      style: TextStyle(
+                                        fontSize: 11,
+                                        color: Colors.grey[600],
+                                      ),
+                                    ),
+                                  ],
                                 ),
                               ),
                             ],
                           ),
-                        ),
-                      ],
+                        );
+                      },
                     ),
-                  );
-                },
-              ),
-            ),
+                  ),
             const SizedBox(height: 16),
             const Text(
               'Would you like to add these to your profile and receive notifications?',
@@ -175,9 +224,7 @@ class _NCCCEventDetailScreenState extends State<NCCCEventDetailScreen>
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: Colors.green,
-            ),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
             child: const Text('Yes, Add to Profile'),
           ),
         ],
@@ -203,19 +250,18 @@ class _NCCCEventDetailScreenState extends State<NCCCEventDetailScreen>
       if (!userDoc.exists) return;
 
       // Get current registered events
-      final currentEvents = List<String>.from(userDoc.data()?['registeredEvents'] ?? []);
+      final currentEvents = List<String>.from(
+        userDoc.data()?['registeredEvents'] ?? [],
+      );
 
       // Add event IDs to user's registered events
       final eventIds = events.map((e) => e.id).toSet();
       final updatedEvents = {...currentEvents, ...eventIds}.toList();
 
       // Update user document
-      await FirebaseFirestore.instance
-          .collection('users')
-          .doc(user.uid)
-          .update({
-        'registeredEvents': updatedEvents,
-      });
+      await FirebaseFirestore.instance.collection('users').doc(user.uid).update(
+        {'registeredEvents': updatedEvents},
+      );
 
       // Enable notifications for each event (you can implement notification logic here)
       // For now, we'll just update a field in the event document
@@ -224,8 +270,8 @@ class _NCCCEventDetailScreenState extends State<NCCCEventDetailScreen>
             .collection('parsed_events')
             .doc(event.id)
             .update({
-          'notifyUsers': FieldValue.arrayUnion([user.uid]),
-        });
+              'notifyUsers': FieldValue.arrayUnion([user.uid]),
+            });
       }
 
       if (mounted) {
@@ -268,10 +314,13 @@ class _NCCCEventDetailScreenState extends State<NCCCEventDetailScreen>
     // Filter by search query
     if (_searchQuery.isNotEmpty) {
       filtered = filtered.where((event) {
-        return event.eventName.toLowerCase().contains(_searchQuery.toLowerCase()) ||
+        return event.eventName.toLowerCase().contains(
+              _searchQuery.toLowerCase(),
+            ) ||
             event.location.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-            event.participants.any((name) =>
-                name.toLowerCase().contains(_searchQuery.toLowerCase()));
+            event.participants.any(
+              (name) => name.toLowerCase().contains(_searchQuery.toLowerCase()),
+            );
       }).toList();
     }
 
@@ -308,8 +357,11 @@ class _NCCCEventDetailScreenState extends State<NCCCEventDetailScreen>
     // Filter by user's events
     if (_showOnlyMyEvents && widget.currentUserName != null) {
       filtered = filtered.where((event) {
-        return event.participants.any((name) =>
-            name.toLowerCase().contains(widget.currentUserName!.toLowerCase()));
+        return event.participants.any(
+          (name) => name.toLowerCase().contains(
+            widget.currentUserName!.toLowerCase(),
+          ),
+        );
       }).toList();
     }
 
@@ -318,8 +370,10 @@ class _NCCCEventDetailScreenState extends State<NCCCEventDetailScreen>
 
   bool _isMyEvent(ParsedEventModel event) {
     if (widget.currentUserName == null) return false;
-    return event.participants.any((name) =>
-        name.toLowerCase().contains(widget.currentUserName!.toLowerCase()));
+    return event.participants.any(
+      (name) =>
+          name.toLowerCase().contains(widget.currentUserName!.toLowerCase()),
+    );
   }
 
   Color _getEventColor(String eventName) {
@@ -387,24 +441,31 @@ class _NCCCEventDetailScreenState extends State<NCCCEventDetailScreen>
                 padding: const EdgeInsets.all(8.0),
                 child: TextField(
                   onChanged: (value) => setState(() => _searchQuery = value),
-                    decoration: InputDecoration(
-                      hintText: 'Search events, participants, or rooms...',
-                      prefixIcon: Icon(Icons.search, color: isDark ? Colors.white70 : Colors.grey),
-                      suffixIcon: _searchQuery.isNotEmpty
-                          ? IconButton(
-                              icon: const Icon(Icons.clear),
-                              onPressed: () => setState(() => _searchQuery = ''),
-                            )
-                          : null,
-                      filled: true,
-                      fillColor: isDark ? const Color(0xFF1E1E1E) : const Color(0xFFF5F5F5),
-                      hintStyle: TextStyle(color: isDark ? Colors.white54 : Colors.grey),
-                      border: OutlineInputBorder(
-                        borderRadius: BorderRadius.circular(30),
-                        borderSide: BorderSide.none,
-                      ),
+                  decoration: InputDecoration(
+                    hintText: 'Search events, participants, or rooms...',
+                    prefixIcon: Icon(
+                      Icons.search,
+                      color: isDark ? Colors.white70 : Colors.grey,
                     ),
-                    style: TextStyle(color: isDark ? Colors.white : Colors.black),
+                    suffixIcon: _searchQuery.isNotEmpty
+                        ? IconButton(
+                            icon: const Icon(Icons.clear),
+                            onPressed: () => setState(() => _searchQuery = ''),
+                          )
+                        : null,
+                    filled: true,
+                    fillColor: isDark
+                        ? const Color(0xFF1E1E1E)
+                        : const Color(0xFFF5F5F5),
+                    hintStyle: TextStyle(
+                      color: isDark ? Colors.white54 : Colors.grey,
+                    ),
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(30),
+                      borderSide: BorderSide.none,
+                    ),
+                  ),
+                  style: TextStyle(color: isDark ? Colors.white : Colors.black),
                 ),
               ),
               // Tabs
@@ -560,7 +621,11 @@ class _NCCCEventDetailScreenState extends State<NCCCEventDetailScreen>
                                       style: TextStyle(
                                         fontWeight: FontWeight.bold,
                                         fontSize: 16,
-                                        color: hasMyEvent ? Colors.amber.shade900 : (isDark ? Colors.white : Colors.black87),
+                                        color: hasMyEvent
+                                            ? Colors.amber.shade900
+                                            : (isDark
+                                                  ? Colors.white
+                                                  : Colors.black87),
                                       ),
                                     ),
                                   ),
@@ -588,24 +653,39 @@ class _NCCCEventDetailScreenState extends State<NCCCEventDetailScreen>
                               const SizedBox(height: 8),
                               Row(
                                 children: [
-                                  Icon(Icons.location_on,
-                                      size: 14, color: isDark ? Colors.white60 : Colors.grey[600]),
+                                  Icon(
+                                    Icons.location_on,
+                                    size: 14,
+                                    color: isDark
+                                        ? Colors.white60
+                                        : Colors.grey[600],
+                                  ),
                                   const SizedBox(width: 4),
                                   Text(
                                     'Room ${events.first.location}',
                                     style: TextStyle(
                                       fontSize: 13,
-                                      color: isDark ? Colors.white70 : Colors.black54,
+                                      color: isDark
+                                          ? Colors.white70
+                                          : Colors.black54,
                                     ),
                                   ),
                                   const SizedBox(width: 16),
-                                  Icon(Icons.access_time, size: 14, color: isDark ? Colors.white60 : Colors.grey[600]),
+                                  Icon(
+                                    Icons.access_time,
+                                    size: 14,
+                                    color: isDark
+                                        ? Colors.white60
+                                        : Colors.grey[600],
+                                  ),
                                   const SizedBox(width: 4),
                                   Text(
                                     '${events.length} time slots',
                                     style: TextStyle(
                                       fontSize: 13,
-                                      color: isDark ? Colors.white70 : Colors.black54,
+                                      color: isDark
+                                          ? Colors.white70
+                                          : Colors.black54,
                                     ),
                                   ),
                                 ],
@@ -669,29 +749,31 @@ class _NCCCEventDetailScreenState extends State<NCCCEventDetailScreen>
               ),
               const SizedBox(height: 8),
               ...((stats['eventTypes'] as Map<String, dynamic>).entries.toList()
-                    ..sort((a, b) => (b.value as int).compareTo(a.value as int)))
+                    ..sort(
+                      (a, b) => (b.value as int).compareTo(a.value as int),
+                    ))
                   .take(10)
-                  .map((entry) => Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 2),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: Text(
-                                entry.key,
-                                style: const TextStyle(fontSize: 13),
-                                overflow: TextOverflow.ellipsis,
-                              ),
+                  .map(
+                    (entry) => Padding(
+                      padding: const EdgeInsets.symmetric(vertical: 2),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Expanded(
+                            child: Text(
+                              entry.key,
+                              style: const TextStyle(fontSize: 13),
+                              overflow: TextOverflow.ellipsis,
                             ),
-                            Text(
-                              entry.value.toString(),
-                              style: const TextStyle(
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                          ],
-                        ),
-                      )),
+                          ),
+                          Text(
+                            entry.value.toString(),
+                            style: const TextStyle(fontWeight: FontWeight.bold),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
             ],
           ),
         ),
