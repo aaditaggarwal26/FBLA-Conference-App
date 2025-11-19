@@ -107,16 +107,16 @@ class _EventDetailPageState extends State<EventDetailPage> {
     final eventIcon = _getEventIcon();
 
     return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF0A0E27) : const Color(0xFFF5F5F5),
+      backgroundColor: isDark ? const Color(0xFF121212) : Colors.white,
       body: CustomScrollView(
         slivers: [
           // App Bar with gradient
           SliverAppBar(
             expandedHeight: 200,
             pinned: true,
-            backgroundColor: isDark ? const Color(0xFF001231) : const Color(0xFF001231),
+            backgroundColor: isDark ? const Color(0xFF121212) : Colors.white,
             leading: IconButton(
-              icon: const Icon(Icons.arrow_back, color: Colors.white),
+              icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black87),
               onPressed: () => Navigator.pop(context),
             ),
             flexibleSpace: FlexibleSpaceBar(
@@ -254,7 +254,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: isDark ? const Color(0xFF1E2744) : Colors.white,
+                      color: isDark ? const Color(0xFF1E1E1E) : const Color(0xFFF5F5F5),
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
@@ -334,7 +334,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
-                      color: isDark ? const Color(0xFF1E2744) : Colors.white,
+                      color: isDark ? const Color(0xFF1E1E1E) : const Color(0xFFF5F5F5),
                       borderRadius: BorderRadius.circular(16),
                       boxShadow: [
                         BoxShadow(
@@ -549,7 +549,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
                     Container(
                       padding: const EdgeInsets.all(20),
                       decoration: BoxDecoration(
-                        color: isDark ? const Color(0xFF1E2744) : Colors.white,
+                        color: isDark ? const Color(0xFF1E1E1E) : const Color(0xFFF5F5F5),
                         borderRadius: BorderRadius.circular(16),
                         boxShadow: [
                           BoxShadow(
@@ -621,7 +621,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
     return Container(
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
-        color: isDark ? const Color(0xFF1E2744) : Colors.white,
+        color: isDark ? const Color(0xFF1E1E1E) : const Color(0xFFF5F5F5),
         borderRadius: BorderRadius.circular(12),
         boxShadow: [
           BoxShadow(

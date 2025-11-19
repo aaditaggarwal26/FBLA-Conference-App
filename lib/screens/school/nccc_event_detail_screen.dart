@@ -306,7 +306,7 @@ class _NCCCEventDetailScreenState extends State<NCCCEventDetailScreen>
               return Card(
                 margin: const EdgeInsets.only(bottom: 16),
                 elevation: hasMyEvent ? 4 : 2,
-                color: isDark ? const Color(0xFF1E2744) : Colors.white,
+                color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
                 shape: RoundedRectangleBorder(
                   borderRadius: BorderRadius.circular(12),
                   side: hasMyEvent
@@ -326,6 +326,7 @@ class _NCCCEventDetailScreenState extends State<NCCCEventDetailScreen>
                           eventColor: eventColor,
                           eventIcon: eventIcon,
                           currentUserName: widget.currentUserName,
+                          isAdmin: true, // TODO: Get from user role
                         ),
                       ),
                     );
