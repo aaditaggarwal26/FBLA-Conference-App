@@ -340,5 +340,83 @@ service cloud.firestore {
         (isSchoolMemberForEvent() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['attendeeIds']))
       );
     }
+    
+    // Location Pins collection (for AR Navigation)
+    match /location_pins/{pinId} {
+      function isSchoolAdminForPin() {
+        let schoolId = resource.data.schoolId;
+        let school = get(/databases/$(database)/documents/schools/$(schoolId));
+        return isSignedIn() && (
+          school.data.ownerId == request.auth.uid ||
+          request.auth.uid in school.data.adminIds
+        );
+      }
+      
+      function canCreatePin() {
+        let schoolId = request.resource.data.schoolId;
+        let school = get(/databases/$(database)/documents/schools/$(schoolId));
+        return isSignedIn() && (
+          school.data.ownerId == request.auth.uid ||
+          request.auth.uid in school.data.adminIds
+        );
+      }
+      
+      function getUserSchoolIds() {
+        let userData = get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+        return 'schoolIds' in userData ? userData.schoolIds : 
+               ('schoolId' in userData && userData.schoolId != null ? [userData.schoolId] : []);
+      }
+      
+      function isSchoolMemberForPin() {
+        let userSchoolIds = getUserSchoolIds();
+        return resource.data.schoolId in userSchoolIds;
+      }
+      
+      // All school members can read location pins (for AR navigation)
+      allow read: if isSignedIn() && isSchoolMemberForPin();
+      
+      // Only school admins can create/update/delete location pins
+      allow create: if isSignedIn() && canCreatePin();
+      allow update, delete: if isSchoolAdminForPin();
+    }
+    
+    // Parsed Events collection (imported from PDF)
+    match /parsed_events/{eventId} {
+      function isSchoolAdminForEvent() {
+        let schoolId = resource.data.schoolId;
+        let school = get(/databases/$(database)/documents/schools/$(schoolId));
+        return isSignedIn() && (
+          school.data.ownerId == request.auth.uid ||
+          request.auth.uid in school.data.adminIds
+        );
+      }
+      
+      function canCreateEvent() {
+        let schoolId = request.resource.data.schoolId;
+        let school = get(/databases/$(database)/documents/schools/$(schoolId));
+        return isSignedIn() && (
+          school.data.ownerId == request.auth.uid ||
+          request.auth.uid in school.data.adminIds
+        );
+      }
+      
+      function getUserSchoolIds() {
+        let userData = get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+        return 'schoolIds' in userData ? userData.schoolIds : 
+               ('schoolId' in userData && userData.schoolId != null ? [userData.schoolId] : []);
+      }
+      
+      function isSchoolMemberForEvent() {
+        let userSchoolIds = getUserSchoolIds();
+        return resource.data.schoolId in userSchoolIds;
+      }
+      
+      // All school members can read parsed events
+      allow read: if isSignedIn() && isSchoolMemberForEvent();
+      
+      // Only school admins can create/update/delete parsed events
+      allow create: if isSignedIn() && canCreateEvent();
+      allow update, delete: if isSchoolAdminForEvent();
+    }
   }
 }
