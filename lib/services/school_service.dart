@@ -72,14 +72,19 @@ class SchoolService {
       'memberIds': FieldValue.arrayUnion([userId]),
     });
 
-    // Update user profile with student role
+    // Update user profile to add school to schoolIds array
     final authService = AuthService();
-    await authService.updateUserSchoolInfo(
-      userId,
-      schoolId,
-      isOwner: false,
-      isAdmin: false,
-    );
+    final user = await authService.getUserData(userId);
+    if (user != null) {
+      final updatedSchoolIds = List<String>.from(user.schoolIds);
+      if (!updatedSchoolIds.contains(schoolId)) {
+        updatedSchoolIds.add(schoolId);
+      }
+      await _firestore.collection('users').doc(userId).update({
+        'schoolIds': updatedSchoolIds,
+        'schoolId': updatedSchoolIds.first, // Backwards compatibility
+      });
+    }
   }
 
   // Leave a school
@@ -95,12 +100,20 @@ class SchoolService {
       'adminIds': FieldValue.arrayRemove([userId]),
     });
 
-    // Clear school info from user profile
-    await _firestore.collection('users').doc(userId).update({
-      'schoolId': null,
-      'schoolRole': 'student',
-      'isSchoolOwner': false,
-    });
+    // Update user's schoolIds array
+    final authService = AuthService();
+    final user = await authService.getUserData(userId);
+    if (user != null) {
+      final updatedSchoolIds = List<String>.from(user.schoolIds);
+      updatedSchoolIds.remove(schoolId);
+      
+      await _firestore.collection('users').doc(userId).update({
+        'schoolIds': updatedSchoolIds,
+        'schoolId': updatedSchoolIds.isNotEmpty ? updatedSchoolIds.first : null,
+        'schoolRole': updatedSchoolIds.isEmpty ? 'student' : null,
+        'isSchoolOwner': false,
+      });
+    }
   }
 
   // Add admin to school
@@ -328,6 +341,45 @@ class SchoolService {
         .get();
 
     return snapshot.docs.isNotEmpty;
+  }
+
+  // Get user's pending join requests
+  Stream<List<SchoolJoinRequestModel>> getUserPendingRequests(String userId) {
+    return _firestore
+        .collection('school_join_requests')
+        .where('userId', isEqualTo: userId)
+        .where('status', isEqualTo: JoinRequestStatus.pending.name)
+        .snapshots()
+        .map(
+          (snapshot) {
+            final requests = snapshot.docs
+                .map((doc) => SchoolJoinRequestModel.fromFirestore(doc))
+                .toList();
+            requests.sort((a, b) => b.requestedAt.compareTo(a.requestedAt));
+            return requests;
+          },
+        );
+  }
+
+  // Cancel a join request
+  Future<void> cancelJoinRequest(String requestId) async {
+    await _firestore.collection('school_join_requests').doc(requestId).delete();
+  }
+
+  // Get total schools user is in (including pending)
+  Future<int> getUserSchoolCount(String userId) async {
+    // Get joined schools
+    final user = await AuthService().getUserData(userId);
+    final joinedCount = user?.schoolIds.length ?? 0;
+    
+    // Get pending requests
+    final pendingSnapshot = await _firestore
+        .collection('school_join_requests')
+        .where('userId', isEqualTo: userId)
+        .where('status', isEqualTo: JoinRequestStatus.pending.name)
+        .get();
+    
+    return joinedCount + pendingSnapshot.docs.length;
   }
 
   // ==================== SCHOOL EVENTS ====================

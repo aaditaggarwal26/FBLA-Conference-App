@@ -9,6 +9,7 @@ import '../../models/event_model.dart';
 import '../../models/announcement_model.dart';
 import '../../models/school_announcement_model.dart';
 import '../../models/school_event_model.dart';
+import '../../models/school_model.dart';
 import '../../models/user_model.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/event_card.dart';
@@ -290,40 +291,50 @@ class _HomeScreenState extends State<HomeScreen> {
                     }
 
                     final userData = userSnapshot.data!;
-                    final schoolId = userData.schoolId;
+                    final schoolIds = userData.schoolIds;
 
-                    if (schoolId == null || schoolId.isEmpty) {
+                    if (schoolIds.isEmpty) {
                       return const SizedBox.shrink();
                     }
 
+                    // Show announcements from all schools
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        // School announcements header
-                        Container(
-                          padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                          decoration: BoxDecoration(
-                            color: AppTheme.success.withValues(alpha: 0.1),
-                            borderRadius: BorderRadius.circular(8),
-                            border: Border.all(color: AppTheme.success.withValues(alpha: 0.3)),
-                          ),
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            children: [
-                              Icon(Icons.school_rounded, size: 16, color: AppTheme.success),
-                              const SizedBox(width: 6),
-                              Text(
-                                'Your School',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppTheme.success,
-                                ),
-                              ),
-                            ],
-                          ),
-                        ),
-                        const SizedBox(height: 12),
+                      children: schoolIds.map((schoolId) {
+                        return Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            // School announcements header
+                            FutureBuilder<SchoolModel?>(
+                              future: _schoolService.getSchool(schoolId),
+                              builder: (context, schoolSnapshot) {
+                                final schoolName = schoolSnapshot.data?.name ?? 'Your School';
+                                return Container(
+                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                  decoration: BoxDecoration(
+                                    color: AppTheme.success.withValues(alpha: 0.1),
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(color: AppTheme.success.withValues(alpha: 0.3)),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(Icons.school_rounded, size: 16, color: AppTheme.success),
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        schoolName,
+                                        style: TextStyle(
+                                          fontSize: 13,
+                                          fontWeight: FontWeight.w600,
+                                          color: AppTheme.success,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                );
+                              },
+                            ),
+                            const SizedBox(height: 12),
                         StreamBuilder<List<SchoolAnnouncementModel>>(
                           stream: _schoolService.getSchoolAnnouncements(schoolId),
                           builder: (context, schoolSnapshot) {
@@ -377,8 +388,10 @@ class _HomeScreenState extends State<HomeScreen> {
                             );
                           },
                         ),
-                        const SizedBox(height: 24),
-                      ],
+                        const SizedBox(height: 16),
+                          ],
+                        );
+                      }).toList(),
                     );
                   },
                 ),

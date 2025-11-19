@@ -232,11 +232,29 @@ class AuthService {
       schoolRole = 'teacher';
     }
 
-    await _firestore.collection('users').doc(uid).update({
-      'schoolId': schoolId,
-      'schoolRole': schoolRole,
-      'isSchoolOwner': isOwner,
-    });
+    // Get current user to update schoolIds array
+    final user = await getUserData(uid);
+    if (user != null) {
+      final updatedSchoolIds = List<String>.from(user.schoolIds);
+      if (!updatedSchoolIds.contains(schoolId)) {
+        updatedSchoolIds.add(schoolId);
+      }
+
+      await _firestore.collection('users').doc(uid).update({
+        'schoolId': updatedSchoolIds.first, // Backwards compatibility
+        'schoolIds': updatedSchoolIds,
+        'schoolRole': schoolRole,
+        'isSchoolOwner': isOwner,
+      });
+    } else {
+      // Fallback for new users
+      await _firestore.collection('users').doc(uid).update({
+        'schoolId': schoolId,
+        'schoolIds': [schoolId],
+        'schoolRole': schoolRole,
+        'isSchoolOwner': isOwner,
+      });
+    }
   }
 
   // Reset password
