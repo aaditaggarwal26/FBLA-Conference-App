@@ -3,18 +3,23 @@ import 'package:intl/intl.dart';
 import '../models/announcement_model.dart';
 import '../theme/app_theme.dart';
 
-class AnnouncementCard extends StatelessWidget {
+class AnnouncementCard extends StatefulWidget {
   final AnnouncementModel announcement;
 
-  const AnnouncementCard({
-    super.key,
-    required this.announcement,
-  });
+  const AnnouncementCard({super.key, required this.announcement});
+
+  @override
+  State<AnnouncementCard> createState() => _AnnouncementCardState();
+}
+
+class _AnnouncementCardState extends State<AnnouncementCard> {
+  bool _isExpanded = false;
 
   @override
   Widget build(BuildContext context) {
+    final announcement = widget.announcement;
     final isDark = Theme.of(context).brightness == Brightness.dark;
-    
+
     return Container(
       decoration: BoxDecoration(
         color: isDark ? AppTheme.darkSurface : Colors.white,
@@ -37,7 +42,8 @@ class AnnouncementCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             // Image if available
-            if (announcement.imageUrl != null && announcement.imageUrl!.isNotEmpty)
+            if (announcement.imageUrl != null &&
+                announcement.imageUrl!.isNotEmpty)
               Stack(
                 children: [
                   Image.network(
@@ -55,7 +61,10 @@ class AnnouncementCard extends StatelessWidget {
                       top: 12,
                       right: 12,
                       child: Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 6),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 6,
+                        ),
                         decoration: BoxDecoration(
                           color: Colors.black.withValues(alpha: 0.6),
                           borderRadius: BorderRadius.circular(8),
@@ -98,12 +107,19 @@ class AnnouncementCard extends StatelessWidget {
                   Row(
                     children: [
                       Container(
-                        padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 5),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 10,
+                          vertical: 5,
+                        ),
                         decoration: BoxDecoration(
-                          color: _getCategoryColor(announcement.category).withValues(alpha: 0.1),
+                          color: _getCategoryColor(
+                            announcement.category,
+                          ).withValues(alpha: 0.1),
                           borderRadius: BorderRadius.circular(6),
                           border: Border.all(
-                            color: _getCategoryColor(announcement.category).withValues(alpha: 0.3),
+                            color: _getCategoryColor(
+                              announcement.category,
+                            ).withValues(alpha: 0.3),
                           ),
                         ),
                         child: Row(
@@ -127,7 +143,8 @@ class AnnouncementCard extends StatelessWidget {
                           ],
                         ),
                       ),
-                      if (announcement.isPinned && announcement.imageUrl == null) ...[
+                      if (announcement.isPinned &&
+                          announcement.imageUrl == null) ...[
                         const SizedBox(width: 8),
                         Container(
                           padding: const EdgeInsets.symmetric(
@@ -170,11 +187,15 @@ class AnnouncementCard extends StatelessWidget {
                       ),
                       const SizedBox(width: 4),
                       Text(
-                        DateFormat('MMM d, h:mm a').format(announcement.postedAt),
+                        DateFormat(
+                          'MMM d, h:mm a',
+                        ).format(announcement.postedAt),
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w500,
-                          color: isDark ? AppTheme.mediumGray : AppTheme.darkGray,
+                          color: isDark
+                              ? AppTheme.mediumGray
+                              : AppTheme.darkGray,
                         ),
                       ),
                     ],
@@ -195,16 +216,50 @@ class AnnouncementCard extends StatelessWidget {
 
                   const SizedBox(height: 10),
 
-                  // Content
-                  Text(
-                    announcement.content,
-                    style: TextStyle(
-                      fontSize: 14,
-                      height: 1.5,
-                      color: isDark ? Colors.white.withValues(alpha: 0.7) : AppTheme.darkGray,
-                    ),
-                    maxLines: 3,
-                    overflow: TextOverflow.ellipsis,
+                  // Content with expand/collapse
+                  Builder(
+                    builder: (context) {
+                      final shouldShowExpand =
+                          announcement.content.length > 150;
+
+                      return Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            announcement.content,
+                            style: TextStyle(
+                              fontSize: 14,
+                              height: 1.5,
+                              color: isDark
+                                  ? Colors.white.withValues(alpha: 0.7)
+                                  : AppTheme.darkGray,
+                            ),
+                            maxLines: _isExpanded ? null : 3,
+                            overflow: _isExpanded
+                                ? null
+                                : TextOverflow.ellipsis,
+                          ),
+                          if (shouldShowExpand) ...[
+                            const SizedBox(height: 8),
+                            GestureDetector(
+                              onTap: () {
+                                setState(() {
+                                  _isExpanded = !_isExpanded;
+                                });
+                              },
+                              child: Text(
+                                _isExpanded ? 'Show less' : 'Show more',
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: AppTheme.primaryBlue,
+                                ),
+                              ),
+                            ),
+                          ],
+                        ],
+                      );
+                    },
                   ),
 
                   const SizedBox(height: 14),
@@ -214,7 +269,9 @@ class AnnouncementCard extends StatelessWidget {
                     children: [
                       CircleAvatar(
                         radius: 14,
-                        backgroundColor: AppTheme.primaryBlue.withValues(alpha: 0.1),
+                        backgroundColor: AppTheme.primaryBlue.withValues(
+                          alpha: 0.1,
+                        ),
                         child: Text(
                           announcement.postedBy.isNotEmpty
                               ? announcement.postedBy[0].toUpperCase()
@@ -246,7 +303,9 @@ class AnnouncementCard extends StatelessWidget {
                               style: TextStyle(
                                 fontSize: 13,
                                 fontWeight: FontWeight.w600,
-                                color: isDark ? Colors.white.withValues(alpha: 0.8) : AppTheme.darkGray,
+                                color: isDark
+                                    ? Colors.white.withValues(alpha: 0.8)
+                                    : AppTheme.darkGray,
                               ),
                             ),
                           ],
@@ -268,12 +327,12 @@ class AnnouncementCard extends StatelessWidget {
       case 'important':
         return AppTheme.error;
       case 'event':
-        return AppTheme.primaryBlue;
+        return AppTheme.success;
       case 'reminder':
         return AppTheme.warning;
       case 'general':
       default:
-        return AppTheme.success;
+        return AppTheme.primaryBlue;
     }
   }
 

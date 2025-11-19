@@ -4,6 +4,7 @@ import '../events/events_screen.dart';
 import '../pins/pin_trading_screen.dart';
 import '../profile/profile_screen.dart';
 import '../messages/messages_list_screen.dart';
+import '../school/school_screen.dart';
 import '../../theme/app_theme.dart';
 
 class MainNavigationScreen extends StatefulWidget {
@@ -20,6 +21,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     HomeScreen(),
     EventsScreen(),
     PinTradingScreen(),
+    SchoolScreen(),
     MessagesListScreen(),
     ProfileScreen(),
   ];
@@ -50,8 +52,9 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                 _buildNavItem(0, Icons.home_rounded, 'Home', isDark),
                 _buildNavItem(1, Icons.event_rounded, 'Events', isDark),
                 _buildNavItem(2, Icons.push_pin_rounded, 'Pins', isDark),
-                _buildNavItem(3, Icons.chat_bubble_rounded, 'Messages', isDark),
-                _buildNavItem(4, Icons.person_rounded, 'Profile', isDark),
+                _buildNavItem(3, Icons.school_rounded, 'School', isDark),
+                _buildNavItem(4, Icons.chat_bubble_rounded, 'Messages', isDark),
+                _buildNavItem(5, Icons.person_rounded, 'Profile', isDark),
               ],
             ),
           ),

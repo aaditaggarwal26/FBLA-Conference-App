@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../services/school_service.dart';
+import '../../services/auth_service.dart';
 import '../../models/school_resource_model.dart';
 import '../../theme/app_theme.dart';
 
@@ -15,6 +16,7 @@ class CreateSchoolResourceScreen extends StatefulWidget {
 
 class _CreateSchoolResourceScreenState extends State<CreateSchoolResourceScreen> {
   final SchoolService _schoolService = SchoolService();
+  final AuthService _authService = AuthService();
   final _formKey = GlobalKey<FormState>();
   final _titleController = TextEditingController();
   final _descriptionController = TextEditingController();
@@ -51,6 +53,10 @@ class _CreateSchoolResourceScreenState extends State<CreateSchoolResourceScreen>
       final currentUser = FirebaseAuth.instance.currentUser;
       if (currentUser == null) throw Exception('Not logged in');
 
+      // Get user's actual name from Firestore
+      final userData = await _authService.getUserData(currentUser.uid);
+      final uploaderName = userData?.name ?? currentUser.displayName ?? 'Unknown';
+
       final resource = SchoolResourceModel(
         id: '',
         schoolId: widget.schoolId,
@@ -59,11 +65,16 @@ class _CreateSchoolResourceScreenState extends State<CreateSchoolResourceScreen>
         type: _selectedType,
         url: _urlController.text.trim(),
         uploadedBy: currentUser.uid,
-        uploaderName: currentUser.displayName ?? 'Unknown',
+        uploaderName: uploaderName,
         uploadedAt: DateTime.now(),
       );
 
+      print('Creating resource for school: ${widget.schoolId}');
+      print('Resource data: ${resource.toFirestore()}');
+      
       await _schoolService.createResource(resource);
+      
+      print('Resource created successfully');
 
       if (mounted) {
         Navigator.pop(context);

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:url_launcher/url_launcher.dart';
 import '../../services/event_service.dart';
 import '../../services/announcement_service.dart';
 import '../../services/school_service.dart';
@@ -30,6 +31,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final AuthService _authService = AuthService();
   late Future<String> _firstNameFuture;
   late Future<UserModel?> _userDataFuture;
+  final Map<String, bool> _expandedAnnouncements = {};
 
   @override
   void initState() {
@@ -836,18 +838,49 @@ class _HomeScreenState extends State<HomeScreen> {
             ],
           ),
           const SizedBox(height: 14),
-          // Content
-          Text(
-            announcement.content,
-            style: TextStyle(
-              fontSize: 14,
-              color: isDark
-                  ? Colors.white.withValues(alpha: 0.7)
-                  : AppTheme.darkGray,
-              height: 1.5,
-            ),
-            maxLines: 3,
-            overflow: TextOverflow.ellipsis,
+          // Content with expand/collapse
+          Builder(
+            builder: (context) {
+              final isExpanded =
+                  _expandedAnnouncements[announcement.id] ?? false;
+              final shouldShowExpand = announcement.content.length > 150;
+
+              return Column(
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(
+                    announcement.content,
+                    style: TextStyle(
+                      fontSize: 14,
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.7)
+                          : AppTheme.darkGray,
+                      height: 1.5,
+                    ),
+                    maxLines: isExpanded ? null : 3,
+                    overflow: isExpanded ? null : TextOverflow.ellipsis,
+                  ),
+                  if (shouldShowExpand) ...[
+                    const SizedBox(height: 8),
+                    GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _expandedAnnouncements[announcement.id] = !isExpanded;
+                        });
+                      },
+                      child: Text(
+                        isExpanded ? 'Show less' : 'Show more',
+                        style: TextStyle(
+                          fontSize: 13,
+                          fontWeight: FontWeight.w600,
+                          color: AppTheme.primaryBlue,
+                        ),
+                      ),
+                    ),
+                  ],
+                ],
+              );
+            },
           ),
           const SizedBox(height: 14),
           // Footer with timestamp
@@ -1149,8 +1182,85 @@ class _HomeScreenState extends State<HomeScreen> {
               ],
             ),
           ],
+          const SizedBox(height: 12),
+          // Add to Google Calendar button
+          SizedBox(
+            width: double.infinity,
+            child: OutlinedButton.icon(
+              onPressed: () => _addToGoogleCalendar(event),
+              icon: const Icon(Icons.event_rounded, size: 18),
+              label: const Text('Add to Google Calendar'),
+              style: OutlinedButton.styleFrom(
+                padding: const EdgeInsets.symmetric(vertical: 12),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(10),
+                ),
+                side: BorderSide(
+                  color: AppTheme.primaryBlue.withValues(alpha: 0.5),
+                ),
+              ),
+            ),
+          ),
         ],
       ),
     );
+  }
+
+  Future<void> _addToGoogleCalendar(SchoolEventModel event) async {
+    try {
+      // Format dates for Google Calendar URL
+      final startDate = event.startTime.toUtc();
+      final endDate = event.endTime.toUtc();
+
+      // Format as YYYYMMDDTHHMMSSZ
+      String formatDate(DateTime date) {
+        return DateFormat('yyyyMMdd\'T\'HHmmss\'Z\'').format(date);
+      }
+
+      final startStr = formatDate(startDate);
+      final endStr = formatDate(endDate);
+
+      // Build Google Calendar URL
+      final params = <String, String>{
+        'action': 'TEMPLATE',
+        'text': event.title,
+        'dates': '$startStr/$endStr',
+        'location': event.location,
+      };
+
+      if (event.description.isNotEmpty) {
+        params['details'] = event.description;
+      }
+
+      final queryString = params.entries
+          .map(
+            (e) =>
+                '${Uri.encodeComponent(e.key)}=${Uri.encodeComponent(e.value)}',
+          )
+          .join('&');
+
+      final url = Uri.parse(
+        'https://calendar.google.com/calendar/render?$queryString',
+      );
+
+      if (await canLaunchUrl(url)) {
+        await launchUrl(url, mode: LaunchMode.externalApplication);
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Could not open Google Calendar'),
+              backgroundColor: AppTheme.error,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $e'), backgroundColor: AppTheme.error),
+        );
+      }
+    }
   }
 }

@@ -181,15 +181,29 @@ class SchoolService {
   Stream<List<SchoolAnnouncementModel>> getSchoolAnnouncements(
     String schoolId,
   ) {
+    // Query without orderBy to avoid index requirement, sort in memory instead
     return _firestore
         .collection('school_announcements')
         .where('schoolId', isEqualTo: schoolId)
-        .orderBy('createdAt', descending: true)
         .snapshots()
         .map(
-          (snapshot) => snapshot.docs
-              .map((doc) => SchoolAnnouncementModel.fromFirestore(doc))
-              .toList(),
+          (snapshot) {
+            final announcements = snapshot.docs
+                .map((doc) {
+                  try {
+                    return SchoolAnnouncementModel.fromFirestore(doc);
+                  } catch (e) {
+                    print('Error parsing announcement ${doc.id}: $e');
+                    print('Document data: ${doc.data()}');
+                    return null;
+                  }
+                })
+                .whereType<SchoolAnnouncementModel>()
+                .toList();
+            // Sort by createdAt descending (newest first)
+            announcements.sort((a, b) => b.createdAt.compareTo(a.createdAt));
+            return announcements;
+          },
         );
   }
 
@@ -205,15 +219,29 @@ class SchoolService {
 
   // Get resources for a school
   Stream<List<SchoolResourceModel>> getSchoolResources(String schoolId) {
+    // Query without orderBy to avoid index requirement, sort in memory instead
     return _firestore
         .collection('school_resources')
         .where('schoolId', isEqualTo: schoolId)
-        .orderBy('uploadedAt', descending: true)
         .snapshots()
         .map(
-          (snapshot) => snapshot.docs
-              .map((doc) => SchoolResourceModel.fromFirestore(doc))
-              .toList(),
+          (snapshot) {
+            final resources = snapshot.docs
+                .map((doc) {
+                  try {
+                    return SchoolResourceModel.fromFirestore(doc);
+                  } catch (e) {
+                    print('Error parsing resource ${doc.id}: $e');
+                    print('Document data: ${doc.data()}');
+                    return null;
+                  }
+                })
+                .whereType<SchoolResourceModel>()
+                .toList();
+            // Sort by uploadedAt descending (newest first)
+            resources.sort((a, b) => b.uploadedAt.compareTo(a.uploadedAt));
+            return resources;
+          },
         );
   }
 

@@ -495,6 +495,10 @@ class _SchoolAdminDashboardState extends State<SchoolAdminDashboard> {
               ),
             ),
           ],
+          if (school.socialMediaLinks.isNotEmpty) ...[
+            const SizedBox(height: 16),
+            _buildSocialMediaSection(school, isDark),
+          ],
         ],
       ),
     );
@@ -522,6 +526,145 @@ class _SchoolAdminDashboardState extends State<SchoolAdminDashboard> {
         ],
       ),
     );
+  }
+
+  Widget _buildSocialMediaSection(SchoolModel school, bool isDark) {
+    final socialMediaIcons = {
+      'instagram': Icons.camera_alt_rounded,
+      'twitter': Icons.alternate_email_rounded,
+      'facebook': Icons.facebook_rounded,
+      'linkedin': Icons.business_rounded,
+      'youtube': Icons.play_circle_filled_rounded,
+      'tiktok': Icons.music_note_rounded,
+      'snapchat': Icons.camera_alt_outlined,
+    };
+
+    final socialMediaLabels = {
+      'instagram': 'Instagram',
+      'twitter': 'Twitter',
+      'facebook': 'Facebook',
+      'linkedin': 'LinkedIn',
+      'youtube': 'YouTube',
+      'tiktok': 'TikTok',
+      'snapchat': 'Snapchat',
+    };
+
+    final socialMediaColors = {
+      'instagram': const Color(0xFFE4405F),
+      'twitter': const Color(0xFF1DA1F2),
+      'facebook': const Color(0xFF1877F2),
+      'linkedin': const Color(0xFF0077B5),
+      'youtube': const Color(0xFFFF0000),
+      'tiktok': const Color(0xFF000000),
+      'snapchat': const Color(0xFFFFFC00),
+    };
+
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Row(
+          children: [
+            Icon(
+              Icons.share_rounded,
+              size: 20,
+              color: isDark ? AppTheme.darkPrimary : AppTheme.primaryBlue,
+            ),
+            const SizedBox(width: 12),
+            Text(
+              'Social Media',
+              style: TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                color: isDark ? Colors.white : AppTheme.black,
+              ),
+            ),
+          ],
+        ),
+        const SizedBox(height: 12),
+        Wrap(
+          spacing: 8,
+          runSpacing: 8,
+          children: school.socialMediaLinks.entries.map((entry) {
+            final platform = entry.key;
+            final url = entry.value;
+            final icon = socialMediaIcons[platform] ?? Icons.link_rounded;
+            final label = socialMediaLabels[platform] ?? platform;
+            final color = socialMediaColors[platform] ?? AppTheme.primaryBlue;
+
+            return InkWell(
+              onTap: () => _launchSocialMediaUrl(url, platform),
+              borderRadius: BorderRadius.circular(12),
+              child: Container(
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 12,
+                  vertical: 8,
+                ),
+                decoration: BoxDecoration(
+                  color: color.withValues(alpha: 0.1),
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(
+                    color: color.withValues(alpha: 0.3),
+                  ),
+                ),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Icon(icon, size: 18, color: color),
+                    const SizedBox(width: 6),
+                    Text(
+                      label,
+                      style: TextStyle(
+                        fontSize: 12,
+                        fontWeight: FontWeight.w600,
+                        color: color,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }).toList(),
+        ),
+      ],
+    );
+  }
+
+  Future<void> _launchSocialMediaUrl(String url, String platform) async {
+    try {
+      Uri uri;
+      if (platform == 'snapchat') {
+        // For Snapchat, if it's just a username, construct the URL
+        if (!url.startsWith('http://') && !url.startsWith('https://')) {
+          uri = Uri.parse('https://snapchat.com/add/$url');
+        } else {
+          uri = Uri.parse(url);
+        }
+      } else {
+        uri = Uri.parse(url);
+      }
+
+      if (await canLaunchUrl(uri)) {
+        await launchUrl(uri, mode: LaunchMode.externalApplication);
+      } else {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Could not open link'),
+              backgroundColor: AppTheme.error,
+            ),
+          );
+        }
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error: $e'),
+            backgroundColor: AppTheme.error,
+          ),
+        );
+      }
+    }
   }
 
   Widget _buildAnnouncementCard(

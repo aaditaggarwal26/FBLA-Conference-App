@@ -148,83 +148,214 @@ class EventCard extends StatelessWidget {
                     Text(
                       event.title,
                       style: TextStyle(
-                        fontSize: isFeatured ? 17 : 16,
+                        fontSize: isFeatured ? 17 : 18,
                         fontWeight: FontWeight.bold,
                         color: isDark ? Colors.white : AppTheme.black,
                         height: 1.3,
+                        letterSpacing: -0.3,
                       ),
                       maxLines: 2,
                       overflow: TextOverflow.ellipsis,
                     ),
 
-                    const SizedBox(height: 12),
+                    const SizedBox(height: 14),
 
-                    // Time
-                    _buildInfoRow(
-                      Icons.schedule_rounded,
-                      DateFormat('MMM d, h:mm a').format(event.startTime),
-                      isDark,
+                    // Date badge with time
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 12,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: _getCategoryColor(event.category)
+                            .withValues(alpha: 0.1),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: _getCategoryColor(event.category)
+                              .withValues(alpha: 0.3),
+                        ),
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Icon(
+                            Icons.calendar_today_rounded,
+                            size: 14,
+                            color: _getCategoryColor(event.category),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            DateFormat('MMM d').format(event.startTime),
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w700,
+                              color: _getCategoryColor(event.category),
+                            ),
+                          ),
+                          const SizedBox(width: 8),
+                          Container(
+                            width: 1,
+                            height: 14,
+                            color: _getCategoryColor(event.category)
+                                .withValues(alpha: 0.3),
+                          ),
+                          const SizedBox(width: 8),
+                          Icon(
+                            Icons.access_time_rounded,
+                            size: 14,
+                            color: _getCategoryColor(event.category),
+                          ),
+                          const SizedBox(width: 6),
+                          Text(
+                            DateFormat('h:mm a').format(event.startTime),
+                            style: TextStyle(
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                              color: _getCategoryColor(event.category),
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
 
-                    const SizedBox(height: 6),
+                    const SizedBox(height: 12),
 
-                    // Location
-                    _buildInfoRow(
-                      Icons.location_on_rounded,
-                      event.location,
-                      isDark,
+                    // Location with enhanced styling
+                    Container(
+                      padding: const EdgeInsets.symmetric(
+                        horizontal: 10,
+                        vertical: 8,
+                      ),
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? Colors.white.withValues(alpha: 0.05)
+                            : AppTheme.lightBlue.withValues(alpha: 0.3),
+                        borderRadius: BorderRadius.circular(8),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(
+                            Icons.location_on_rounded,
+                            size: 16,
+                            color: AppTheme.primaryBlue,
+                          ),
+                          const SizedBox(width: 8),
+                          Expanded(
+                            child: Text(
+                              event.location,
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: isDark
+                                    ? Colors.white.withValues(alpha: 0.9)
+                                    : AppTheme.darkGray,
+                              ),
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
 
                     const SizedBox(height: 14),
 
-                    // Capacity Bar
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Text(
-                              'Capacity',
-                              style: TextStyle(
-                                fontSize: 11,
-                                fontWeight: FontWeight.w600,
-                                color: isDark
-                                    ? Colors.white.withValues(alpha: 0.7)
-                                    : AppTheme.darkGray,
-                              ),
-                            ),
-                            Text(
-                              '${event.registeredUsers.length}/${event.maxCapacity}',
-                              style: TextStyle(
-                                fontSize: 12,
-                                fontWeight: FontWeight.bold,
-                                color: isDark ? Colors.white : AppTheme.black,
-                              ),
-                            ),
-                          ],
+                    // Capacity Bar with enhanced styling
+                    Container(
+                      padding: const EdgeInsets.all(12),
+                      decoration: BoxDecoration(
+                        color: isDark
+                            ? Colors.white.withValues(alpha: 0.03)
+                            : AppTheme.lightBlue.withValues(alpha: 0.2),
+                        borderRadius: BorderRadius.circular(10),
+                        border: Border.all(
+                          color: isDark
+                              ? Colors.white.withValues(alpha: 0.1)
+                              : AppTheme.lightBlue.withValues(alpha: 0.5),
                         ),
-                        const SizedBox(height: 6),
-                        ClipRRect(
-                          borderRadius: BorderRadius.circular(10),
-                          child: LinearProgressIndicator(
-                            value: event.maxCapacity > 0
-                                ? event.registeredUsers.length /
-                                      event.maxCapacity
-                                : 0,
-                            backgroundColor: isDark
-                                ? Colors.white.withValues(alpha: 0.1)
-                                : AppTheme.lightBlue,
-                            valueColor: AlwaysStoppedAnimation<Color>(
-                              _getCapacityColor(
-                                event.registeredUsers.length /
-                                    event.maxCapacity,
+                      ),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Row(
+                                children: [
+                                  Icon(
+                                    Icons.people_rounded,
+                                    size: 14,
+                                    color: isDark
+                                        ? Colors.white.withValues(alpha: 0.7)
+                                        : AppTheme.darkGray,
+                                  ),
+                                  const SizedBox(width: 6),
+                                  Text(
+                                    'Capacity',
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight: FontWeight.w600,
+                                      color: isDark
+                                          ? Colors.white.withValues(alpha: 0.7)
+                                          : AppTheme.darkGray,
+                                    ),
+                                  ),
+                                ],
                               ),
-                            ),
-                            minHeight: 6,
+                              Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 8,
+                                  vertical: 4,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: _getCapacityColor(
+                                    event.maxCapacity > 0
+                                        ? event.registeredUsers.length /
+                                            event.maxCapacity
+                                        : 0,
+                                  ).withValues(alpha: 0.15),
+                                  borderRadius: BorderRadius.circular(6),
+                                ),
+                                child: Text(
+                                  '${event.registeredUsers.length}/${event.maxCapacity}',
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight: FontWeight.bold,
+                                    color: _getCapacityColor(
+                                      event.maxCapacity > 0
+                                          ? event.registeredUsers.length /
+                                              event.maxCapacity
+                                          : 0,
+                                    ),
+                                  ),
+                                ),
+                              ),
+                            ],
                           ),
-                        ),
-                      ],
+                          const SizedBox(height: 8),
+                          ClipRRect(
+                            borderRadius: BorderRadius.circular(8),
+                            child: LinearProgressIndicator(
+                              value: event.maxCapacity > 0
+                                  ? event.registeredUsers.length /
+                                        event.maxCapacity
+                                  : 0,
+                              backgroundColor: isDark
+                                  ? Colors.white.withValues(alpha: 0.1)
+                                  : AppTheme.lightBlue,
+                              valueColor: AlwaysStoppedAnimation<Color>(
+                                _getCapacityColor(
+                                  event.maxCapacity > 0
+                                      ? event.registeredUsers.length /
+                                          event.maxCapacity
+                                      : 0,
+                                ),
+                              ),
+                              minHeight: 8,
+                            ),
+                          ),
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -233,36 +364,6 @@ class EventCard extends StatelessWidget {
           ),
         ),
       ),
-    );
-  }
-
-  Widget _buildInfoRow(IconData icon, String text, bool isDark) {
-    return Row(
-      children: [
-        Container(
-          padding: const EdgeInsets.all(6),
-          decoration: BoxDecoration(
-            color: AppTheme.primaryBlue.withValues(alpha: 0.1),
-            borderRadius: BorderRadius.circular(6),
-          ),
-          child: Icon(icon, size: 14, color: AppTheme.primaryBlue),
-        ),
-        const SizedBox(width: 8),
-        Expanded(
-          child: Text(
-            text,
-            style: TextStyle(
-              fontSize: 13,
-              fontWeight: FontWeight.w500,
-              color: isDark
-                  ? Colors.white.withValues(alpha: 0.8)
-                  : AppTheme.darkGray,
-            ),
-            maxLines: 1,
-            overflow: TextOverflow.ellipsis,
-          ),
-        ),
-      ],
     );
   }
 
