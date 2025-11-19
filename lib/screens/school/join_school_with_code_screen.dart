@@ -75,6 +75,21 @@ class _JoinSchoolWithCodeScreenState extends State<JoinSchoolWithCodeScreen> {
     setState(() => _isLoading = true);
 
     try {
+      // Check if user can join more schools
+      final schoolCount = await _schoolService.getUserSchoolCount(user.uid);
+      if (schoolCount >= 2) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('You can only join up to 2 schools at a time'),
+              backgroundColor: AppTheme.error,
+            ),
+          );
+        }
+        setState(() => _isLoading = false);
+        return;
+      }
+
       // Check if already has pending request
       final hasPending = await _schoolService.hasPendingRequest(_foundSchool!.id, user.uid);
       if (hasPending) {

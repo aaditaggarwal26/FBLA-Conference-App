@@ -24,7 +24,8 @@ class UserModel {
   final DateTime createdAt;
   final UserRole role;
   final bool isApproved;
-  final String? schoolId;
+  final String? schoolId; // Deprecated: kept for backwards compatibility
+  final List<String> schoolIds; // New: support multiple schools
   final SchoolRole? schoolRole;
   final bool isSchoolOwner;
 
@@ -40,14 +41,16 @@ class UserModel {
     this.role = UserRole.attendee,
     this.isApproved = true,
     this.schoolId,
+    List<String>? schoolIds,
     this.schoolRole,
     this.isSchoolOwner = false,
-  });
+  }) : schoolIds = schoolIds ?? (schoolId != null ? [schoolId] : []);
 
   bool get isAdmin => role == UserRole.admin;
   bool get isOrganizer => role == UserRole.organizer || role == UserRole.admin;
   bool get isSpeaker => role == UserRole.speaker || role == UserRole.organizer || role == UserRole.admin;
-  bool get hasSchool => schoolId != null && schoolId!.isNotEmpty;
+  bool get hasSchool => schoolIds.isNotEmpty;
+  bool get canJoinMoreSchools => schoolIds.length < 2;
   bool get isSchoolAdminOrTeacher => schoolRole == SchoolRole.schoolAdmin || schoolRole == SchoolRole.teacher || isSchoolOwner;
 
   factory UserModel.fromFirestore(DocumentSnapshot doc) {
@@ -64,6 +67,7 @@ class UserModel {
       role: _roleFromString(data['role'] as String? ?? 'attendee'),
       isApproved: data['isApproved'] ?? true,
       schoolId: data['schoolId'],
+      schoolIds: data['schoolIds'] != null ? List<String>.from(data['schoolIds']) : null,
       schoolRole: data['schoolRole'] != null ? _schoolRoleFromString(data['schoolRole']) : null,
       isSchoolOwner: data['isSchoolOwner'] ?? false,
     );
@@ -130,7 +134,8 @@ class UserModel {
       'createdAt': Timestamp.fromDate(createdAt),
       'role': _roleToString(role),
       'isApproved': isApproved,
-      'schoolId': schoolId,
+      'schoolId': schoolIds.isNotEmpty ? schoolIds.first : null, // Backwards compatibility
+      'schoolIds': schoolIds,
       'schoolRole': _schoolRoleToString(schoolRole),
       'isSchoolOwner': isSchoolOwner,
     };
@@ -148,6 +153,7 @@ class UserModel {
     UserRole? role,
     bool? isApproved,
     String? schoolId,
+    List<String>? schoolIds,
     SchoolRole? schoolRole,
     bool? isSchoolOwner,
   }) {
@@ -163,6 +169,7 @@ class UserModel {
       role: role ?? this.role,
       isApproved: isApproved ?? this.isApproved,
       schoolId: schoolId ?? this.schoolId,
+      schoolIds: schoolIds ?? this.schoolIds,
       schoolRole: schoolRole ?? this.schoolRole,
       isSchoolOwner: isSchoolOwner ?? this.isSchoolOwner,
     );

@@ -3,6 +3,7 @@ import '../../theme/app_theme.dart';
 import 'create_school_screen.dart';
 import 'join_school_screen.dart';
 import 'join_school_with_code_screen.dart';
+import 'pending_requests_screen.dart';
 
 class SchoolSelectionScreen extends StatelessWidget {
   const SchoolSelectionScreen({super.key});
@@ -77,6 +78,25 @@ class SchoolSelectionScreen extends StatelessWidget {
                   if (result == true && context.mounted) {
                     Navigator.pop(context);
                   }
+                },
+              ),
+              const SizedBox(height: 16),
+
+              // Pending Requests Option
+              _buildOptionCard(
+                context: context,
+                isDark: isDark,
+                icon: Icons.pending_actions_rounded,
+                title: 'Pending Requests',
+                description: 'View and manage your pending join requests',
+                color: AppTheme.warning,
+                onTap: () {
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (context) => const PendingRequestsScreen(),
+                    ),
+                  );
                 },
               ),
               const SizedBox(height: 16),
