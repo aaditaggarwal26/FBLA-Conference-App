@@ -25,7 +25,12 @@ service cloud.firestore {
     match /users/{userId} {
       allow read: if isSignedIn();
       allow create: if isSignedIn() && isOwner(userId);
-      allow update: if isSignedIn() && (isOwner(userId) || isAdmin());
+      allow update: if isSignedIn() && (
+        isOwner(userId) || 
+        isAdmin() ||
+        // Allow school admins to update schoolIds when approving join requests
+        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['schoolId', 'schoolIds']))
+      );
       allow delete: if isAdmin();
     }
     
@@ -177,8 +182,10 @@ service cloud.firestore {
     
     // School Announcements (top-level collection for queries)
     match /school_announcements/{announcementId} {
-      function getUserSchoolId() {
-        return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.schoolId;
+      function getUserSchoolIds() {
+        let userData = get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+        return 'schoolIds' in userData ? userData.schoolIds : 
+               ('schoolId' in userData && userData.schoolId != null ? [userData.schoolId] : []);
       }
       
       function isSchoolAdminForAnnouncement() {
@@ -200,11 +207,11 @@ service cloud.firestore {
       }
       
       function isSchoolMember() {
-        let userSchoolId = getUserSchoolId();
-        return userSchoolId != null && resource.data.schoolId == userSchoolId;
+        let userSchoolIds = getUserSchoolIds();
+        return resource.data.schoolId in userSchoolIds;
       }
       
-      // Users can read announcements from their school (both get and list)
+      // Users can read announcements from their schools (both get and list)
       allow read: if isSignedIn() && isSchoolMember();
       
       // Only school admins/owners can create announcements
@@ -216,8 +223,10 @@ service cloud.firestore {
     
     // School Resources (top-level collection for queries)
     match /school_resources/{resourceId} {
-      function getUserSchoolId() {
-        return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.schoolId;
+      function getUserSchoolIds() {
+        let userData = get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+        return 'schoolIds' in userData ? userData.schoolIds : 
+               ('schoolId' in userData && userData.schoolId != null ? [userData.schoolId] : []);
       }
       
       function isSchoolAdminForResource() {
@@ -239,11 +248,11 @@ service cloud.firestore {
       }
       
       function isSchoolMember() {
-        let userSchoolId = getUserSchoolId();
-        return userSchoolId != null && resource.data.schoolId == userSchoolId;
+        let userSchoolIds = getUserSchoolIds();
+        return resource.data.schoolId in userSchoolIds;
       }
       
-      // Users can read resources from their school (both get and list)
+      // Users can read resources from their schools (both get and list)
       allow read: if isSignedIn() && isSchoolMember();
       
       // Only school admins/owners can create/update/delete
@@ -287,8 +296,10 @@ service cloud.firestore {
     
     // School Events collection
     match /school_events/{eventId} {
-      function getUserSchoolId() {
-        return get(/databases/$(database)/documents/users/$(request.auth.uid)).data.schoolId;
+      function getUserSchoolIds() {
+        let userData = get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+        return 'schoolIds' in userData ? userData.schoolIds : 
+               ('schoolId' in userData && userData.schoolId != null ? [userData.schoolId] : []);
       }
       
       function isSchoolAdminForEvent() {
@@ -310,11 +321,11 @@ service cloud.firestore {
       }
       
       function isSchoolMemberForEvent() {
-        let userSchoolId = getUserSchoolId();
-        return userSchoolId != null && resource.data.schoolId == userSchoolId;
+        let userSchoolIds = getUserSchoolIds();
+        return resource.data.schoolId in userSchoolIds;
       }
       
-      // Members can read events from their school (both get and list)
+      // Members can read events from their schools (both get and list)
       allow read: if isSignedIn() && isSchoolMemberForEvent();
       
       // Only school admins/owners can create events
