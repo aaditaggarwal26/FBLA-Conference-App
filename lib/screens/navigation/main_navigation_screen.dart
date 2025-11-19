@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import '../home/home_screen.dart';
 import '../events/events_screen.dart';
-import '../schedule/schedule_screen.dart';
 import '../pins/pin_trading_screen.dart';
 import '../profile/profile_screen.dart';
 import '../messages/messages_list_screen.dart';
@@ -22,7 +21,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     EventsScreen(),
     PinTradingScreen(),
     MessagesListScreen(),
-    ScheduleScreen(),
     ProfileScreen(),
   ];
 
@@ -53,13 +51,7 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                 _buildNavItem(1, Icons.event_rounded, 'Events', isDark),
                 _buildNavItem(2, Icons.push_pin_rounded, 'Pins', isDark),
                 _buildNavItem(3, Icons.chat_bubble_rounded, 'Messages', isDark),
-                _buildNavItem(
-                  4,
-                  Icons.calendar_today_rounded,
-                  'Schedule',
-                  isDark,
-                ),
-                _buildNavItem(5, Icons.person_rounded, 'Profile', isDark),
+                _buildNavItem(4, Icons.person_rounded, 'Profile', isDark),
               ],
             ),
           ),

@@ -24,7 +24,6 @@ class _SchoolCalendarScreenState extends State<SchoolCalendarScreen> {
   DateTime? _selectedDay;
   Map<DateTime, List<SchoolEventModel>> _events = {};
   bool _isAdmin = false;
-  List<SchoolEventModel> _allEvents = [];
 
   @override
   void initState() {
@@ -56,26 +55,25 @@ class _SchoolCalendarScreenState extends State<SchoolCalendarScreen> {
 
   void _organizeEvents(List<SchoolEventModel> events) {
     if (!mounted) return;
-    
+
     final Map<DateTime, List<SchoolEventModel>> eventMap = {};
-    
+
     for (final event in events) {
       final eventDate = DateTime(
         event.startTime.year,
         event.startTime.month,
         event.startTime.day,
       );
-      
+
       if (eventMap[eventDate] == null) {
         eventMap[eventDate] = [];
       }
       eventMap[eventDate]!.add(event);
     }
-    
+
     if (mounted) {
       setState(() {
         _events = eventMap;
-        _allEvents = events;
       });
     }
   }
@@ -83,18 +81,18 @@ class _SchoolCalendarScreenState extends State<SchoolCalendarScreen> {
   Future<void> _addToGoogleCalendar(SchoolEventModel event) async {
     final startTime = event.startTime.toUtc();
     final endTime = event.endTime.toUtc();
-    
+
     final startStr = DateFormat("yyyyMMdd'T'HHmmss'Z'").format(startTime);
     final endStr = DateFormat("yyyyMMdd'T'HHmmss'Z'").format(endTime);
-    
+
     final url = Uri.parse(
       'https://calendar.google.com/calendar/render?action=TEMPLATE'
       '&text=${Uri.encodeComponent(event.title)}'
       '&dates=$startStr/$endStr'
       '&details=${Uri.encodeComponent(event.description)}'
-      '&location=${Uri.encodeComponent(event.location)}'
+      '&location=${Uri.encodeComponent(event.location)}',
     );
-    
+
     if (await canLaunchUrl(url)) {
       await launchUrl(url, mode: LaunchMode.externalApplication);
     } else {
@@ -178,7 +176,7 @@ class _SchoolCalendarScreenState extends State<SchoolCalendarScreen> {
           );
           return;
         }
-        
+
         await _schoolService.registerForEvent(event.id, currentUserId);
         if (mounted) {
           ScaffoldMessenger.of(context).showSnackBar(
@@ -192,10 +190,7 @@ class _SchoolCalendarScreenState extends State<SchoolCalendarScreen> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error: $e'),
-            backgroundColor: AppTheme.error,
-          ),
+          SnackBar(content: Text('Error: $e'), backgroundColor: AppTheme.error),
         );
       }
     }
@@ -220,7 +215,8 @@ class _SchoolCalendarScreenState extends State<SchoolCalendarScreen> {
                 Navigator.push(
                   context,
                   MaterialPageRoute(
-                    builder: (context) => CreateSchoolEventScreen(schoolId: widget.schoolId),
+                    builder: (context) =>
+                        CreateSchoolEventScreen(schoolId: widget.schoolId),
                   ),
                 );
               },
@@ -230,7 +226,8 @@ class _SchoolCalendarScreenState extends State<SchoolCalendarScreen> {
       body: StreamBuilder<List<SchoolEventModel>>(
         stream: _schoolService.getSchoolEvents(widget.schoolId),
         builder: (context, snapshot) {
-          if (snapshot.connectionState == ConnectionState.waiting && !snapshot.hasData) {
+          if (snapshot.connectionState == ConnectionState.waiting &&
+              !snapshot.hasData) {
             return const Center(child: CircularProgressIndicator());
           }
 
@@ -239,7 +236,7 @@ class _SchoolCalendarScreenState extends State<SchoolCalendarScreen> {
           }
 
           final events = snapshot.data ?? [];
-          
+
           // Organize events only when data changes
           WidgetsBinding.instance.addPostFrameCallback((_) {
             _organizeEvents(events);
@@ -260,11 +257,15 @@ class _SchoolCalendarScreenState extends State<SchoolCalendarScreen> {
                   startingDayOfWeek: StartingDayOfWeek.sunday,
                   calendarStyle: CalendarStyle(
                     todayDecoration: BoxDecoration(
-                      color: (isDark ? AppTheme.darkPrimary : AppTheme.primaryBlue).withValues(alpha: 0.5),
+                      color:
+                          (isDark ? AppTheme.darkPrimary : AppTheme.primaryBlue)
+                              .withValues(alpha: 0.5),
                       shape: BoxShape.circle,
                     ),
                     selectedDecoration: BoxDecoration(
-                      color: isDark ? AppTheme.darkPrimary : AppTheme.primaryBlue,
+                      color: isDark
+                          ? AppTheme.darkPrimary
+                          : AppTheme.primaryBlue,
                       shape: BoxShape.circle,
                     ),
                     markerDecoration: BoxDecoration(
@@ -300,14 +301,18 @@ class _SchoolCalendarScreenState extends State<SchoolCalendarScreen> {
                   },
                 ),
               ),
-              
+
               const SizedBox(height: 8),
-              
+
               // Events for selected day
               Expanded(
                 child: _selectedDay == null
                     ? const Center(child: Text('Select a day to see events'))
-                    : _buildEventsList(_getEventsForDay(_selectedDay!), isDark, currentUserId),
+                    : _buildEventsList(
+                        _getEventsForDay(_selectedDay!),
+                        isDark,
+                        currentUserId,
+                      ),
               ),
             ],
           );
@@ -316,19 +321,32 @@ class _SchoolCalendarScreenState extends State<SchoolCalendarScreen> {
     );
   }
 
-  Widget _buildEventsList(List<SchoolEventModel> events, bool isDark, String currentUserId) {
+  Widget _buildEventsList(
+    List<SchoolEventModel> events,
+    bool isDark,
+    String currentUserId,
+  ) {
     if (events.isEmpty) {
       return Center(
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
           children: [
-            Icon(Icons.event_busy_rounded, size: 64, color: AppTheme.mediumGray),
-            const SizedBox(height: 16),
-            Text(
-              'No events on this day',
-              style: TextStyle(
-                fontSize: 16,
-                color: isDark ? Colors.white : AppTheme.black,
+            Icon(
+              Icons.event_busy_rounded,
+              size: 56,
+              color: AppTheme.mediumGray,
+            ),
+            const SizedBox(height: 12),
+            Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 16),
+              child: Text(
+                'No events on this day',
+                style: TextStyle(
+                  fontSize: 14,
+                  color: isDark ? Colors.white : AppTheme.black,
+                ),
+                textAlign: TextAlign.center,
               ),
             ),
           ],
@@ -343,15 +361,15 @@ class _SchoolCalendarScreenState extends State<SchoolCalendarScreen> {
       itemBuilder: (context, index) {
         final event = events[index];
         final isRegistered = event.isUserRegistered(currentUserId);
-        
+
         return Container(
           padding: const EdgeInsets.all(16),
           decoration: BoxDecoration(
             color: isDark ? AppTheme.darkSurface : Colors.white,
             borderRadius: BorderRadius.circular(16),
             border: Border.all(
-              color: isRegistered 
-                  ? AppTheme.success 
+              color: isRegistered
+                  ? AppTheme.success
                   : (isDark ? AppTheme.darkCard : AppTheme.lightGray),
               width: isRegistered ? 2 : 1,
             ),
@@ -373,7 +391,10 @@ class _SchoolCalendarScreenState extends State<SchoolCalendarScreen> {
                   ),
                   if (_isAdmin)
                     IconButton(
-                      icon: const Icon(Icons.delete_rounded, color: AppTheme.error),
+                      icon: const Icon(
+                        Icons.delete_rounded,
+                        color: AppTheme.error,
+                      ),
                       onPressed: () => _deleteEvent(event.id),
                     ),
                 ],
@@ -381,7 +402,11 @@ class _SchoolCalendarScreenState extends State<SchoolCalendarScreen> {
               const SizedBox(height: 8),
               Row(
                 children: [
-                  Icon(Icons.access_time_rounded, size: 16, color: AppTheme.mediumGray),
+                  Icon(
+                    Icons.access_time_rounded,
+                    size: 16,
+                    color: AppTheme.mediumGray,
+                  ),
                   const SizedBox(width: 4),
                   Text(
                     event.isAllDay
@@ -394,7 +419,11 @@ class _SchoolCalendarScreenState extends State<SchoolCalendarScreen> {
               const SizedBox(height: 4),
               Row(
                 children: [
-                  Icon(Icons.location_on_outlined, size: 16, color: AppTheme.mediumGray),
+                  Icon(
+                    Icons.location_on_outlined,
+                    size: 16,
+                    color: AppTheme.mediumGray,
+                  ),
                   const SizedBox(width: 4),
                   Expanded(
                     child: Text(
@@ -410,7 +439,9 @@ class _SchoolCalendarScreenState extends State<SchoolCalendarScreen> {
                   event.description,
                   style: TextStyle(
                     fontSize: 14,
-                    color: isDark ? Colors.white.withValues(alpha: 0.8) : AppTheme.darkGray,
+                    color: isDark
+                        ? Colors.white.withValues(alpha: 0.8)
+                        : AppTheme.darkGray,
                   ),
                 ),
               ],
@@ -418,13 +449,21 @@ class _SchoolCalendarScreenState extends State<SchoolCalendarScreen> {
                 const SizedBox(height: 8),
                 Row(
                   children: [
-                    Icon(Icons.people_rounded, size: 16, color: AppTheme.mediumGray),
+                    Icon(
+                      Icons.people_rounded,
+                      size: 16,
+                      color: AppTheme.mediumGray,
+                    ),
                     const SizedBox(width: 4),
                     Text(
                       '${event.attendeeIds.length}/${event.maxAttendees} registered',
                       style: TextStyle(
-                        color: event.isFull() ? AppTheme.error : AppTheme.mediumGray,
-                        fontWeight: event.isFull() ? FontWeight.bold : FontWeight.normal,
+                        color: event.isFull()
+                            ? AppTheme.error
+                            : AppTheme.mediumGray,
+                        fontWeight: event.isFull()
+                            ? FontWeight.bold
+                            : FontWeight.normal,
                       ),
                     ),
                   ],
@@ -437,16 +476,24 @@ class _SchoolCalendarScreenState extends State<SchoolCalendarScreen> {
                     child: OutlinedButton.icon(
                       onPressed: () => _registerForEvent(event),
                       icon: Icon(
-                        isRegistered ? Icons.check_circle_rounded : Icons.event_available_rounded,
+                        isRegistered
+                            ? Icons.check_circle_rounded
+                            : Icons.event_available_rounded,
                         size: 18,
                       ),
                       label: Text(isRegistered ? 'Registered' : 'Register'),
                       style: OutlinedButton.styleFrom(
-                        foregroundColor: isRegistered ? AppTheme.success : AppTheme.primaryBlue,
+                        foregroundColor: isRegistered
+                            ? AppTheme.success
+                            : AppTheme.primaryBlue,
                         side: BorderSide(
-                          color: isRegistered ? AppTheme.success : AppTheme.primaryBlue,
+                          color: isRegistered
+                              ? AppTheme.success
+                              : AppTheme.primaryBlue,
                         ),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
                     ),
                   ),
@@ -459,7 +506,9 @@ class _SchoolCalendarScreenState extends State<SchoolCalendarScreen> {
                       style: OutlinedButton.styleFrom(
                         foregroundColor: AppTheme.warning,
                         side: const BorderSide(color: AppTheme.warning),
-                        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
                     ),
                   ),

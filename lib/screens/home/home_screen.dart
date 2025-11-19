@@ -15,7 +15,6 @@ import '../../theme/app_theme.dart';
 import '../../widgets/event_card.dart';
 import '../../widgets/announcement_card.dart';
 import '../practice_tests/practice_tests_screen.dart';
-import '../school/school_calendar_screen.dart';
 
 class HomeScreen extends StatefulWidget {
   const HomeScreen({super.key});
@@ -430,6 +429,7 @@ class _HomeScreenState extends State<HomeScreen> {
                 ),
 
                 // FBLA announcements header
+                const SizedBox(height: 20),
                 Container(
                   padding: const EdgeInsets.symmetric(
                     horizontal: 12,
@@ -528,50 +528,10 @@ class _HomeScreenState extends State<HomeScreen> {
                     return Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Row(
-                          children: [
-                            Expanded(
-                              child: _buildSectionHeader(
-                                'Upcoming Events',
-                                Icons.event_rounded,
-                                isDark,
-                              ),
-                            ),
-                            TextButton(
-                              onPressed: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (context) => SchoolCalendarScreen(
-                                      schoolId: schoolId,
-                                    ),
-                                  ),
-                                );
-                              },
-                              child: Row(
-                                mainAxisSize: MainAxisSize.min,
-                                children: [
-                                  Text(
-                                    'View Calendar',
-                                    style: TextStyle(
-                                      color: isDark
-                                          ? AppTheme.darkPrimary
-                                          : AppTheme.primaryBlue,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Icon(
-                                    Icons.arrow_forward_rounded,
-                                    size: 16,
-                                    color: isDark
-                                        ? AppTheme.darkPrimary
-                                        : AppTheme.primaryBlue,
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
+                        _buildSectionHeader(
+                          'Upcoming Events',
+                          Icons.event_rounded,
+                          isDark,
                         ),
                         const SizedBox(height: 16),
                         _buildUpcomingEvents(schoolId, isDark),
@@ -836,12 +796,12 @@ class _HomeScreenState extends State<HomeScreen> {
         color: isDark ? AppTheme.darkSurface : Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: AppTheme.success.withValues(alpha: 0.3),
-          width: 1.5,
+          color: AppTheme.success.withValues(alpha: 0.2),
+          width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: AppTheme.success.withValues(alpha: 0.1),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.06),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -850,7 +810,9 @@ class _HomeScreenState extends State<HomeScreen> {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
+          // Header row with icon, title, and pinned badge
           Row(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
                 padding: const EdgeInsets.all(8),
@@ -869,78 +831,109 @@ class _HomeScreenState extends State<HomeScreen> {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
-                    Text(
-                      announcement.title,
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.bold,
-                        color: isDark ? Colors.white : AppTheme.black,
-                      ),
+                    Row(
+                      children: [
+                        Expanded(
+                          child: Text(
+                            announcement.title,
+                            style: TextStyle(
+                              fontSize: 18,
+                              fontWeight: FontWeight.bold,
+                              color: isDark ? Colors.white : AppTheme.black,
+                              height: 1.3,
+                            ),
+                          ),
+                        ),
+                        if (announcement.isPinned) ...[
+                          const SizedBox(width: 8),
+                          Container(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 8,
+                              vertical: 4,
+                            ),
+                            decoration: BoxDecoration(
+                              color: AppTheme.warning.withValues(alpha: 0.15),
+                              borderRadius: BorderRadius.circular(6),
+                              border: Border.all(
+                                color: AppTheme.warning.withValues(alpha: 0.4),
+                              ),
+                            ),
+                            child: Row(
+                              mainAxisSize: MainAxisSize.min,
+                              children: [
+                                Icon(
+                                  Icons.push_pin_rounded,
+                                  size: 12,
+                                  color: AppTheme.warning,
+                                ),
+                                const SizedBox(width: 4),
+                                Text(
+                                  'Pinned',
+                                  style: TextStyle(
+                                    fontSize: 10,
+                                    fontWeight: FontWeight.bold,
+                                    color: AppTheme.warning,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ],
                     ),
-                    const SizedBox(height: 2),
-                    Text(
-                      'By ${announcement.authorName}',
-                      style: TextStyle(
-                        fontSize: 12,
-                        color: AppTheme.success,
-                        fontWeight: FontWeight.w500,
-                      ),
+                    const SizedBox(height: 6),
+                    Row(
+                      children: [
+                        Icon(
+                          Icons.person_rounded,
+                          size: 12,
+                          color: AppTheme.success,
+                        ),
+                        const SizedBox(width: 4),
+                        Text(
+                          announcement.authorName,
+                          style: TextStyle(
+                            fontSize: 12,
+                            color: AppTheme.success,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ],
                     ),
                   ],
                 ),
               ),
-              if (announcement.isPinned)
-                Container(
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 8,
-                    vertical: 4,
-                  ),
-                  decoration: BoxDecoration(
-                    color: AppTheme.success.withValues(alpha: 0.2),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                  child: const Row(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(Icons.push_pin, size: 12, color: AppTheme.success),
-                      SizedBox(width: 4),
-                      Text(
-                        'Pinned',
-                        style: TextStyle(
-                          fontSize: 10,
-                          fontWeight: FontWeight.bold,
-                          color: AppTheme.success,
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
             ],
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
+          // Content
           Text(
             announcement.content,
             style: TextStyle(
               fontSize: 14,
-              color: isDark ? AppTheme.mediumGray : AppTheme.darkGray,
+              color: isDark
+                  ? Colors.white.withValues(alpha: 0.7)
+                  : AppTheme.darkGray,
               height: 1.5,
             ),
             maxLines: 3,
             overflow: TextOverflow.ellipsis,
           ),
-          const SizedBox(height: 12),
+          const SizedBox(height: 14),
+          // Footer with timestamp
           Row(
             children: [
               Icon(
                 Icons.access_time_rounded,
-                size: 14,
+                size: 13,
                 color: isDark ? AppTheme.mediumGray : AppTheme.darkGray,
               ),
               const SizedBox(width: 6),
               Text(
                 DateFormat('MMM d, y • h:mm a').format(announcement.createdAt),
                 style: TextStyle(
-                  fontSize: 12,
+                  fontSize: 11,
+                  fontWeight: FontWeight.w500,
                   color: isDark ? AppTheme.mediumGray : AppTheme.darkGray,
                 ),
               ),

@@ -16,16 +16,16 @@ class AnnouncementCard extends StatelessWidget {
     final isDark = Theme.of(context).brightness == Brightness.dark;
     
     return Container(
-      margin: const EdgeInsets.only(bottom: 0),
       decoration: BoxDecoration(
         color: isDark ? AppTheme.darkSurface : Colors.white,
         borderRadius: BorderRadius.circular(16),
         border: Border.all(
-          color: (isDark ? AppTheme.darkCard : AppTheme.lightGray).withValues(alpha: 0.5),
+          color: AppTheme.primaryBlue.withValues(alpha: 0.2),
+          width: 1,
         ),
         boxShadow: [
           BoxShadow(
-            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.04),
+            color: Colors.black.withValues(alpha: isDark ? 0.2 : 0.06),
             blurRadius: 12,
             offset: const Offset(0, 4),
           ),
@@ -49,7 +49,7 @@ class AnnouncementCard extends StatelessWidget {
                       return const SizedBox.shrink();
                     },
                   ),
-                  // Gradient overlay for pinned badge
+                  // Pinned badge on image
                   if (announcement.isPinned)
                     Positioned(
                       top: 12,
@@ -90,11 +90,11 @@ class AnnouncementCard extends StatelessWidget {
 
             // Content
             Padding(
-              padding: const EdgeInsets.all(16),
+              padding: const EdgeInsets.all(20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Category and Time
+                  // Header row with category, pinned badge, and time
                   Row(
                     children: [
                       Container(
@@ -127,11 +127,46 @@ class AnnouncementCard extends StatelessWidget {
                           ],
                         ),
                       ),
+                      if (announcement.isPinned && announcement.imageUrl == null) ...[
+                        const SizedBox(width: 8),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 8,
+                            vertical: 4,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppTheme.warning.withValues(alpha: 0.15),
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(
+                              color: AppTheme.warning.withValues(alpha: 0.4),
+                            ),
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                Icons.push_pin_rounded,
+                                size: 12,
+                                color: AppTheme.warning,
+                              ),
+                              const SizedBox(width: 4),
+                              Text(
+                                'Pinned',
+                                style: TextStyle(
+                                  fontSize: 10,
+                                  fontWeight: FontWeight.bold,
+                                  color: AppTheme.warning,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                      ],
                       const Spacer(),
                       Icon(
-                        Icons.schedule_rounded,
+                        Icons.access_time_rounded,
                         size: 13,
-                        color: isDark ? Colors.white.withValues(alpha: 0.5) : AppTheme.mediumGray,
+                        color: isDark ? AppTheme.mediumGray : AppTheme.darkGray,
                       ),
                       const SizedBox(width: 4),
                       Text(
@@ -139,26 +174,26 @@ class AnnouncementCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: 11,
                           fontWeight: FontWeight.w500,
-                          color: isDark ? Colors.white.withValues(alpha: 0.5) : AppTheme.mediumGray,
+                          color: isDark ? AppTheme.mediumGray : AppTheme.darkGray,
                         ),
                       ),
                     ],
                   ),
 
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 14),
 
                   // Title
                   Text(
                     announcement.title,
                     style: TextStyle(
-                      fontSize: 17,
+                      fontSize: 18,
                       fontWeight: FontWeight.bold,
                       color: isDark ? Colors.white : AppTheme.black,
                       height: 1.3,
                     ),
                   ),
 
-                  const SizedBox(height: 8),
+                  const SizedBox(height: 10),
 
                   // Content
                   Text(
@@ -172,32 +207,49 @@ class AnnouncementCard extends StatelessWidget {
                     overflow: TextOverflow.ellipsis,
                   ),
 
-                  const SizedBox(height: 12),
+                  const SizedBox(height: 14),
 
-                  // Footer
+                  // Footer with author
                   Row(
                     children: [
                       CircleAvatar(
-                        radius: 12,
+                        radius: 14,
                         backgroundColor: AppTheme.primaryBlue.withValues(alpha: 0.1),
                         child: Text(
-                          announcement.postedBy[0].toUpperCase(),
+                          announcement.postedBy.isNotEmpty
+                              ? announcement.postedBy[0].toUpperCase()
+                              : 'A',
                           style: TextStyle(
-                            fontSize: 11,
+                            fontSize: 12,
                             fontWeight: FontWeight.bold,
                             color: AppTheme.primaryBlue,
                           ),
                         ),
                       ),
-                      const SizedBox(width: 8),
+                      const SizedBox(width: 10),
                       Expanded(
-                        child: Text(
-                          announcement.postedBy,
-                          style: TextStyle(
-                            fontSize: 12,
-                            fontWeight: FontWeight.w600,
-                            color: isDark ? Colors.white.withValues(alpha: 0.6) : AppTheme.darkGray,
-                          ),
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              'Posted by',
+                              style: TextStyle(
+                                fontSize: 11,
+                                color: isDark
+                                    ? Colors.white.withValues(alpha: 0.5)
+                                    : AppTheme.mediumGray,
+                              ),
+                            ),
+                            const SizedBox(height: 2),
+                            Text(
+                              announcement.postedBy,
+                              style: TextStyle(
+                                fontSize: 13,
+                                fontWeight: FontWeight.w600,
+                                color: isDark ? Colors.white.withValues(alpha: 0.8) : AppTheme.darkGray,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
                     ],
