@@ -31,11 +31,12 @@ class SchoolSelectionScreen extends StatelessWidget {
         ],
       ),
       body: SafeArea(
-        child: Padding(
-          padding: const EdgeInsets.all(24),
-          child: Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
+        child: SingleChildScrollView(
+          child: Padding(
+            padding: const EdgeInsets.all(24),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
               const SizedBox(height: 32),
               Icon(
                 Icons.school_rounded,
@@ -143,7 +144,7 @@ class SchoolSelectionScreen extends StatelessWidget {
                   }
                 },
               ),
-              const Spacer(),
+              const SizedBox(height: 32),
               Text(
                 'You can also set this up later from your profile.',
                 textAlign: TextAlign.center,
@@ -152,6 +153,7 @@ class SchoolSelectionScreen extends StatelessWidget {
                 ),
               ),
             ],
+            ),
           ),
         ),
       ),

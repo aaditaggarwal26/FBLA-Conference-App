@@ -268,12 +268,13 @@ class _HomeScreenState extends State<HomeScreen> {
                   isDark,
                 ),
                 const SizedBox(height: 16),
-                
+
                 // School Announcements (if user is in a school)
-                FutureBuilder<UserModel?> (
+                FutureBuilder<UserModel?>(
                   future: _userDataFuture,
                   builder: (context, userSnapshot) {
-                    if (userSnapshot.connectionState == ConnectionState.waiting) {
+                    if (userSnapshot.connectionState ==
+                        ConnectionState.waiting) {
                       return _buildLoadingShimmer(isDark);
                     }
 
@@ -308,18 +309,32 @@ class _HomeScreenState extends State<HomeScreen> {
                             FutureBuilder<SchoolModel?>(
                               future: _schoolService.getSchool(schoolId),
                               builder: (context, schoolSnapshot) {
-                                final schoolName = schoolSnapshot.data?.name ?? 'Your School';
+                                final schoolName =
+                                    schoolSnapshot.data?.name ?? 'Your School';
                                 return Container(
-                                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 6,
+                                  ),
                                   decoration: BoxDecoration(
-                                    color: AppTheme.success.withValues(alpha: 0.1),
+                                    color: AppTheme.success.withValues(
+                                      alpha: 0.1,
+                                    ),
                                     borderRadius: BorderRadius.circular(8),
-                                    border: Border.all(color: AppTheme.success.withValues(alpha: 0.3)),
+                                    border: Border.all(
+                                      color: AppTheme.success.withValues(
+                                        alpha: 0.3,
+                                      ),
+                                    ),
                                   ),
                                   child: Row(
                                     mainAxisSize: MainAxisSize.min,
                                     children: [
-                                      Icon(Icons.school_rounded, size: 16, color: AppTheme.success),
+                                      Icon(
+                                        Icons.school_rounded,
+                                        size: 16,
+                                        color: AppTheme.success,
+                                      ),
                                       const SizedBox(width: 6),
                                       Text(
                                         schoolName,
@@ -335,79 +350,106 @@ class _HomeScreenState extends State<HomeScreen> {
                               },
                             ),
                             const SizedBox(height: 12),
-                        StreamBuilder<List<SchoolAnnouncementModel>>(
-                          stream: _schoolService.getSchoolAnnouncements(schoolId),
-                          builder: (context, schoolSnapshot) {
-                            // Only show loading on initial wait
-                            if (schoolSnapshot.connectionState == ConnectionState.waiting && !schoolSnapshot.hasData) {
-                              return _buildLoadingShimmer(isDark);
-                            }
+                            StreamBuilder<List<SchoolAnnouncementModel>>(
+                              stream: _schoolService.getSchoolAnnouncements(
+                                schoolId,
+                              ),
+                              builder: (context, schoolSnapshot) {
+                                // Only show loading on initial wait
+                                if (schoolSnapshot.connectionState ==
+                                        ConnectionState.waiting &&
+                                    !schoolSnapshot.hasData) {
+                                  return _buildLoadingShimmer(isDark);
+                                }
 
-                            if (!schoolSnapshot.hasData || schoolSnapshot.data!.isEmpty) {
-                              return Container(
-                                padding: const EdgeInsets.all(20),
-                                decoration: BoxDecoration(
-                                  color: isDark ? AppTheme.darkSurface : Colors.white,
-                                  borderRadius: BorderRadius.circular(12),
-                                  border: Border.all(
-                                    color: AppTheme.success.withValues(alpha: 0.3),
-                                  ),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.school_rounded,
-                                      color: AppTheme.success.withValues(alpha: 0.5),
-                                      size: 20,
-                                    ),
-                                    const SizedBox(width: 12),
-                                    Expanded(
-                                      child: Text(
-                                        'No school announcements yet',
-                                        style: TextStyle(
-                                          fontSize: 14,
-                                          color: isDark ? AppTheme.mediumGray : AppTheme.darkGray,
+                                if (!schoolSnapshot.hasData ||
+                                    schoolSnapshot.data!.isEmpty) {
+                                  return Container(
+                                    padding: const EdgeInsets.all(20),
+                                    decoration: BoxDecoration(
+                                      color: isDark
+                                          ? AppTheme.darkSurface
+                                          : Colors.white,
+                                      borderRadius: BorderRadius.circular(12),
+                                      border: Border.all(
+                                        color: AppTheme.success.withValues(
+                                          alpha: 0.3,
                                         ),
                                       ),
                                     ),
-                                  ],
-                                ),
-                              );
-                            }
-
-                            return Column(
-                              children: schoolSnapshot.data!
-                                  .take(3)
-                                  .map(
-                                    (announcement) => Padding(
-                                      padding: const EdgeInsets.only(bottom: 12),
-                                      child: _buildSchoolAnnouncementCard(announcement, isDark),
+                                    child: Row(
+                                      children: [
+                                        Icon(
+                                          Icons.school_rounded,
+                                          color: AppTheme.success.withValues(
+                                            alpha: 0.5,
+                                          ),
+                                          size: 20,
+                                        ),
+                                        const SizedBox(width: 12),
+                                        Expanded(
+                                          child: Text(
+                                            'No school announcements yet',
+                                            style: TextStyle(
+                                              fontSize: 14,
+                                              color: isDark
+                                                  ? AppTheme.mediumGray
+                                                  : AppTheme.darkGray,
+                                            ),
+                                          ),
+                                        ),
+                                      ],
                                     ),
-                                  )
-                                  .toList(),
-                            );
-                          },
-                        ),
-                        const SizedBox(height: 16),
+                                  );
+                                }
+
+                                return Column(
+                                  children: schoolSnapshot.data!
+                                      .take(3)
+                                      .map(
+                                        (announcement) => Padding(
+                                          padding: const EdgeInsets.only(
+                                            bottom: 12,
+                                          ),
+                                          child: _buildSchoolAnnouncementCard(
+                                            announcement,
+                                            isDark,
+                                          ),
+                                        ),
+                                      )
+                                      .toList(),
+                                );
+                              },
+                            ),
+                            const SizedBox(height: 16),
                           ],
                         );
                       }).toList(),
                     );
                   },
                 ),
-                
+
                 // FBLA announcements header
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
+                  ),
                   decoration: BoxDecoration(
                     color: AppTheme.primaryBlue.withValues(alpha: 0.1),
                     borderRadius: BorderRadius.circular(8),
-                    border: Border.all(color: AppTheme.primaryBlue.withValues(alpha: 0.3)),
+                    border: Border.all(
+                      color: AppTheme.primaryBlue.withValues(alpha: 0.3),
+                    ),
                   ),
                   child: Row(
                     mainAxisSize: MainAxisSize.min,
                     children: [
-                      Icon(Icons.account_balance_rounded, size: 16, color: AppTheme.primaryBlue),
+                      Icon(
+                        Icons.account_balance_rounded,
+                        size: 16,
+                        color: AppTheme.primaryBlue,
+                      ),
                       const SizedBox(width: 6),
                       Text(
                         'FBLA Conference',
@@ -421,7 +463,7 @@ class _HomeScreenState extends State<HomeScreen> {
                   ),
                 ),
                 const SizedBox(height: 12),
-                
+
                 // FBLA Announcements
                 StreamBuilder<List<AnnouncementModel>>(
                   stream: _announcementService.getAnnouncements(),
@@ -500,7 +542,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                 Navigator.push(
                                   context,
                                   MaterialPageRoute(
-                                    builder: (context) => SchoolCalendarScreen(schoolId: schoolId),
+                                    builder: (context) => SchoolCalendarScreen(
+                                      schoolId: schoolId,
+                                    ),
                                   ),
                                 );
                               },
@@ -510,7 +554,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   Text(
                                     'View Calendar',
                                     style: TextStyle(
-                                      color: isDark ? AppTheme.darkPrimary : AppTheme.primaryBlue,
+                                      color: isDark
+                                          ? AppTheme.darkPrimary
+                                          : AppTheme.primaryBlue,
                                       fontWeight: FontWeight.w600,
                                     ),
                                   ),
@@ -518,7 +564,9 @@ class _HomeScreenState extends State<HomeScreen> {
                                   Icon(
                                     Icons.arrow_forward_rounded,
                                     size: 16,
-                                    color: isDark ? AppTheme.darkPrimary : AppTheme.primaryBlue,
+                                    color: isDark
+                                        ? AppTheme.darkPrimary
+                                        : AppTheme.primaryBlue,
                                   ),
                                 ],
                               ),
@@ -592,20 +640,18 @@ class _HomeScreenState extends State<HomeScreen> {
 
   Widget _buildSectionHeader(String title, IconData icon, bool isDark) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.start, // Ensure alignment
+      mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        Flexible(
-          child: Container(
-            padding: const EdgeInsets.all(8),
-            decoration: BoxDecoration(
-              color: AppTheme.primaryBlue.withOpacity(0.1),
-              borderRadius: BorderRadius.circular(8),
-            ),
-            child: Icon(icon, color: AppTheme.primaryBlue, size: 20),
+        Container(
+          padding: const EdgeInsets.all(8),
+          decoration: BoxDecoration(
+            color: AppTheme.primaryBlue.withOpacity(0.1),
+            borderRadius: BorderRadius.circular(8),
           ),
+          child: Icon(icon, color: AppTheme.primaryBlue, size: 20),
         ),
         const SizedBox(width: 12),
-        Flexible(
+        Expanded(
           child: Text(
             title,
             style: TextStyle(
@@ -614,7 +660,8 @@ class _HomeScreenState extends State<HomeScreen> {
               color: isDark ? Colors.white : AppTheme.black,
               letterSpacing: 0.3,
             ),
-            overflow: TextOverflow.ellipsis, // Prevent overflow
+            overflow: TextOverflow.ellipsis,
+            maxLines: 1,
           ),
         ),
       ],
@@ -779,7 +826,10 @@ class _HomeScreenState extends State<HomeScreen> {
     );
   }
 
-  Widget _buildSchoolAnnouncementCard(SchoolAnnouncementModel announcement, bool isDark) {
+  Widget _buildSchoolAnnouncementCard(
+    SchoolAnnouncementModel announcement,
+    bool isDark,
+  ) {
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
@@ -841,7 +891,10 @@ class _HomeScreenState extends State<HomeScreen> {
               ),
               if (announcement.isPinned)
                 Container(
-                  padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 4),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 8,
+                    vertical: 4,
+                  ),
                   decoration: BoxDecoration(
                     color: AppTheme.success.withValues(alpha: 0.2),
                     borderRadius: BorderRadius.circular(6),
@@ -902,7 +955,8 @@ class _HomeScreenState extends State<HomeScreen> {
     return StreamBuilder<List<SchoolEventModel>>(
       stream: _schoolService.getSchoolEvents(schoolId),
       builder: (context, snapshot) {
-        if (snapshot.connectionState == ConnectionState.waiting && !snapshot.hasData) {
+        if (snapshot.connectionState == ConnectionState.waiting &&
+            !snapshot.hasData) {
           return _buildLoadingShimmer(isDark);
         }
 
@@ -940,10 +994,11 @@ class _HomeScreenState extends State<HomeScreen> {
 
         // Get upcoming events (future events sorted by start time)
         final now = DateTime.now();
-        final upcomingEvents = snapshot.data!
-            .where((event) => event.startTime.isAfter(now))
-            .toList()
-          ..sort((a, b) => a.startTime.compareTo(b.startTime));
+        final upcomingEvents =
+            snapshot.data!
+                .where((event) => event.startTime.isAfter(now))
+                .toList()
+              ..sort((a, b) => a.startTime.compareTo(b.startTime));
 
         if (upcomingEvents.isEmpty) {
           return Container(
@@ -981,7 +1036,7 @@ class _HomeScreenState extends State<HomeScreen> {
           children: upcomingEvents.take(3).map((event) {
             final currentUserId = FirebaseAuth.instance.currentUser?.uid ?? '';
             final isRegistered = event.isUserRegistered(currentUserId);
-            
+
             return Container(
               margin: const EdgeInsets.only(bottom: 12),
               padding: const EdgeInsets.all(16),
@@ -989,8 +1044,8 @@ class _HomeScreenState extends State<HomeScreen> {
                 color: isDark ? AppTheme.darkSurface : Colors.white,
                 borderRadius: BorderRadius.circular(12),
                 border: Border.all(
-                  color: isRegistered 
-                      ? AppTheme.success 
+                  color: isRegistered
+                      ? AppTheme.success
                       : (isDark ? AppTheme.darkCard : AppTheme.lightGray),
                   width: isRegistered ? 2 : 1,
                 ),
@@ -1032,13 +1087,21 @@ class _HomeScreenState extends State<HomeScreen> {
                             const SizedBox(height: 2),
                             Row(
                               children: [
-                                Icon(Icons.access_time_rounded, size: 10, color: AppTheme.mediumGray),
+                                Icon(
+                                  Icons.access_time_rounded,
+                                  size: 10,
+                                  color: AppTheme.mediumGray,
+                                ),
                                 const SizedBox(width: 2),
                                 Expanded(
                                   child: Text(
                                     event.isAllDay
-                                        ? DateFormat('MMM d').format(event.startTime)
-                                        : DateFormat('MMM d h:mm a').format(event.startTime),
+                                        ? DateFormat(
+                                            'MMM d',
+                                          ).format(event.startTime)
+                                        : DateFormat(
+                                            'MMM d h:mm a',
+                                          ).format(event.startTime),
                                     style: TextStyle(
                                       fontSize: 11,
                                       color: AppTheme.mediumGray,
@@ -1059,7 +1122,11 @@ class _HomeScreenState extends State<HomeScreen> {
                             color: AppTheme.success.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(4),
                           ),
-                          child: const Icon(Icons.check_circle_rounded, size: 12, color: AppTheme.success),
+                          child: const Icon(
+                            Icons.check_circle_rounded,
+                            size: 12,
+                            color: AppTheme.success,
+                          ),
                         ),
                     ],
                   ),
@@ -1067,14 +1134,20 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        Icon(Icons.location_on_outlined, size: 14, color: AppTheme.mediumGray),
+                        Icon(
+                          Icons.location_on_outlined,
+                          size: 14,
+                          color: AppTheme.mediumGray,
+                        ),
                         const SizedBox(width: 4),
                         Expanded(
                           child: Text(
                             event.location,
                             style: TextStyle(
                               fontSize: 13,
-                              color: isDark ? AppTheme.mediumGray : AppTheme.darkGray,
+                              color: isDark
+                                  ? AppTheme.mediumGray
+                                  : AppTheme.darkGray,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -1087,14 +1160,22 @@ class _HomeScreenState extends State<HomeScreen> {
                     const SizedBox(height: 8),
                     Row(
                       children: [
-                        Icon(Icons.people_rounded, size: 14, color: AppTheme.mediumGray),
+                        Icon(
+                          Icons.people_rounded,
+                          size: 14,
+                          color: AppTheme.mediumGray,
+                        ),
                         const SizedBox(width: 4),
                         Text(
                           '${event.attendeeIds.length}/${event.maxAttendees} registered',
                           style: TextStyle(
                             fontSize: 12,
-                            color: event.isFull() ? AppTheme.error : AppTheme.mediumGray,
-                            fontWeight: event.isFull() ? FontWeight.bold : FontWeight.normal,
+                            color: event.isFull()
+                                ? AppTheme.error
+                                : AppTheme.mediumGray,
+                            fontWeight: event.isFull()
+                                ? FontWeight.bold
+                                : FontWeight.normal,
                           ),
                         ),
                       ],
