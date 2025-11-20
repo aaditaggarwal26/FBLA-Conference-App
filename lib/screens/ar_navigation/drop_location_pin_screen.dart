@@ -1,6 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
+import 'package:permission_handler/permission_handler.dart'; // Add this import
 import '../../services/location_pin_service.dart';
 import '../../services/ar_navigation_service.dart';
 
@@ -53,39 +54,127 @@ class _DropLocationPinScreenState extends State<DropLocationPinScreen> {
   Future<void> _getCurrentLocation() async {
     setState(() => _isLoadingLocation = true);
 
-    final hasPermission = await _navService.hasRequiredPermissions();
-    if (!hasPermission) {
-      final granted = await _navService.requestPermissions();
-      if (!granted) {
+    try {
+      // First, check if location services are enabled
+      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
         if (mounted) {
-          ScaffoldMessenger.of(context).showSnackBar(
-            const SnackBar(
-              content: Text('Location permission is required to drop pins'),
-              backgroundColor: Colors.red,
-            ),
-          );
+          _showLocationServicesDialog();
         }
         setState(() => _isLoadingLocation = false);
         return;
       }
-    }
 
-    final position = await _navService.getCurrentLocation();
-    setState(() {
-      _currentPosition = position;
-      _isLoadingLocation = false;
-    });
+      // Check permission status using Geolocator
+      LocationPermission permission = await Geolocator.checkPermission();
+      
+      if (permission == LocationPermission.denied) {
+        // Request permission
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              const SnackBar(
+                content: Text('Location permission is required to drop pins'),
+                backgroundColor: Colors.red,
+              ),
+            );
+          }
+          setState(() => _isLoadingLocation = false);
+          return;
+        }
+      }
+      
+      if (permission == LocationPermission.deniedForever) {
+        if (mounted) {
+          _showPermissionSettingsDialog();
+        }
+        setState(() => _isLoadingLocation = false);
+        return;
+      }
 
-    if (position != null && mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        SnackBar(
-          content: Text(
-            'Location acquired: ${position.latitude.toStringAsFixed(6)}, ${position.longitude.toStringAsFixed(6)}',
-          ),
-          backgroundColor: Colors.green,
-        ),
+      // Permission is granted, get location
+      final position = await Geolocator.getCurrentPosition(
+        desiredAccuracy: LocationAccuracy.high,
+        timeLimit: const Duration(seconds: 10),
       );
+      
+      setState(() {
+        _currentPosition = position;
+        _isLoadingLocation = false;
+      });
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              'Location acquired: ${position.latitude.toStringAsFixed(6)}, ${position.longitude.toStringAsFixed(6)}',
+            ),
+            backgroundColor: Colors.green,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isLoadingLocation = false);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Failed to get location: $e'),
+            backgroundColor: Colors.red,
+          ),
+        );
+      }
     }
+  }
+
+  void _showLocationServicesDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Location Services Disabled'),
+        content: const Text(
+          'Please enable location services in your device settings to use this feature.',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              await Geolocator.openLocationSettings();
+            },
+            child: const Text('Open Settings'),
+          ),
+        ],
+      ),
+    );
+  }
+
+  void _showPermissionSettingsDialog() {
+    showDialog(
+      context: context,
+      builder: (context) => AlertDialog(
+        title: const Text('Location Permission Required'),
+        content: const Text(
+          'Location permission was denied. To use AR navigation and location pins, please enable location permission in:\n\nSettings → FBLA → Location → While Using the App',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context),
+            child: const Text('Cancel'),
+          ),
+          ElevatedButton(
+            onPressed: () async {
+              Navigator.pop(context);
+              await Geolocator.openAppSettings();
+            },
+            child: const Text('Open Settings'),
+          ),
+        ],
+      ),
+    );
   }
 
   Future<void> _pickLocationImage() async {

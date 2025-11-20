@@ -250,6 +250,42 @@ class _EventsScreenState extends State<EventsScreen>
                   ? _eventService.getEvents()
                   : _eventService.getEventsByCategory(_selectedCategory),
               builder: (context, snapshot) {
+                if (snapshot.hasError) {
+                  // Check if it's the index error
+                  if (snapshot.error.toString().contains('requires an index')) {
+                    return SliverToBoxAdapter(
+                      child: Padding(
+                        padding: const EdgeInsets.all(16),
+                        child: Card(
+                          color: Colors.orange.shade50,
+                          child: Padding(
+                            padding: const EdgeInsets.all(16),
+                            child: Column(
+                              children: [
+                                const Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 40),
+                                const SizedBox(height: 8),
+                                const Text(
+                                  'Database Index Required',
+                                  style: TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                const SizedBox(height: 8),
+                                const Text(
+                                  'Please check the debug console for a link to create the required Firestore index.',
+                                  textAlign: TextAlign.center,
+                                  style: TextStyle(fontSize: 12),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                      ),
+                    );
+                  }
+                  return SliverToBoxAdapter(
+                    child: Center(child: Text('Error: ${snapshot.error}')),
+                  );
+                }
+
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const SliverFillRemaining(
                     child: Center(child: CircularProgressIndicator()),

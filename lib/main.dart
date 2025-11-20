@@ -3,6 +3,7 @@ import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:provider/provider.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'firebase_options.dart';
 import 'theme/app_theme.dart';
 import 'screens/auth/login_screen.dart';
@@ -12,7 +13,8 @@ import 'screens/navigation/main_navigation_screen.dart';
 import 'services/notification_service.dart';
 
 void main() async {
-  WidgetsFlutterBinding.ensureInitialized();
+  WidgetsBinding widgetsBinding = WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
 
   try {
     await Firebase.initializeApp(
@@ -28,6 +30,8 @@ void main() async {
   } catch (e) {
     print('Firebase initialization error: $e');
   }
+
+  FlutterNativeSplash.remove();
 
   runApp(
     ChangeNotifierProvider(

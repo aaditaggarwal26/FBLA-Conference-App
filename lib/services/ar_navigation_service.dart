@@ -7,13 +7,56 @@ class ARNavigationService {
   // Request necessary permissions for AR navigation
   Future<bool> requestPermissions() async {
     try {
-      final Map<Permission, PermissionStatus> statuses = await [
+      Map<Permission, PermissionStatus> statuses = await [
         Permission.camera,
-        Permission.location,
         Permission.locationWhenInUse,
       ].request();
 
-      return statuses.values.every((status) => status.isGranted);
+      final cameraGranted = statuses[Permission.camera]?.isGranted ?? false;
+      final locationGranted = statuses[Permission.locationWhenInUse]?.isGranted ?? false;
+
+      return cameraGranted && locationGranted;
+    } catch (e) {
+      return false;
+    }
+  }
+
+  // Request only location permission (for dropping pins)
+  Future<bool> requestLocationPermission() async {
+    try {
+      // Check if location services are enabled first
+      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        return false;
+      }
+
+      // Check current status
+      final currentStatus = await Permission.locationWhenInUse.status;
+      
+      // If already granted, return true
+      if (currentStatus.isGranted) {
+        return true;
+      }
+      
+      // If permanently denied, cannot request again
+      if (currentStatus.isPermanentlyDenied) {
+        return false;
+      }
+      
+      // Request permission
+      final status = await Permission.locationWhenInUse.request();
+      return status.isGranted;
+    } catch (e) {
+      print('Error requesting location permission: $e');
+      return false;
+    }
+  }
+
+  // Check if location permission is permanently denied
+  Future<bool> isLocationPermanentlyDenied() async {
+    try {
+      final status = await Permission.locationWhenInUse.status;
+      return status.isPermanentlyDenied;
     } catch (e) {
       return false;
     }
@@ -21,24 +64,49 @@ class ARNavigationService {
 
   // Check if all required permissions are granted
   Future<bool> hasRequiredPermissions() async {
-    final cameraStatus = await Permission.camera.status;
-    final locationStatus = await Permission.location.status;
-    return cameraStatus.isGranted && locationStatus.isGranted;
+    try {
+      final cameraStatus = await Permission.camera.status;
+      final locationStatus = await Permission.locationWhenInUse.status;
+      
+      return cameraStatus.isGranted && locationStatus.isGranted;
+    } catch (e) {
+      return false;
+    }
   }
 
-  // Get current user location
+  // Get current user location with better error handling
   Future<Position?> getCurrentLocation() async {
     try {
-      final hasPermission = await hasRequiredPermissions();
-      if (!hasPermission) {
-        final granted = await requestPermissions();
-        if (!granted) return null;
+      // Check if location services are enabled
+      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      if (!serviceEnabled) {
+        print('Location services are disabled');
+        return null;
       }
 
+      // Check location permission status
+      LocationPermission permission = await Geolocator.checkPermission();
+      
+      if (permission == LocationPermission.denied) {
+        permission = await Geolocator.requestPermission();
+        if (permission == LocationPermission.denied) {
+          print('Location permissions are denied');
+          return null;
+        }
+      }
+      
+      if (permission == LocationPermission.deniedForever) {
+        print('Location permissions are permanently denied');
+        return null;
+      }
+
+      // Get position with timeout
       return await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
+        timeLimit: const Duration(seconds: 10),
       );
     } catch (e) {
+      print('Error getting current location: $e');
       return null;
     }
   }
@@ -114,6 +182,11 @@ class ARNavigationService {
     double relativeBearing = bearing - currentHeading;
     if (relativeBearing < 0) relativeBearing += 360;
     if (relativeBearing > 360) relativeBearing -= 360;
+    
+    // Ensure relativeBearing is finite
+    if (!relativeBearing.isFinite) {
+      relativeBearing = 0.0;
+    }
 
     // Determine direction instruction
     String direction;
@@ -184,7 +257,7 @@ class ARNavigationService {
 
   // Open app settings
   Future<void> openAppSettings() async {
-    await openAppSettings();
+    await Permission.locationWhenInUse.request();
   }
 }
 
