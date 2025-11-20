@@ -1,7 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
+import 'package:firebase_auth/firebase_auth.dart';
 import '../models/announcement_model.dart';
+import '../models/user_model.dart';
 import '../theme/app_theme.dart';
+import '../services/message_service.dart';
+import '../screens/messages/chat_screen.dart';
 
 class AnnouncementCard extends StatefulWidget {
   final AnnouncementModel announcement;
@@ -14,6 +19,7 @@ class AnnouncementCard extends StatefulWidget {
 
 class _AnnouncementCardState extends State<AnnouncementCard> {
   bool _isExpanded = false;
+  final MessageService _messageService = MessageService();
 
   @override
   Widget build(BuildContext context) {
@@ -264,7 +270,7 @@ class _AnnouncementCardState extends State<AnnouncementCard> {
 
                   const SizedBox(height: 14),
 
-                  // Footer with author
+                  // Footer with author and chat button
                   Row(
                     children: [
                       CircleAvatar(
@@ -311,6 +317,24 @@ class _AnnouncementCardState extends State<AnnouncementCard> {
                           ],
                         ),
                       ),
+                      const SizedBox(width: 8),
+                      OutlinedButton.icon(
+                        onPressed: () => _openChatWithPoster(context),
+                        icon: const Icon(
+                          Icons.chat_bubble_outline_rounded,
+                          size: 16,
+                        ),
+                        label: const Text('Chat'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppTheme.primaryBlue,
+                          side: BorderSide(color: AppTheme.primaryBlue),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          minimumSize: const Size(0, 32),
+                        ),
+                      ),
                     ],
                   ),
                 ],
@@ -347,6 +371,122 @@ class _AnnouncementCardState extends State<AnnouncementCard> {
       case 'general':
       default:
         return Icons.info_rounded;
+    }
+  }
+
+  Future<void> _openChatWithPoster(BuildContext context) async {
+    final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+    if (currentUserId == null) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Please sign in to start a chat'),
+          backgroundColor: AppTheme.error,
+        ),
+      );
+      return;
+    }
+
+    // Show loading indicator
+    showDialog(
+      context: context,
+      barrierDismissible: false,
+      builder: (context) => const Center(child: CircularProgressIndicator()),
+    );
+
+    try {
+      // Search for user by name (postedBy)
+      final postedByName = widget.announcement.postedBy;
+
+      // First, try to find user by exact name match
+      final usersSnapshot = await FirebaseFirestore.instance
+          .collection('users')
+          .where('name', isEqualTo: postedByName)
+          .limit(1)
+          .get();
+
+      String? targetUserId;
+      String? targetUserName;
+
+      if (usersSnapshot.docs.isNotEmpty) {
+        final user = UserModel.fromFirestore(usersSnapshot.docs.first);
+        targetUserId = user.id;
+        targetUserName = user.name;
+      } else {
+        // If not found, search admins collection
+        final adminsSnapshot = await FirebaseFirestore.instance
+            .collection('admins')
+            .get();
+
+        for (final adminDoc in adminsSnapshot.docs) {
+          final adminId = adminDoc.id;
+          final adminData = adminDoc.data();
+          final adminEmail = adminData['email'] ?? '';
+
+          // Try to get user data for this admin
+          final adminUserDoc = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(adminId)
+              .get();
+
+          if (adminUserDoc.exists) {
+            final adminUser = UserModel.fromFirestore(adminUserDoc);
+            // Check if name or email matches
+            if (adminUser.name == postedByName ||
+                adminEmail.contains(postedByName)) {
+              targetUserId = adminUser.id;
+              targetUserName = adminUser.name;
+              break;
+            }
+          } else if (adminEmail.contains(postedByName)) {
+            // If user doc doesn't exist but email matches, use admin ID
+            targetUserId = adminId;
+            targetUserName = postedByName;
+            break;
+          }
+        }
+      }
+
+      if (!mounted) return;
+
+      Navigator.pop(context); // Close loading dialog
+
+      if (targetUserId == null || targetUserId == currentUserId) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Could not find user to chat with'),
+            backgroundColor: AppTheme.warning,
+          ),
+        );
+        return;
+      }
+
+      // Store in non-nullable variable for flow analysis
+      final userId = targetUserId;
+      final userName = targetUserName ?? postedByName;
+
+      // Get or create chat room
+      await _messageService.getOrCreateChatRoom(currentUserId, userId);
+
+      // Navigate to chat screen
+      if (mounted) {
+        Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) =>
+                ChatScreen(otherUserId: userId, otherUserName: userName),
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        Navigator.pop(context); // Close loading dialog
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error opening chat: $e'),
+            backgroundColor: AppTheme.error,
+          ),
+        );
+      }
     }
   }
 }

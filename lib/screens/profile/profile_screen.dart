@@ -136,7 +136,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
             // Profile Header
             Container(
               width: double.infinity,
-              color: AppTheme.white,
+              color: isDark ? AppTheme.darkSurface : AppTheme.white,
               padding: const EdgeInsets.all(24),
               child: Column(
                 children: [
@@ -285,12 +285,17 @@ class _ProfileScreenState extends State<ProfileScreen> {
   }
 
   Widget _buildStatCard(String label, String value, IconData icon) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
     return Container(
       padding: const EdgeInsets.all(20),
       decoration: BoxDecoration(
-        color: AppTheme.white,
+        color: isDark ? AppTheme.darkSurface : AppTheme.white,
         borderRadius: BorderRadius.circular(16),
-        border: Border.all(color: AppTheme.lightGray),
+        border: Border.all(
+          color: isDark
+              ? AppTheme.darkCard.withValues(alpha: 0.3)
+              : AppTheme.lightGray,
+        ),
       ),
       child: Column(
         children: [

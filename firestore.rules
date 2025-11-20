@@ -1,422 +1,312 @@
 rules_version = '2';
+
 service cloud.firestore {
+
   match /databases/{database}/documents {
+
     
-    // Helper functions
-    function isSignedIn() {
-      return request.auth != null;
-    }
-    
-    function isOwner(userId) {
-      return isSignedIn() && request.auth.uid == userId;
-    }
-    
-    function isAdmin() {
-      return isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid));
-    }
-    
+
+    // Core helpers
+
+    function isSignedIn() { return request.auth != null; }
+
+    function isOwner(userId) { return isSignedIn() && request.auth.uid == userId; }
+
+    function isAdmin() { return isSignedIn() && exists(/databases/$(database)/documents/admins/$(request.auth.uid)); }
+
     function hasPermission(permission) {
-      return isAdmin() && 
-        (get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role == 'super_admin' ||
-         permission in get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.permissions);
+
+      return isAdmin() && (get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.role == 'super_admin' ||
+
+                           permission in get(/databases/$(database)/documents/admins/$(request.auth.uid)).data.permissions);
+
     }
+
     
-    // Users collection
+
+    // School helpers (reusable)
+
+    function getUserSchoolIds() {
+
+      let userData = get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
+
+      return 'schoolIds' in userData ? userData.schoolIds : 
+
+             ('schoolId' in userData && userData.schoolId != null ? [userData.schoolId] : []);
+
+    }
+
+    function isSchoolAdmin(schoolId) {
+
+      let school = get(/databases/$(database)/documents/schools/$(schoolId));
+
+      return isSignedIn() && (school.data.ownerId == request.auth.uid || request.auth.uid in school.data.adminIds);
+
+    }
+
+    function isSchoolMember(schoolId) {
+
+      return isSignedIn() && schoolId in getUserSchoolIds();
+
+    }
+
+    
+
+    // Users
+
     match /users/{userId} {
+
       allow read: if isSignedIn();
+
       allow create: if isSignedIn() && isOwner(userId);
-      allow update: if isSignedIn() && (
-        isOwner(userId) || 
-        isAdmin() ||
-        // Allow school admins to update schoolIds when approving join requests
-        (request.resource.data.diff(resource.data).affectedKeys().hasOnly(['schoolId', 'schoolIds']))
-      );
+
+      allow update: if isSignedIn() && (isOwner(userId) || isAdmin() || 
+
+                   request.resource.data.diff(resource.data).affectedKeys().hasOnly(['schoolId', 'schoolIds', 'schoolRole', 'isSchoolOwner']));
+
       allow delete: if isAdmin();
+
     }
+
     
-    // Admins collection
+
+    // Admins
+
     match /admins/{adminId} {
-      allow read: if isSignedIn(); // Anyone can check if someone is admin
+
+      allow read: if isSignedIn();
+
       allow create, update, delete: if hasPermission('manage_users');
+
     }
+
     
-    // Events collection
+
+    // Admin-managed collections
+
     match /events/{eventId} {
+
       allow read: if isSignedIn();
-      allow create: if hasPermission('manage_events');
-      allow update: if hasPermission('manage_events');
-      allow delete: if hasPermission('manage_events');
+
+      allow create, update, delete: if hasPermission('manage_events');
+
     }
-    
-    // Announcements collection
+
     match /announcements/{announcementId} {
+
       allow read: if isSignedIn();
-      allow create: if hasPermission('manage_announcements');
-      allow update: if hasPermission('manage_announcements');
-      allow delete: if hasPermission('manage_announcements');
+
+      allow create, update, delete: if hasPermission('manage_announcements');
+
     }
-    
-    // Schedule collection
+
     match /schedules/{scheduleId} {
+
       allow read: if isSignedIn();
-      allow create: if hasPermission('manage_schedule');
-      allow update: if hasPermission('manage_schedule');
-      allow delete: if hasPermission('manage_schedule');
+
+      allow create, update, delete: if hasPermission('manage_schedule');
+
     }
-    
-    // Pin Trading collection
-    match /pins/{pinId} {
-      allow read: if isSignedIn();
-      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      allow update: if isSignedIn() && (
-        resource.data.userId == request.auth.uid || 
-        hasPermission('manage_pins')
-      );
-      allow delete: if isSignedIn() && (
-        resource.data.userId == request.auth.uid || 
-        hasPermission('manage_pins')
-      );
-    }
-    
-    // Chat Rooms collection
-    match /chatRooms/{chatRoomId} {
-      allow read: if isSignedIn();
-      allow create: if isSignedIn();
-      allow update: if isSignedIn();
-      allow delete: if isSignedIn() || isAdmin();
-      
-      match /messages/{messageId} {
-        allow read: if isSignedIn();
-        allow create: if isSignedIn() && request.resource.data.senderId == request.auth.uid;
-        allow update, delete: if isSignedIn() && 
-          (resource.data.senderId == request.auth.uid || isAdmin());
-      }
-    }
-    
-    // Resources collection (if needed)
+
     match /resources/{resourceId} {
+
       allow read: if isSignedIn();
+
       allow create, update, delete: if isAdmin();
+
     }
+
     
-    // Test Results collection
-    match /test_results/{resultId} {
-      // Allow read (both get and list) if user owns the document or is admin
-      // For queries, Firestore will check this rule against each document in the result set
-      allow read: if isSignedIn() && (
-        resource.data.userId == request.auth.uid || 
-        isAdmin()
-      );
-      
-      // Allow create only if the userId in the new document matches the requesting user
-      allow create: if isSignedIn() && 
-        request.resource.data.userId == request.auth.uid;
-      
-      // Allow update and delete only if user owns the document or is admin
-      allow update, delete: if isSignedIn() && (
-        resource.data.userId == request.auth.uid || 
-        isAdmin()
-      );
-    }
-    
-    // Schools collection
-    match /schools/{schoolId} {
-      function isSchoolOwner() {
-        return isSignedIn() && resource.data.ownerId == request.auth.uid;
-      }
-      
-      function isSchoolAdmin() {
-        return isSignedIn() && request.auth.uid in resource.data.adminIds;
-      }
-      
-      function isSchoolMember() {
-        return isSignedIn() && request.auth.uid in resource.data.memberIds;
-      }
-      
-      function canManageSchool() {
-        return isSchoolOwner() || isSchoolAdmin();
-      }
-      
-      // Anyone signed in can read schools (for search/joining)
+
+    // User-owned collections
+
+    match /pins/{pinId} {
+
       allow read: if isSignedIn();
-      
-      // Anyone signed in can create a school (becomes owner)
-      allow create: if isSignedIn() && 
-        request.resource.data.ownerId == request.auth.uid;
-      
-      // Owner can do anything, admins can update members/admins lists
-      allow update: if isSignedIn() && (
-        resource.data.ownerId == request.auth.uid ||
-        (request.auth.uid in resource.data.adminIds)
-      );
-      
-      // Only owner can delete
-      allow delete: if isSignedIn() && resource.data.ownerId == request.auth.uid;
-      
-      // School Announcements subcollection
-      match /announcements/{announcementId} {
-        // All school members can read announcements
-        allow read: if isSignedIn() && (
-          isSchoolMember() || 
-          isSchoolAdmin() || 
-          isSchoolOwner()
-        );
-        
-        // Only school admins and owner can create/update/delete announcements
-        allow create, update, delete: if canManageSchool();
-      }
-      
-      // School Resources subcollection
-      match /resources/{resourceId} {
-        // All school members can read resources
-        allow read: if isSignedIn() && (
-          isSchoolMember() || 
-          isSchoolAdmin() || 
-          isSchoolOwner()
-        );
-        
-        // Only school admins and owner can create/update/delete resources
-        allow create, update, delete: if canManageSchool();
-      }
-    }
-    
-    // School Announcements (top-level collection for queries)
-    match /school_announcements/{announcementId} {
-      function getUserSchoolIds() {
-        let userData = get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
-        return 'schoolIds' in userData ? userData.schoolIds : 
-               ('schoolId' in userData && userData.schoolId != null ? [userData.schoolId] : []);
-      }
-      
-      function isSchoolAdminForAnnouncement() {
-        let schoolId = resource.data.schoolId;
-        let school = get(/databases/$(database)/documents/schools/$(schoolId));
-        return isSignedIn() && (
-          school.data.ownerId == request.auth.uid ||
-          request.auth.uid in school.data.adminIds
-        );
-      }
-      
-      function canCreateAnnouncement() {
-        let schoolId = request.resource.data.schoolId;
-        let school = get(/databases/$(database)/documents/schools/$(schoolId));
-        return isSignedIn() && (
-          school.data.ownerId == request.auth.uid ||
-          request.auth.uid in school.data.adminIds
-        );
-      }
-      
-      function isSchoolMember() {
-        let userSchoolIds = getUserSchoolIds();
-        return resource.data.schoolId in userSchoolIds;
-      }
-      
-      // Users can read announcements from their schools (both get and list)
-      allow read: if isSignedIn() && isSchoolMember();
-      
-      // Only school admins/owners can create announcements
-      allow create: if isSignedIn() && canCreateAnnouncement();
-      
-      // Only school admins/owners can update/delete
-      allow update, delete: if isSchoolAdminForAnnouncement();
-    }
-    
-    // School Resources (top-level collection for queries)
-    match /school_resources/{resourceId} {
-      function getUserSchoolIds() {
-        let userData = get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
-        return 'schoolIds' in userData ? userData.schoolIds : 
-               ('schoolId' in userData && userData.schoolId != null ? [userData.schoolId] : []);
-      }
-      
-      function isSchoolAdminForResource() {
-        let schoolId = resource.data.schoolId;
-        let school = get(/databases/$(database)/documents/schools/$(schoolId));
-        return isSignedIn() && (
-          school.data.ownerId == request.auth.uid ||
-          request.auth.uid in school.data.adminIds
-        );
-      }
-      
-      function canCreateResource() {
-        let schoolId = request.resource.data.schoolId;
-        let school = get(/databases/$(database)/documents/schools/$(schoolId));
-        return isSignedIn() && (
-          school.data.ownerId == request.auth.uid ||
-          request.auth.uid in school.data.adminIds
-        );
-      }
-      
-      function isSchoolMember() {
-        let userSchoolIds = getUserSchoolIds();
-        return resource.data.schoolId in userSchoolIds;
-      }
-      
-      // Users can read resources from their schools (both get and list)
-      allow read: if isSignedIn() && isSchoolMember();
-      
-      // Only school admins/owners can create/update/delete
-      allow create: if isSignedIn() && canCreateResource();
-      allow update, delete: if isSchoolAdminForResource();
-    }
-    
-    // School Join Requests collection
-    match /school_join_requests/{requestId} {
-      function isSchoolAdminForRequest(schoolId) {
-        let school = get(/databases/$(database)/documents/schools/$(schoolId));
-        return isSignedIn() && (
-          school.data.ownerId == request.auth.uid ||
-          request.auth.uid in school.data.adminIds
-        );
-      }
-      
-      function isRequestOwner() {
-        return isSignedIn() && resource.data.userId == request.auth.uid;
-      }
-      
-      // Anyone signed in can create a join request
+
       allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
-      
-      // Request owner can read their own requests
-      // For list queries by schoolId, allow if user is admin of that school
-      allow read: if isSignedIn() && (
-        resource.data.userId == request.auth.uid || 
-        isSchoolAdminForRequest(resource.data.schoolId)
-      );
-      
-      // Only school admins can update (approve/reject) requests
-      allow update: if isSignedIn() && isSchoolAdminForRequest(resource.data.schoolId);
-      
-      // Request owner or school admin can delete
-      allow delete: if isSignedIn() && (
-        resource.data.userId == request.auth.uid || 
-        isSchoolAdminForRequest(resource.data.schoolId)
-      );
+
+      allow update, delete: if isSignedIn() && (resource.data.userId == request.auth.uid || hasPermission('manage_pins'));
+
     }
+
+    match /test_results/{resultId} {
+
+      allow read, update, delete: if isSignedIn() && (resource.data.userId == request.auth.uid || isAdmin());
+
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+
+    }
+
     
-    // School Events collection
+
+    // Chat
+
+    match /chatRooms/{chatRoomId} {
+
+      allow read, create, update: if isSignedIn();
+
+      allow delete: if isSignedIn() || isAdmin();
+
+      match /messages/{messageId} {
+
+        allow read: if isSignedIn();
+
+        allow create: if isSignedIn() && request.resource.data.senderId == request.auth.uid;
+
+        allow update, delete: if isSignedIn() && (resource.data.senderId == request.auth.uid || isAdmin());
+
+      }
+
+    }
+
+    
+
+    // Schools
+
+    match /schools/{schoolId} {
+
+      function isOwner() { return isSignedIn() && resource.data.ownerId == request.auth.uid; }
+
+      function isAdmin() { return isSignedIn() && request.auth.uid in resource.data.adminIds; }
+
+      function isMember() { return isSignedIn() && (request.auth.uid in resource.data.memberIds || request.auth.uid in resource.data.adminIds); }
+
+      function canManage() { return isOwner() || isAdmin(); }
+
+      function isLeavingSchool() {
+        // Allow if user is removing themselves from memberIds or adminIds
+        let oldMemberIds = 'memberIds' in resource.data ? resource.data.memberIds : [];
+        let newMemberIds = 'memberIds' in request.resource.data ? request.resource.data.memberIds : [];
+        let oldAdminIds = 'adminIds' in resource.data ? resource.data.adminIds : [];
+        let newAdminIds = 'adminIds' in request.resource.data ? request.resource.data.adminIds : [];
+        
+        let removedFromMembers = request.auth.uid in oldMemberIds && !(request.auth.uid in newMemberIds);
+        let removedFromAdmins = request.auth.uid in oldAdminIds && !(request.auth.uid in newAdminIds);
+        
+        // Check that only memberIds/adminIds changed and user is removing themselves
+        let affectedKeys = request.resource.data.diff(resource.data).affectedKeys();
+        let onlyMemberFieldsChanged = affectedKeys.hasOnly(['memberIds', 'adminIds']);
+        
+        return isMember() && onlyMemberFieldsChanged && (removedFromMembers || removedFromAdmins);
+      }
+
+      
+
+      allow read: if isSignedIn();
+
+      allow create: if isSignedIn() && request.resource.data.ownerId == request.auth.uid;
+
+      allow update: if isSignedIn() && (resource.data.ownerId == request.auth.uid || request.auth.uid in resource.data.adminIds || isLeavingSchool());
+
+      allow delete: if isSignedIn() && resource.data.ownerId == request.auth.uid;
+
+      
+
+      match /announcements/{announcementId} {
+
+        allow read: if isSignedIn() && (isOwner() || isAdmin() || request.auth.uid in resource.data.memberIds);
+
+        allow create, update, delete: if canManage();
+
+      }
+
+      match /resources/{resourceId} {
+
+        allow read: if isSignedIn() && (isOwner() || isAdmin() || request.auth.uid in resource.data.memberIds);
+
+        allow create, update, delete: if canManage();
+
+      }
+
+    }
+
+    
+
+    // School-scoped collections (top-level for queries)
+
+    match /school_announcements/{announcementId} {
+
+      allow read: if isSignedIn() && isSchoolMember(resource.data.schoolId);
+
+      allow create: if isSignedIn() && isSchoolAdmin(request.resource.data.schoolId);
+
+      allow update, delete: if isSignedIn() && isSchoolAdmin(resource.data.schoolId);
+
+    }
+
+    match /school_resources/{resourceId} {
+
+      allow read: if isSignedIn() && isSchoolMember(resource.data.schoolId);
+
+      allow create: if isSignedIn() && isSchoolAdmin(request.resource.data.schoolId);
+
+      allow update, delete: if isSignedIn() && isSchoolAdmin(resource.data.schoolId);
+
+    }
+
     match /school_events/{eventId} {
-      function getUserSchoolIds() {
-        let userData = get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
-        return 'schoolIds' in userData ? userData.schoolIds : 
-               ('schoolId' in userData && userData.schoolId != null ? [userData.schoolId] : []);
-      }
-      
-      function isSchoolAdminForEvent() {
-        let schoolId = resource.data.schoolId;
-        let school = get(/databases/$(database)/documents/schools/$(schoolId));
-        return isSignedIn() && (
-          school.data.ownerId == request.auth.uid ||
-          request.auth.uid in school.data.adminIds
-        );
-      }
-      
-      function canCreateEvent() {
-        let schoolId = request.resource.data.schoolId;
-        let school = get(/databases/$(database)/documents/schools/$(schoolId));
-        return isSignedIn() && (
-          school.data.ownerId == request.auth.uid ||
-          request.auth.uid in school.data.adminIds
-        );
-      }
-      
-      function isSchoolMemberForEvent() {
-        let userSchoolIds = getUserSchoolIds();
-        return resource.data.schoolId in userSchoolIds;
-      }
-      
-      // Members can read events from their schools (both get and list)
-      allow read: if isSignedIn() && isSchoolMemberForEvent();
-      
-      // Only school admins/owners can create events
-      allow create: if isSignedIn() && canCreateEvent();
-      
-      // Only school admins/owners can delete events
-      allow delete: if isSchoolAdminForEvent();
-      
-      // Admins can update anything, members can update attendeeIds (register/unregister)
-      allow update: if isSignedIn() && (
-        isSchoolAdminForEvent() ||
-        (isSchoolMemberForEvent() && request.resource.data.diff(resource.data).affectedKeys().hasOnly(['attendeeIds']))
-      );
+
+      allow read: if isSignedIn() && isSchoolMember(resource.data.schoolId);
+
+      allow create: if isSignedIn() && isSchoolAdmin(request.resource.data.schoolId);
+
+      allow delete: if isSignedIn() && isSchoolAdmin(resource.data.schoolId);
+
+      allow update: if isSignedIn() && (isSchoolAdmin(resource.data.schoolId) ||
+
+                   (isSchoolMember(resource.data.schoolId) && 
+
+                    request.resource.data.diff(resource.data).affectedKeys().hasOnly(['attendeeIds'])));
+
     }
-    
-    // Location Pins collection (for AR Navigation)
-    match /location_pins/{pinId} {
-      function isSchoolAdminForPin() {
-        let schoolId = resource.data.schoolId;
-        let school = get(/databases/$(database)/documents/schools/$(schoolId));
-        return isSignedIn() && (
-          school.data.ownerId == request.auth.uid ||
-          request.auth.uid in school.data.adminIds
-        );
-      }
-      
-      function canCreatePin() {
-        let schoolId = request.resource.data.schoolId;
-        let school = get(/databases/$(database)/documents/schools/$(schoolId));
-        return isSignedIn() && (
-          school.data.ownerId == request.auth.uid ||
-          request.auth.uid in school.data.adminIds
-        );
-      }
-      
-      function getUserSchoolIds() {
-        let userData = get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
-        return 'schoolIds' in userData ? userData.schoolIds : 
-               ('schoolId' in userData && userData.schoolId != null ? [userData.schoolId] : []);
-      }
-      
-      function isSchoolMemberForPin() {
-        let userSchoolIds = getUserSchoolIds();
-        return resource.data.schoolId in userSchoolIds;
-      }
-      
-      // All school members can read location pins (for AR navigation)
-      allow read: if isSignedIn() && isSchoolMemberForPin();
-      
-      // Only school admins can create/update/delete location pins
-      allow create: if isSignedIn() && canCreatePin();
-      allow update, delete: if isSchoolAdminForPin();
-    }
-    
-    // Parsed Events collection (imported from PDF)
+
     match /parsed_events/{eventId} {
-      function isSchoolAdminForEvent() {
-        let schoolId = resource.data.schoolId;
-        let school = get(/databases/$(database)/documents/schools/$(schoolId));
-        return isSignedIn() && (
-          school.data.ownerId == request.auth.uid ||
-          request.auth.uid in school.data.adminIds
-        );
-      }
-      
-      function canCreateEvent() {
-        let schoolId = request.resource.data.schoolId;
-        let school = get(/databases/$(database)/documents/schools/$(schoolId));
-        return isSignedIn() && (
-          school.data.ownerId == request.auth.uid ||
-          request.auth.uid in school.data.adminIds
-        );
-      }
-      
-      function getUserSchoolIds() {
-        let userData = get(/databases/$(database)/documents/users/$(request.auth.uid)).data;
-        return 'schoolIds' in userData ? userData.schoolIds : 
-               ('schoolId' in userData && userData.schoolId != null ? [userData.schoolId] : []);
-      }
-      
-      function isSchoolMemberForEvent() {
-        let userSchoolIds = getUserSchoolIds();
-        return resource.data.schoolId in userSchoolIds;
-      }
-      
-      // All school members can read parsed events
-      allow read: if isSignedIn() && isSchoolMemberForEvent();
-      
-      // Only school admins can create/update/delete parsed events
-      allow create: if isSignedIn() && canCreateEvent();
-      allow update, delete: if isSchoolAdminForEvent();
+
+      allow read: if isSignedIn() && isSchoolMember(resource.data.schoolId);
+
+      allow create: if isSignedIn() && isSchoolAdmin(request.resource.data.schoolId);
+
+      allow delete: if isSignedIn() && isSchoolAdmin(resource.data.schoolId);
+
+      allow update: if isSignedIn() && (isSchoolAdmin(resource.data.schoolId) ||
+
+                   (isSchoolMember(resource.data.schoolId) && 
+
+                    request.resource.data.diff(resource.data).affectedKeys().hasOnly(['notifyUsers'])));
+
     }
+
+    match /location_pins/{pinId} {
+
+      allow read: if isSignedIn() && isSchoolMember(resource.data.schoolId);
+
+      allow create: if isSignedIn() && isSchoolAdmin(request.resource.data.schoolId);
+
+      allow update, delete: if isSignedIn() && isSchoolAdmin(resource.data.schoolId);
+
+    }
+
+    
+
+    // Join requests
+
+    match /school_join_requests/{requestId} {
+
+      allow create: if isSignedIn() && request.resource.data.userId == request.auth.uid;
+
+      allow read: if isSignedIn() && (resource.data.userId == request.auth.uid || 
+
+                 isSchoolAdmin(resource.data.schoolId));
+
+      allow update: if isSignedIn() && isSchoolAdmin(resource.data.schoolId);
+
+      allow delete: if isSignedIn() && (resource.data.userId == request.auth.uid || 
+
+                 isSchoolAdmin(resource.data.schoolId));
+
+    }
+
   }
+
 }

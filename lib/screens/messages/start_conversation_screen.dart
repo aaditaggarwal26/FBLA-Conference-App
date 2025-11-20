@@ -21,7 +21,15 @@ class _StartConversationScreenState extends State<StartConversationScreen> {
   final MessageService _messageService = MessageService();
   final SchoolService _schoolService = SchoolService();
   List<UserModel> _searchResults = [];
+  List<UserModel> _adminUsers = [];
   bool _isSearching = false;
+  bool _isLoadingAdmins = true;
+
+  @override
+  void initState() {
+    super.initState();
+    _loadAdmins();
+  }
 
   @override
   void dispose() {
@@ -29,9 +37,62 @@ class _StartConversationScreenState extends State<StartConversationScreen> {
     super.dispose();
   }
 
+  Future<void> _loadAdmins() async {
+    try {
+      final currentUserId = FirebaseAuth.instance.currentUser?.uid;
+      if (currentUserId == null) {
+        setState(() => _isLoadingAdmins = false);
+        return;
+      }
+
+      final adminsSnapshot = await FirebaseFirestore.instance
+          .collection('admins')
+          .get();
+
+      final List<UserModel> admins = [];
+
+      for (final adminDoc in adminsSnapshot.docs) {
+        final adminId = adminDoc.id;
+        if (adminId == currentUserId) continue;
+
+        try {
+          final adminUserDoc = await FirebaseFirestore.instance
+              .collection('users')
+              .doc(adminId)
+              .get();
+
+          if (adminUserDoc.exists) {
+            final adminUser = UserModel.fromFirestore(adminUserDoc);
+            admins.add(adminUser);
+          }
+        } catch (e) {
+          // Skip if admin user doc doesn't exist or error
+          continue;
+        }
+      }
+
+      // Sort admins by name
+      admins.sort((a, b) => a.name.compareTo(b.name));
+
+      setState(() {
+        _adminUsers = admins;
+        _isLoadingAdmins = false;
+        // Show admins when screen first loads
+        _searchResults = admins;
+      });
+    } catch (e) {
+      setState(() => _isLoadingAdmins = false);
+    }
+  }
+
   Future<void> _searchUsers(String query) async {
-    if (query.trim().isEmpty) {
-      setState(() => _searchResults = []);
+    final queryTrimmed = query.trim();
+    
+    if (queryTrimmed.isEmpty) {
+      // Show admins when search is empty
+      setState(() {
+        _searchResults = _adminUsers;
+      });
       return;
     }
 
@@ -41,21 +102,47 @@ class _StartConversationScreenState extends State<StartConversationScreen> {
       final currentUserId = FirebaseAuth.instance.currentUser?.uid;
       if (currentUserId == null) return;
 
-      // Search by name (case-insensitive)
-      final snapshot = await FirebaseFirestore.instance
+      final queryLower = queryTrimmed.toLowerCase();
+      final Set<String> foundUserIds = {};
+      final List<UserModel> matchingAdmins = [];
+      final List<UserModel> matchingUsers = [];
+
+      // First, filter admins that match the query
+      for (final admin in _adminUsers) {
+        if (admin.name.toLowerCase().contains(queryLower) ||
+            admin.email.toLowerCase().contains(queryLower)) {
+          matchingAdmins.add(admin);
+          foundUserIds.add(admin.id);
+        }
+      }
+
+      // Then search regular users by name
+      final usersSnapshot = await FirebaseFirestore.instance
           .collection('users')
-          .where('name', isGreaterThanOrEqualTo: query)
-          .where('name', isLessThan: '${query}z')
-          .limit(20)
           .get();
 
-      final users = snapshot.docs
-          .map((doc) => UserModel.fromFirestore(doc))
-          .where((user) => user.id != currentUserId) // Exclude current user
-          .toList();
+      for (final doc in usersSnapshot.docs) {
+        if (doc.id == currentUserId || foundUserIds.contains(doc.id)) {
+          continue; // Exclude current user and already found admins
+        }
+        
+        final user = UserModel.fromFirestore(doc);
+        if (user.name.toLowerCase().contains(queryLower) ||
+            user.email.toLowerCase().contains(queryLower)) {
+          matchingUsers.add(user);
+          foundUserIds.add(user.id);
+        }
+      }
+
+      // Sort each list by name
+      matchingAdmins.sort((a, b) => a.name.compareTo(b.name));
+      matchingUsers.sort((a, b) => a.name.compareTo(b.name));
+
+      // Combine: admins first, then regular users
+      final combinedResults = [...matchingAdmins, ...matchingUsers];
 
       setState(() {
-        _searchResults = users;
+        _searchResults = combinedResults.take(20).toList(); // Limit to 20 results
         _isSearching = false;
       });
     } catch (e) {
@@ -128,7 +215,7 @@ class _StartConversationScreenState extends State<StartConversationScreen> {
                         icon: const Icon(Icons.clear),
                         onPressed: () {
                           _searchController.clear();
-                          setState(() => _searchResults = []);
+                          _searchUsers(''); // Show admins again
                         },
                       )
                     : null,
@@ -146,7 +233,7 @@ class _StartConversationScreenState extends State<StartConversationScreen> {
 
           // Results
           Expanded(
-            child: _isSearching
+            child: _isLoadingAdmins || _isSearching
                 ? const Center(child: CircularProgressIndicator())
                 : _searchResults.isEmpty && _searchController.text.isNotEmpty
                     ? Center(
@@ -212,7 +299,8 @@ class _StartConversationScreenState extends State<StartConversationScreen> {
                             itemCount: _searchResults.length,
                             itemBuilder: (context, index) {
                               final user = _searchResults[index];
-                              return _buildUserCard(user, isDark);
+                              final isAdmin = _adminUsers.any((admin) => admin.id == user.id);
+                              return _buildUserCard(user, isDark, isAdmin: isAdmin);
                             },
                           ),
           ),
@@ -221,7 +309,7 @@ class _StartConversationScreenState extends State<StartConversationScreen> {
     );
   }
 
-  Widget _buildUserCard(UserModel user, bool isDark) {
+  Widget _buildUserCard(UserModel user, bool isDark, {bool isAdmin = false}) {
     return InkWell(
       onTap: () => _startConversation(user),
       child: Container(
@@ -231,23 +319,51 @@ class _StartConversationScreenState extends State<StartConversationScreen> {
           color: isDark ? AppTheme.darkSurface : Colors.white,
           borderRadius: BorderRadius.circular(12),
           border: Border.all(
-            color: isDark ? AppTheme.darkCard : AppTheme.lightGray,
+            color: isAdmin
+                ? AppTheme.primaryBlue.withValues(alpha: 0.5)
+                : (isDark ? AppTheme.darkCard : AppTheme.lightGray),
+            width: isAdmin ? 1.5 : 1,
           ),
         ),
         child: Row(
           children: [
-            CircleAvatar(
-              radius: 28,
-              backgroundColor: isDark ? AppTheme.darkCard : AppTheme.lightGray,
-              backgroundImage:
-                  user.photoUrl != null && user.photoUrl!.isNotEmpty ? NetworkImage(user.photoUrl!) : null,
-              child: user.photoUrl == null || user.photoUrl!.isEmpty
-                  ? Icon(
-                      Icons.person,
-                      color: isDark ? Colors.white : AppTheme.darkGray,
-                      size: 28,
-                    )
-                  : null,
+            Stack(
+              children: [
+                CircleAvatar(
+                  radius: 28,
+                  backgroundColor: isDark ? AppTheme.darkCard : AppTheme.lightGray,
+                  backgroundImage:
+                      user.photoUrl != null && user.photoUrl!.isNotEmpty ? NetworkImage(user.photoUrl!) : null,
+                  child: user.photoUrl == null || user.photoUrl!.isEmpty
+                      ? Icon(
+                          Icons.person,
+                          color: isDark ? Colors.white : AppTheme.darkGray,
+                          size: 28,
+                        )
+                      : null,
+                ),
+                if (isAdmin)
+                  Positioned(
+                    bottom: 0,
+                    right: 0,
+                    child: Container(
+                      padding: const EdgeInsets.all(4),
+                      decoration: BoxDecoration(
+                        color: AppTheme.primaryBlue,
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: isDark ? AppTheme.darkSurface : Colors.white,
+                          width: 2,
+                        ),
+                      ),
+                      child: const Icon(
+                        Icons.admin_panel_settings_rounded,
+                        size: 12,
+                        color: Colors.white,
+                      ),
+                    ),
+                  ),
+              ],
             ),
             const SizedBox(width: 12),
             Expanded(
@@ -267,6 +383,30 @@ class _StartConversationScreenState extends State<StartConversationScreen> {
                           overflow: TextOverflow.ellipsis,
                         ),
                       ),
+                      if (isAdmin) ...[
+                        const SizedBox(width: 6),
+                        Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 6,
+                            vertical: 2,
+                          ),
+                          decoration: BoxDecoration(
+                            color: AppTheme.primaryBlue.withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(4),
+                            border: Border.all(
+                              color: AppTheme.primaryBlue.withValues(alpha: 0.3),
+                            ),
+                          ),
+                          child: Text(
+                            'Admin',
+                            style: TextStyle(
+                              fontSize: 10,
+                              fontWeight: FontWeight.w700,
+                              color: AppTheme.primaryBlue,
+                            ),
+                          ),
+                        ),
+                      ],
                       if (user.hasSchool) ...[
                         const SizedBox(width: 6),
                         SchoolBadgeAsync(

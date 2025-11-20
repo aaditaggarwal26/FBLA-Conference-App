@@ -229,10 +229,7 @@ class _SocialMediaManagementScreenState
                   Expanded(
                     child: Text(
                       'Add your chapter\'s social media links to help members stay connected.',
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14,
-                      ),
+                      style: TextStyle(color: Colors.white, fontSize: 14),
                     ),
                   ),
                 ],
@@ -299,9 +296,7 @@ class _SocialMediaManagementScreenState
                         controller: _controllers[key],
                         decoration: InputDecoration(
                           hintText: placeholder,
-                          hintStyle: TextStyle(
-                            color: AppTheme.mediumGray,
-                          ),
+                          hintStyle: TextStyle(color: AppTheme.mediumGray),
                           border: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
                             borderSide: BorderSide(
@@ -320,10 +315,7 @@ class _SocialMediaManagementScreenState
                           ),
                           focusedBorder: OutlineInputBorder(
                             borderRadius: BorderRadius.circular(12),
-                            borderSide: BorderSide(
-                              color: color,
-                              width: 2,
-                            ),
+                            borderSide: BorderSide(color: color, width: 2),
                           ),
                           filled: true,
                           fillColor: isDark
@@ -383,4 +375,3 @@ class _SocialMediaManagementScreenState
     );
   }
 }
-

@@ -426,7 +426,7 @@ class _NCCCEventDetailScreenState extends State<NCCCEventDetailScreen>
       backgroundColor: isDark ? const Color(0xFF121212) : Colors.white,
       appBar: AppBar(
         title: Text(
-          'NCCC 2025 - Event Schedule',
+          'NCCC 2025',
           style: TextStyle(color: isDark ? Colors.white : Colors.black87),
         ),
         backgroundColor: isDark ? const Color(0xFF121212) : Colors.white,

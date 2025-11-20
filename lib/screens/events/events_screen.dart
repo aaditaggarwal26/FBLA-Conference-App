@@ -1304,7 +1304,7 @@ class _EventsScreenState extends State<EventsScreen>
                         : Icons.event_available_rounded,
                     size: 18,
                   ),
-                  label: Text(isRegistered ? 'Registered' : 'Register'),
+                  label: Text(isRegistered ? "Reg'd" : 'Register'),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: isRegistered
                         ? AppTheme.success
