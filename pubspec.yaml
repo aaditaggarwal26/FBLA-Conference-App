@@ -57,8 +57,10 @@ dependencies:
   html: ^0.15.4
   table_calendar: ^3.2.0
   # AR Navigation packages
-  ar_flutter_plugin: ^0.7.3
+  # ar_flutter_plugin: ^0.7.3
   geolocator: ^9.0.2
+  camera: ^0.10.5
+  flutter_compass: ^0.7.0
   permission_handler: ^10.1.0
   # PDF parsing
   pdf: ^3.11.1
