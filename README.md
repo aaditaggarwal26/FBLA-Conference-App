@@ -19,6 +19,15 @@ A modern, feature-rich conference management application built with Flutter and 
 - Smooth animations and transitions
 - Intuitive navigation with bottom navigation bar
 
+### ♿ Accessibility Features
+- **Dark Mode**: Reduce eye strain in low-light conditions
+- **Text Size Adjustment**: Scale text from 85% to 150% for better readability
+- **Reduce Motion**: Minimize animations for motion-sensitive users
+- **High Contrast Mode**: Enhanced contrast for better visibility
+- **Bold Text**: Make text bolder and easier to read
+- All settings persist across app sessions
+- See [ACCESSIBILITY_FEATURES.md](ACCESSIBILITY_FEATURES.md) for details
+
 ### 🔥 Firebase Integration
 - **Firebase Authentication**: Secure user authentication
 - **Cloud Firestore**: Real-time database for events, users, and announcements

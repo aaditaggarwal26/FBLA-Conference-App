@@ -34,8 +34,11 @@ void main() async {
   FlutterNativeSplash.remove();
 
   runApp(
-    ChangeNotifierProvider(
-      create: (_) => ThemeProvider(),
+    MultiProvider(
+      providers: [
+        ChangeNotifierProvider(create: (_) => ThemeProvider()),
+        ChangeNotifierProvider(create: (_) => AccessibilityService()),
+      ],
       child: const MyApp(),
     ),
   );
@@ -46,12 +49,12 @@ class MyApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Consumer<ThemeProvider>(
-      builder: (context, themeProvider, _) {
+    return Consumer2<ThemeProvider, AccessibilityService>(
+      builder: (context, themeProvider, accessibilityService, _) {
         return MaterialApp(
           title: 'FBLA',
-          theme: AppTheme.lightTheme,
-          darkTheme: AppTheme.darkTheme,
+          theme: _buildTheme(AppTheme.lightTheme, accessibilityService),
+          darkTheme: _buildTheme(AppTheme.darkTheme, accessibilityService),
           themeMode: themeProvider.isDarkMode
               ? ThemeMode.dark
               : ThemeMode.light,
@@ -63,8 +66,40 @@ class MyApp extends StatelessWidget {
             '/forgot-password': (context) => const ForgotPasswordScreen(),
             '/home': (context) => const MainNavigationScreen(),
           },
+          builder: (context, child) {
+            // Apply text scale factor globally
+            return MediaQuery(
+              data: MediaQuery.of(context).copyWith(
+                textScaler: TextScaler.linear(accessibilityService.textScaleFactor),
+                boldText: accessibilityService.boldText,
+              ),
+              child: child!,
+            );
+          },
         );
       },
+    );
+  }
+
+  /// Build theme with accessibility adjustments
+  ThemeData _buildTheme(ThemeData baseTheme, AccessibilityService accessibility) {
+    if (!accessibility.highContrast) {
+      return baseTheme;
+    }
+
+    // Apply high contrast modifications
+    final isDark = baseTheme.brightness == Brightness.dark;
+    return baseTheme.copyWith(
+      scaffoldBackgroundColor: isDark ? Colors.black : Colors.white,
+      cardColor: isDark ? const Color(0xFF1A1A1A) : const Color(0xFFFAFAFA),
+      colorScheme: baseTheme.colorScheme.copyWith(
+        primary: isDark ? const Color(0xFF60A5FA) : const Color(0xFF1E40AF),
+        surface: isDark ? const Color(0xFF0A0A0A) : Colors.white,
+      ),
+      textTheme: baseTheme.textTheme.apply(
+        bodyColor: isDark ? Colors.white : Colors.black,
+        displayColor: isDark ? Colors.white : Colors.black,
+      ),
     );
   }
 }
