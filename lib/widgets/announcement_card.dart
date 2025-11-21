@@ -525,7 +525,7 @@ class _AnnouncementCardState extends State<AnnouncementCard> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Please connect LinkedIn in Admin Panel first'),
+            content: Text('Please connect LinkedIn in Profile settings first'),
             backgroundColor: AppTheme.warning,
           ),
         );

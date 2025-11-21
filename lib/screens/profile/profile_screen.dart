@@ -6,6 +6,7 @@ import '../../services/accessibility_service.dart';
 import '../../models/user_model.dart';
 import '../../theme/app_theme.dart';
 import '../admin/admin_panel_screen.dart';
+import '../admin/linkedin_settings_screen.dart';
 import 'edit_profile_screen.dart';
 import 'help_support_screen.dart';
 
@@ -249,6 +250,19 @@ class _ProfileScreenState extends State<ProfileScreen> {
               }
             }),
             _buildDarkModeToggle(),
+            _buildMenuItem(
+              Icons.business_rounded,
+              'LinkedIn Integration',
+              () {
+                Navigator.push(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const LinkedInSettingsScreen(),
+                  ),
+                );
+              },
+              iconColor: const Color(0xFF0077B5),
+            ),
             const SizedBox(height: 8),
             _buildAccessibilitySection(),
             const SizedBox(height: 8),
@@ -420,7 +434,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
     return Consumer<AccessibilityService>(
       builder: (context, accessibilityService, _) {
         final isDark = Theme.of(context).brightness == Brightness.dark;
-        
+
         return Container(
           margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
           decoration: BoxDecoration(
@@ -435,7 +449,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
           child: Theme(
             data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
             child: ExpansionTile(
-              tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              tilePadding: const EdgeInsets.symmetric(
+                horizontal: 16,
+                vertical: 4,
+              ),
               leading: Icon(
                 Icons.accessibility_new_rounded,
                 color: AppTheme.primaryBlue,
@@ -446,7 +463,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               children: [
                 // Text Size
                 Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 8,
+                  ),
                   child: Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
@@ -474,7 +494,11 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       const SizedBox(height: 8),
                       Row(
                         children: [
-                          Icon(Icons.text_fields, size: 16, color: AppTheme.mediumGray),
+                          Icon(
+                            Icons.text_fields,
+                            size: 16,
+                            color: AppTheme.mediumGray,
+                          ),
                           Expanded(
                             child: Slider(
                               value: accessibilityService.textScaleFactor,
@@ -482,29 +506,33 @@ class _ProfileScreenState extends State<ProfileScreen> {
                               max: 1.5,
                               divisions: 4,
                               activeColor: AppTheme.primaryBlue,
-                              inactiveColor: isDark 
-                                  ? AppTheme.darkCard 
+                              inactiveColor: isDark
+                                  ? AppTheme.darkCard
                                   : AppTheme.lightGray,
                               onChanged: (value) {
                                 accessibilityService.setTextScaleFactor(value);
                               },
                             ),
                           ),
-                          Icon(Icons.text_fields, size: 24, color: AppTheme.mediumGray),
+                          Icon(
+                            Icons.text_fields,
+                            size: 24,
+                            color: AppTheme.mediumGray,
+                          ),
                         ],
                       ),
                     ],
                   ),
                 ),
-                
+
                 const Divider(height: 1),
-                
+
                 // Reduce Motion
                 ListTile(
                   leading: Icon(
                     Icons.animation,
-                    color: accessibilityService.reduceMotion 
-                        ? AppTheme.success 
+                    color: accessibilityService.reduceMotion
+                        ? AppTheme.success
                         : AppTheme.mediumGray,
                   ),
                   title: const Text('Reduce Motion'),
@@ -525,15 +553,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     activeThumbColor: AppTheme.primaryBlue,
                   ),
                 ),
-                
+
                 const Divider(height: 1),
-                
+
                 // High Contrast
                 ListTile(
                   leading: Icon(
                     Icons.contrast,
-                    color: accessibilityService.highContrast 
-                        ? AppTheme.success 
+                    color: accessibilityService.highContrast
+                        ? AppTheme.success
                         : AppTheme.mediumGray,
                   ),
                   title: const Text('High Contrast'),
@@ -554,15 +582,15 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     activeThumbColor: AppTheme.primaryBlue,
                   ),
                 ),
-                
+
                 const Divider(height: 1),
-                
+
                 // Bold Text
                 ListTile(
                   leading: Icon(
                     Icons.format_bold,
-                    color: accessibilityService.boldText 
-                        ? AppTheme.success 
+                    color: accessibilityService.boldText
+                        ? AppTheme.success
                         : AppTheme.mediumGray,
                   ),
                   title: const Text('Bold Text'),
@@ -583,7 +611,7 @@ class _ProfileScreenState extends State<ProfileScreen> {
                     activeThumbColor: AppTheme.primaryBlue,
                   ),
                 ),
-                
+
                 // Reset button
                 Padding(
                   padding: const EdgeInsets.all(16),
@@ -592,7 +620,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
                       accessibilityService.resetToDefaults();
                       ScaffoldMessenger.of(context).showSnackBar(
                         const SnackBar(
-                          content: Text('Accessibility settings reset to defaults'),
+                          content: Text(
+                            'Accessibility settings reset to defaults',
+                          ),
                           duration: Duration(seconds: 2),
                         ),
                       );

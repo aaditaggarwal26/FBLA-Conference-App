@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../models/pin_model.dart';
 import '../../services/pin_service.dart';
+import '../../services/linkedin_service.dart';
 import '../../theme/app_theme.dart';
 import '../messages/chat_screen.dart';
 
@@ -16,9 +17,11 @@ class PinDetailScreen extends StatefulWidget {
 
 class _PinDetailScreenState extends State<PinDetailScreen> {
   final PinService _pinService = PinService();
+  final LinkedInService _linkedInService = LinkedInService();
   final PageController _pageController = PageController();
   int _currentImageIndex = 0;
   bool _isLoading = false;
+  bool _isSharingToLinkedIn = false;
 
   Future<void> _markAsTraded() async {
     final confirm = await showDialog<bool>(
@@ -107,6 +110,22 @@ class _PinDetailScreenState extends State<PinDetailScreen> {
             expandedHeight: 300,
             pinned: true,
             backgroundColor: AppTheme.primaryBlue,
+            actions: [
+              IconButton(
+                icon: _isSharingToLinkedIn
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          color: Colors.white,
+                        ),
+                      )
+                    : const Icon(Icons.business_rounded),
+                onPressed: _isSharingToLinkedIn ? null : _shareToLinkedIn,
+                tooltip: 'Share on LinkedIn',
+              ),
+            ],
             flexibleSpace: FlexibleSpaceBar(
               background: Hero(
                 tag: 'pin_${widget.pin.id}',
@@ -479,6 +498,58 @@ class _PinDetailScreenState extends State<PinDetailScreen> {
       return '${difference.inDays}d ago';
     } else {
       return '${date.month}/${date.day}/${date.year}';
+    }
+  }
+
+  Future<void> _shareToLinkedIn() async {
+    final isConnected = await _linkedInService.isConnected();
+
+    if (!isConnected) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please connect LinkedIn in Profile settings first'),
+            backgroundColor: AppTheme.warning,
+          ),
+        );
+      }
+      return;
+    }
+
+    setState(() => _isSharingToLinkedIn = true);
+
+    try {
+      final success = await _linkedInService.sharePin(
+        pinName: widget.pin.pinName,
+        description: widget.pin.description,
+        condition: widget.pin.isAvailable ? 'Available' : 'Traded',
+      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              success
+                  ? 'Pin shared on LinkedIn!'
+                  : 'Failed to share on LinkedIn',
+            ),
+            backgroundColor: success ? AppTheme.success : AppTheme.error,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error sharing to LinkedIn: $e'),
+            backgroundColor: AppTheme.error,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSharingToLinkedIn = false);
+      }
     }
   }
 }

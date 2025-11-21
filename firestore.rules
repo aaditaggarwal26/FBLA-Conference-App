@@ -66,6 +66,11 @@ service cloud.firestore {
 
       allow delete: if isAdmin();
 
+      // Social media connections (LinkedIn, etc.)
+      match /socialMedia/{socialMediaId} {
+        allow read, write: if isSignedIn() && isOwner(userId);
+      }
+
     }
 
     
@@ -217,6 +222,12 @@ service cloud.firestore {
 
         allow create, update, delete: if canManage();
 
+      }
+
+      // Social media connections (LinkedIn, etc.) for schools
+      match /socialMedia/{socialMediaId} {
+        allow read: if isSignedIn() && (isOwner() || isAdmin() || isMember());
+        allow write: if isSignedIn() && canManage();
       }
 
     }

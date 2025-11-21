@@ -338,7 +338,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           const SnackBar(
-            content: Text('Please connect LinkedIn in Admin Panel first'),
+            content: Text('Please connect LinkedIn in Profile settings first'),
             backgroundColor: AppTheme.warning,
           ),
         );

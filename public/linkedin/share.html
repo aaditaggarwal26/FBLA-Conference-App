@@ -1,0 +1,76 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>FBLA Conference Share</title>
+    <style>
+      body {
+        font-family: 'Inter', -apple-system, BlinkMacSystemFont, 'Segoe UI',
+          Roboto, sans-serif;
+        background: #f4f7fb;
+        margin: 0;
+        padding: 0;
+        min-height: 100vh;
+        display: flex;
+        align-items: center;
+        justify-content: center;
+      }
+      .card {
+        background: #fff;
+        width: min(480px, 90vw);
+        border-radius: 20px;
+        box-shadow: 0 20px 45px rgba(0, 0, 0, 0.08);
+        padding: 32px;
+      }
+      h1 {
+        font-size: 1.5rem;
+        margin: 0 0 12px;
+        color: #0a66c2;
+      }
+      .tagline {
+        font-size: 0.95rem;
+        color: #5f6b7c;
+        margin-bottom: 20px;
+      }
+      .content {
+        background: #f7f9fc;
+        border-radius: 12px;
+        padding: 16px;
+        white-space: pre-wrap;
+        color: #1f2937;
+        font-size: 1rem;
+      }
+      footer {
+        margin-top: 24px;
+        font-size: 0.85rem;
+        color: #9ca3af;
+        text-align: center;
+      }
+    </style>
+  </head>
+  <body>
+    <div class="card">
+      <h1>FBLA Conference Update</h1>
+      <p class="tagline">
+        Shared via the FBLA Conference Companion app. Join the conversation!
+      </p>
+      <div id="share-content" class="content">
+        Preparing your announcement…
+      </div>
+      <footer>fbla-conference-app</footer>
+    </div>
+    <script>
+      const params = new URLSearchParams(window.location.search);
+      const text = params.get('text');
+      const container = document.getElementById('share-content');
+      if (text && text.trim().length > 0) {
+        container.textContent = decodeURIComponent(text);
+      } else {
+        container.textContent =
+          'Thanks for supporting the FBLA community. Stay tuned for more updates!';
+      }
+    </script>
+  </body>
+</html>
+

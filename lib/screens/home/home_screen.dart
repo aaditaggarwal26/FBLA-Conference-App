@@ -6,6 +6,7 @@ import '../../services/event_service.dart';
 import '../../services/announcement_service.dart';
 import '../../services/school_service.dart';
 import '../../services/auth_service.dart';
+import '../../services/linkedin_service.dart';
 import '../../models/event_model.dart';
 import '../../models/announcement_model.dart';
 import '../../models/school_announcement_model.dart';
@@ -29,9 +30,11 @@ class _HomeScreenState extends State<HomeScreen> {
   final AnnouncementService _announcementService = AnnouncementService();
   final SchoolService _schoolService = SchoolService();
   final AuthService _authService = AuthService();
+  final LinkedInService _linkedInService = LinkedInService();
   late Future<String> _firstNameFuture;
   late Future<UserModel?> _userDataFuture;
   final Map<String, bool> _expandedAnnouncements = {};
+  final Map<String, bool> _sharingToLinkedIn = {};
 
   @override
   void initState() {
@@ -883,7 +886,7 @@ class _HomeScreenState extends State<HomeScreen> {
             },
           ),
           const SizedBox(height: 14),
-          // Footer with timestamp
+          // Footer with timestamp and share button
           Row(
             children: [
               Icon(
@@ -900,11 +903,93 @@ class _HomeScreenState extends State<HomeScreen> {
                   color: isDark ? AppTheme.mediumGray : AppTheme.darkGray,
                 ),
               ),
+              const Spacer(),
+              OutlinedButton.icon(
+                onPressed: (_sharingToLinkedIn[announcement.id] ?? false)
+                    ? null
+                    : () => _shareSchoolAnnouncementToLinkedIn(announcement),
+                icon: (_sharingToLinkedIn[announcement.id] ?? false)
+                    ? const SizedBox(
+                        width: 16,
+                        height: 16,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                        ),
+                      )
+                    : const Icon(Icons.business_rounded, size: 16),
+                label: const Text('Share'),
+                style: OutlinedButton.styleFrom(
+                  foregroundColor: const Color(0xFF0077B5),
+                  side: const BorderSide(color: Color(0xFF0077B5)),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 8,
+                  ),
+                  minimumSize: const Size(0, 32),
+                ),
+              ),
             ],
           ),
         ],
       ),
     );
+  }
+
+  Future<void> _shareSchoolAnnouncementToLinkedIn(
+    SchoolAnnouncementModel announcement,
+  ) async {
+    final isConnected = await _linkedInService.isConnected();
+
+    if (!isConnected) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please connect LinkedIn in Profile settings first'),
+            backgroundColor: AppTheme.warning,
+          ),
+        );
+      }
+      return;
+    }
+
+    setState(() {
+      _sharingToLinkedIn[announcement.id] = true;
+    });
+
+    try {
+      final success = await _linkedInService.shareAnnouncement(
+        title: announcement.title,
+        content: announcement.content,
+      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              success
+                  ? 'Announcement shared on LinkedIn!'
+                  : 'Failed to share on LinkedIn',
+            ),
+            backgroundColor: success ? AppTheme.success : AppTheme.error,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error sharing to LinkedIn: $e'),
+            backgroundColor: AppTheme.error,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() {
+          _sharingToLinkedIn[announcement.id] = false;
+        });
+      }
+    }
   }
 
   Widget _buildMergedUpcomingEvents(bool isDark) {
