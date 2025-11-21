@@ -97,8 +97,17 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
             pinned: true,
             actions: [
               IconButton(
-                icon: const Icon(Icons.business_rounded),
-                onPressed: _shareToLinkedIn,
+                icon: _isSharingToLinkedIn
+                    ? const SizedBox(
+                        width: 20,
+                        height: 20,
+                        child: CircularProgressIndicator(
+                          strokeWidth: 2,
+                          valueColor: AlwaysStoppedAnimation<Color>(Colors.white),
+                        ),
+                      )
+                    : const Icon(Icons.business_rounded),
+                onPressed: _isSharingToLinkedIn ? null : _shareToLinkedIn,
                 tooltip: 'Share on LinkedIn',
               ),
               IconButton(
@@ -354,6 +363,7 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
         description: widget.event.description,
         startTime: widget.event.startTime,
         location: widget.event.location,
+        context: context,
       );
 
       if (mounted) {

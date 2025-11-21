@@ -523,6 +523,7 @@ class _PinDetailScreenState extends State<PinDetailScreen> {
         pinName: widget.pin.pinName,
         description: widget.pin.description,
         condition: widget.pin.isAvailable ? 'Available' : 'Traded',
+        context: context,
       );
 
       if (mounted) {

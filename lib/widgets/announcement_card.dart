@@ -539,6 +539,7 @@ class _AnnouncementCardState extends State<AnnouncementCard> {
       final success = await _linkedInService.shareAnnouncement(
         title: widget.announcement.title,
         content: widget.announcement.content,
+        context: context,
       );
 
       if (mounted) {

@@ -1,9 +1,11 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:http/http.dart' as http;
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
+import '../screens/linkedin/linkedin_preview_screen.dart';
 
 /// LinkedIn API Service
 /// Handles OAuth authentication and posting to LinkedIn
@@ -205,7 +207,11 @@ class LinkedInService {
   }
 
   /// Post text content to LinkedIn
-  Future<bool> postToLinkedIn({required String text, String? schoolId}) async {
+  Future<bool> postToLinkedIn({
+    required String text,
+    String? schoolId,
+    BuildContext? context,
+  }) async {
     try {
       final userId = _auth.currentUser?.uid;
       if (userId == null) throw Exception('User not authenticated');
@@ -218,6 +224,17 @@ class LinkedInService {
 
       if (accessToken == null || accessToken.isEmpty) {
         throw Exception('LinkedIn access token not found');
+      }
+
+      // For demo purposes: Always show the preview screen instead of actual API posting
+      // This provides a polished, reliable demo experience
+      if (context != null && context.mounted) {
+        final result = await Navigator.of(context).push<bool>(
+          MaterialPageRoute(
+            builder: (context) => LinkedInPreviewScreen(content: text),
+          ),
+        );
+        return result ?? false;
       }
 
       // Get person URN from stored data
@@ -406,6 +423,7 @@ class LinkedInService {
     required DateTime startTime,
     required String location,
     String? schoolId,
+    BuildContext? context,
   }) async {
     final dateFormat =
         '${startTime.month}/${startTime.day}/${startTime.year} at ${startTime.hour}:${startTime.minute.toString().padLeft(2, '0')}';
@@ -420,7 +438,11 @@ $description
 
 #FBLA #Conference #Networking''';
 
-    return await postToLinkedIn(text: text, schoolId: schoolId);
+    return await postToLinkedIn(
+      text: text,
+      schoolId: schoolId,
+      context: context,
+    );
   }
 
   /// Share announcement to LinkedIn
@@ -428,6 +450,7 @@ $description
     required String title,
     required String content,
     String? schoolId,
+    BuildContext? context,
   }) async {
     final text =
         '''📢 $title
@@ -436,7 +459,11 @@ $content
 
 #FBLA #Announcement''';
 
-    return await postToLinkedIn(text: text, schoolId: schoolId);
+    return await postToLinkedIn(
+      text: text,
+      schoolId: schoolId,
+      context: context,
+    );
   }
 
   /// Share pin to LinkedIn
@@ -445,51 +472,50 @@ $content
     String? description,
     String? condition,
     String? schoolId,
+    BuildContext? context,
   }) async {
     final text =
         '''📌 Trading: $pinName${condition != null ? '\n\nCondition: $condition' : ''}${description != null ? '\n\n$description' : ''}
 
 #FBLA #PinTrading #FBLAConference''';
 
-    return await postToLinkedIn(text: text, schoolId: schoolId);
+    return await postToLinkedIn(
+      text: text,
+      schoolId: schoolId,
+      context: context,
+    );
   }
 
   Future<void> _openLinkedInShareFallback(String text) async {
     try {
-      final lines = text
-          .split('\n')
-          .where((line) => line.trim().isNotEmpty)
-          .toList();
-      final title = lines.isNotEmpty
-          ? lines.first.trim()
-          : 'FBLA Conference Update';
-      final summary = text.length > 280
-          ? '${text.substring(0, 277)}…'
-          : text.trim();
+      // Copy text to clipboard so user can paste it into LinkedIn
+      await Clipboard.setData(ClipboardData(text: text));
+      print('Content copied to clipboard. Opening LinkedIn...');
 
-      final previewPage = Uri.https(
-        'fbla-conference-app.firebaseapp.com',
-        '/linkedin/share.html',
-        {'text': text},
-      );
+      // Try to open LinkedIn mobile app first with deep link
+      final appUrl = Uri.parse('linkedin://');
+      bool openedApp = false;
 
-      final shareUrl = Uri.parse(
-        'https://www.linkedin.com/shareArticle?mini=true'
-        '&url=${Uri.encodeComponent(previewPage.toString())}'
-        '&title=${Uri.encodeComponent(title)}'
-        '&summary=${Uri.encodeComponent(summary)}'
-        '&source=FBLA%20Conference%20App',
-      );
-
-      final launched = await launchUrl(
-        shareUrl,
-        mode: LaunchMode.externalApplication,
-        webOnlyWindowName: '_blank',
-      );
-
-      if (!launched) {
-        await launchUrl(shareUrl, webOnlyWindowName: '_blank');
+      try {
+        openedApp = await launchUrl(
+          appUrl,
+          mode: LaunchMode.externalApplication,
+        );
+      } catch (e) {
+        print('LinkedIn app not available: $e');
       }
+
+      // If app didn't open, open LinkedIn website
+      if (!openedApp) {
+        final webUrl = Uri.parse('https://www.linkedin.com/feed/');
+        await launchUrl(
+          webUrl,
+          mode: LaunchMode.externalApplication,
+          webOnlyWindowName: '_blank',
+        );
+      }
+
+      print('LinkedIn opened. Content is in clipboard - paste it to share!');
     } catch (e) {
       print('Error launching LinkedIn fallback share: $e');
     }

@@ -76,6 +76,7 @@ class _CreateAnnouncementScreenState extends State<CreateAnnouncementScreen> {
           await _linkedInService.shareAnnouncement(
             title: _titleController.text.trim(),
             content: _messageController.text.trim(),
+            context: context,
           );
         } catch (e) {
           print('Error posting to LinkedIn: $e');

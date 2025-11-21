@@ -960,6 +960,7 @@ class _HomeScreenState extends State<HomeScreen> {
       final success = await _linkedInService.shareAnnouncement(
         title: announcement.title,
         content: announcement.content,
+        context: context,
       );
 
       if (mounted) {
