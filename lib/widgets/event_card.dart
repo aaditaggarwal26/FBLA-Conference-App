@@ -175,46 +175,56 @@ class EventCard extends StatelessWidget {
                               .withValues(alpha: 0.3),
                         ),
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Icon(
-                            Icons.calendar_today_rounded,
-                            size: 14,
-                            color: _getCategoryColor(event.category),
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            DateFormat('MMM d').format(event.startTime),
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w700,
+                      child: IntrinsicHeight(
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Icon(
+                              Icons.calendar_today_rounded,
+                              size: 14,
                               color: _getCategoryColor(event.category),
                             ),
-                          ),
-                          const SizedBox(width: 8),
-                          Container(
-                            width: 1,
-                            height: 14,
-                            color: _getCategoryColor(event.category)
-                                .withValues(alpha: 0.3),
-                          ),
-                          const SizedBox(width: 8),
-                          Icon(
-                            Icons.access_time_rounded,
-                            size: 14,
-                            color: _getCategoryColor(event.category),
-                          ),
-                          const SizedBox(width: 6),
-                          Text(
-                            DateFormat('h:mm a').format(event.startTime),
-                            style: TextStyle(
-                              fontSize: 13,
-                              fontWeight: FontWeight.w600,
+                            const SizedBox(width: 6),
+                            Flexible(
+                              child: Text(
+                                DateFormat('MMM d').format(event.startTime),
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w700,
+                                  color: _getCategoryColor(event.category),
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                            const SizedBox(width: 8),
+                            VerticalDivider(
+                              width: 1,
+                              thickness: 1,
+                              color: _getCategoryColor(event.category)
+                                  .withValues(alpha: 0.3),
+                            ),
+                            const SizedBox(width: 8),
+                            Icon(
+                              Icons.access_time_rounded,
+                              size: 14,
                               color: _getCategoryColor(event.category),
                             ),
-                          ),
-                        ],
+                            const SizedBox(width: 6),
+                            Flexible(
+                              child: Text(
+                                DateFormat('h:mm a').format(event.startTime),
+                                style: TextStyle(
+                                  fontSize: 13,
+                                  fontWeight: FontWeight.w600,
+                                  color: _getCategoryColor(event.category),
+                                ),
+                                maxLines: 1,
+                                overflow: TextOverflow.ellipsis,
+                              ),
+                            ),
+                          ],
+                        ),
                       ),
                     ),
 
@@ -280,28 +290,36 @@ class EventCard extends StatelessWidget {
                           Row(
                             mainAxisAlignment: MainAxisAlignment.spaceBetween,
                             children: [
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.people_rounded,
-                                    size: 14,
-                                    color: isDark
-                                        ? Colors.white.withValues(alpha: 0.7)
-                                        : AppTheme.darkGray,
-                                  ),
-                                  const SizedBox(width: 6),
-                                  Text(
-                                    'Capacity',
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight: FontWeight.w600,
+                              Flexible(
+                                child: Row(
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Icon(
+                                      Icons.people_rounded,
+                                      size: 14,
                                       color: isDark
                                           ? Colors.white.withValues(alpha: 0.7)
                                           : AppTheme.darkGray,
                                     ),
-                                  ),
-                                ],
+                                    const SizedBox(width: 6),
+                                    Flexible(
+                                      child: Text(
+                                        'Capacity',
+                                        style: TextStyle(
+                                          fontSize: 12,
+                                          fontWeight: FontWeight.w600,
+                                          color: isDark
+                                              ? Colors.white.withValues(alpha: 0.7)
+                                              : AppTheme.darkGray,
+                                        ),
+                                        maxLines: 1,
+                                        overflow: TextOverflow.ellipsis,
+                                      ),
+                                    ),
+                                  ],
+                                ),
                               ),
+                              const SizedBox(width: 8),
                               Container(
                                 padding: const EdgeInsets.symmetric(
                                   horizontal: 8,

@@ -146,112 +146,130 @@ class _HomeScreenState extends State<HomeScreen> {
                   background: SafeArea(
                     child: Padding(
                       padding: const EdgeInsets.fromLTRB(24, 16, 24, 20),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisAlignment: MainAxisAlignment.end,
-                        children: [
-                          // Logo with rounded corners
-                          ClipRRect(
-                            borderRadius: BorderRadius.circular(12),
-                            child: Image.asset(
-                              'assets/logo.png',
-                              height: 32,
-                              width: 32,
-                              fit: BoxFit.contain,
-                            ),
-                          ),
-                          const SizedBox(height: 8),
-                          // Greeting
-                          Text(
-                            '${_getGreeting()},',
-                            style: TextStyle(
-                              color: isDark
-                                  ? Colors.white.withValues(alpha: 0.6)
-                                  : AppTheme.mediumGray,
-                              fontSize: 16,
-                              fontWeight: FontWeight.w500,
-                              letterSpacing: 0.2,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          FutureBuilder<String>(
-                            future: _firstNameFuture,
-                            builder: (context, snapshot) {
-                              if (snapshot.connectionState ==
-                                  ConnectionState.waiting) {
-                                return Text(
-                                  'Friend',
-                                  style: TextStyle(
-                                    color: isDark
-                                        ? Colors.white
-                                        : AppTheme.black,
-                                    fontSize: 32,
-                                    fontWeight: FontWeight.w800,
-                                    height: 1.2,
-                                    letterSpacing: -0.5,
-                                  ),
-                                );
-                              }
-                              return Text(
-                                snapshot.data ?? 'Friend',
-                                style: TextStyle(
-                                  color: isDark ? Colors.white : AppTheme.black,
-                                  fontSize: 32,
-                                  fontWeight: FontWeight.w800,
-                                  height: 1.2,
-                                  letterSpacing: -0.5,
+                      child: LayoutBuilder(
+                        builder: (context, constraints) {
+                          // Adjust sizing based on available space
+                          final availableHeight = constraints.maxHeight;
+                          final textScaleFactor = MediaQuery.of(context).textScaleFactor;
+                          
+                          // Scale down elements when text is scaled up or space is limited
+                          final shouldCompact = textScaleFactor > 1.1 || availableHeight < 140;
+                          final logoSize = shouldCompact ? 24.0 : 32.0;
+                          final greetingFontSize = shouldCompact ? 13.0 : 16.0;
+                          final nameFontSize = shouldCompact ? 24.0 : 32.0;
+                          final dateFontSize = shouldCompact ? 11.0 : 12.0;
+                          final iconSize = shouldCompact ? 11.0 : 13.0;
+                          final spacing = shouldCompact ? 4.0 : 8.0;
+                          
+                          return Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            mainAxisAlignment: MainAxisAlignment.end,
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              // Logo with rounded corners
+                              ClipRRect(
+                                borderRadius: BorderRadius.circular(12),
+                                child: Image.asset(
+                                  'assets/logo.png',
+                                  height: logoSize,
+                                  width: logoSize,
+                                  fit: BoxFit.contain,
                                 ),
-                              );
-                            },
-                          ),
-                          const SizedBox(height: 8),
-                          // Date with subtle background
-                          Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color: isDark
-                                  ? AppTheme.darkSurface.withValues(alpha: 0.5)
-                                  : Colors.white.withValues(alpha: 0.6),
-                              borderRadius: BorderRadius.circular(8),
-                              border: Border.all(
-                                color:
-                                    (isDark
-                                            ? AppTheme.darkCard
-                                            : AppTheme.lightGray)
-                                        .withValues(alpha: 0.3),
                               ),
-                            ),
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                Icon(
-                                  Icons.calendar_today_rounded,
-                                  size: 13,
-                                  color: isDark
-                                      ? AppTheme.darkSecondary
-                                      : AppTheme.primaryBlue,
-                                ),
-                                const SizedBox(width: 6),
-                                Text(
-                                  DateFormat(
-                                    'EEEE, MMMM d',
-                                  ).format(DateTime.now()),
+                              SizedBox(height: spacing),
+                              // Greeting
+                              Flexible(
+                                child: Text(
+                                  '${_getGreeting()},',
                                   style: TextStyle(
                                     color: isDark
-                                        ? Colors.white.withValues(alpha: 0.8)
-                                        : AppTheme.darkGray,
-                                    fontSize: 12,
-                                    fontWeight: FontWeight.w600,
+                                        ? Colors.white.withValues(alpha: 0.6)
+                                        : AppTheme.mediumGray,
+                                    fontSize: greetingFontSize,
+                                    fontWeight: FontWeight.w500,
                                     letterSpacing: 0.2,
                                   ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
                                 ),
-                              ],
-                            ),
-                          ),
-                        ],
+                              ),
+                              SizedBox(height: spacing / 2),
+                              FutureBuilder<String>(
+                                future: _firstNameFuture,
+                                builder: (context, snapshot) {
+                                  final name = snapshot.data ?? 'Friend';
+                                  return Flexible(
+                                    child: Text(
+                                      name,
+                                      style: TextStyle(
+                                        color: isDark ? Colors.white : AppTheme.black,
+                                        fontSize: nameFontSize,
+                                        fontWeight: FontWeight.w800,
+                                        height: 1.2,
+                                        letterSpacing: -0.5,
+                                      ),
+                                      maxLines: 1,
+                                      overflow: TextOverflow.ellipsis,
+                                    ),
+                                  );
+                                },
+                              ),
+                              SizedBox(height: spacing),
+                              // Date with subtle background
+                              Flexible(
+                                child: Container(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: shouldCompact ? 8 : 12,
+                                    vertical: shouldCompact ? 4 : 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: isDark
+                                        ? AppTheme.darkSurface.withValues(alpha: 0.5)
+                                        : Colors.white.withValues(alpha: 0.6),
+                                    borderRadius: BorderRadius.circular(8),
+                                    border: Border.all(
+                                      color:
+                                          (isDark
+                                                  ? AppTheme.darkCard
+                                                  : AppTheme.lightGray)
+                                              .withValues(alpha: 0.3),
+                                    ),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.calendar_today_rounded,
+                                        size: iconSize,
+                                        color: isDark
+                                            ? AppTheme.darkSecondary
+                                            : AppTheme.primaryBlue,
+                                      ),
+                                      SizedBox(width: shouldCompact ? 4 : 6),
+                                      Flexible(
+                                        child: Text(
+                                          DateFormat(
+                                            'EEEE, MMMM d',
+                                          ).format(DateTime.now()),
+                                          style: TextStyle(
+                                            color: isDark
+                                                ? Colors.white.withValues(alpha: 0.8)
+                                                : AppTheme.darkGray,
+                                            fontSize: dateFontSize,
+                                            fontWeight: FontWeight.w600,
+                                            letterSpacing: 0.2,
+                                          ),
+                                          maxLines: 1,
+                                          overflow: TextOverflow.ellipsis,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ),
+                            ],
+                          );
+                        },
                       ),
                     ),
                   ),

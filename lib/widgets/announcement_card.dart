@@ -115,41 +115,49 @@ class _AnnouncementCardState extends State<AnnouncementCard> {
                   // Header row with category, pinned badge, and time
                   Row(
                     children: [
-                      Container(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 10,
-                          vertical: 5,
-                        ),
-                        decoration: BoxDecoration(
-                          color: _getCategoryColor(
-                            announcement.category,
-                          ).withValues(alpha: 0.1),
-                          borderRadius: BorderRadius.circular(6),
-                          border: Border.all(
+                      Flexible(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 10,
+                            vertical: 5,
+                          ),
+                          decoration: BoxDecoration(
                             color: _getCategoryColor(
                               announcement.category,
-                            ).withValues(alpha: 0.3),
+                            ).withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(
+                              color: _getCategoryColor(
+                                announcement.category,
+                              ).withValues(alpha: 0.3),
+                            ),
                           ),
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Icon(
-                              _getCategoryIcon(announcement.category),
-                              size: 12,
-                              color: _getCategoryColor(announcement.category),
-                            ),
-                            const SizedBox(width: 4),
-                            Text(
-                              announcement.category,
-                              style: TextStyle(
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Icon(
+                                _getCategoryIcon(announcement.category),
+                                size: 12,
                                 color: _getCategoryColor(announcement.category),
-                                fontSize: 11,
-                                fontWeight: FontWeight.w700,
-                                letterSpacing: 0.3,
                               ),
-                            ),
-                          ],
+                              const SizedBox(width: 4),
+                              Flexible(
+                                child: Text(
+                                  announcement.category,
+                                  style: TextStyle(
+                                    color: _getCategoryColor(
+                                      announcement.category,
+                                    ),
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w700,
+                                    letterSpacing: 0.3,
+                                  ),
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                ),
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                       if (announcement.isPinned &&
@@ -195,16 +203,20 @@ class _AnnouncementCardState extends State<AnnouncementCard> {
                         color: isDark ? AppTheme.mediumGray : AppTheme.darkGray,
                       ),
                       const SizedBox(width: 4),
-                      Text(
-                        DateFormat(
-                          'MMM d, h:mm a',
-                        ).format(announcement.postedAt),
-                        style: TextStyle(
-                          fontSize: 11,
-                          fontWeight: FontWeight.w500,
-                          color: isDark
-                              ? AppTheme.mediumGray
-                              : AppTheme.darkGray,
+                      Flexible(
+                        child: Text(
+                          DateFormat(
+                            'MMM d, h:mm a',
+                          ).format(announcement.postedAt),
+                          style: TextStyle(
+                            fontSize: 11,
+                            fontWeight: FontWeight.w500,
+                            color: isDark
+                                ? AppTheme.mediumGray
+                                : AppTheme.darkGray,
+                          ),
+                          maxLines: 1,
+                          overflow: TextOverflow.ellipsis,
                         ),
                       ),
                     ],
