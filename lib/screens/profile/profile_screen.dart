@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import '../../services/auth_service.dart';
 import '../../services/admin_service.dart';
+import '../../services/accessibility_service.dart';
 import '../../models/user_model.dart';
 import '../../theme/app_theme.dart';
 import '../admin/admin_panel_screen.dart';
@@ -248,6 +249,9 @@ class _ProfileScreenState extends State<ProfileScreen> {
               }
             }),
             _buildDarkModeToggle(),
+            const SizedBox(height: 8),
+            _buildAccessibilitySection(),
+            const SizedBox(height: 8),
             _buildMenuItem(Icons.notifications_outlined, 'Notifications', () {
               // TODO: Navigate to notifications settings
             }),
@@ -401,10 +405,206 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onChanged: (value) {
                 themeProvider.toggleTheme();
               },
-              activeColor: const Color(0xFF4F46E5),
+              activeThumbColor: const Color(0xFF4F46E5),
               activeTrackColor: const Color(0xFF8B7DFF),
               inactiveThumbColor: Colors.white,
               inactiveTrackColor: const Color(0xFFE0E3E7),
+            ),
+          ),
+        );
+      },
+    );
+  }
+
+  Widget _buildAccessibilitySection() {
+    return Consumer<AccessibilityService>(
+      builder: (context, accessibilityService, _) {
+        final isDark = Theme.of(context).brightness == Brightness.dark;
+        
+        return Container(
+          margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+          decoration: BoxDecoration(
+            color: isDark ? AppTheme.darkSurface : AppTheme.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: isDark
+                  ? AppTheme.darkCard.withValues(alpha: 0.3)
+                  : AppTheme.lightGray,
+            ),
+          ),
+          child: Theme(
+            data: Theme.of(context).copyWith(dividerColor: Colors.transparent),
+            child: ExpansionTile(
+              tilePadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 4),
+              leading: Icon(
+                Icons.accessibility_new_rounded,
+                color: AppTheme.primaryBlue,
+              ),
+              title: const Text('Accessibility'),
+              iconColor: AppTheme.primaryBlue,
+              collapsedIconColor: AppTheme.primaryBlue,
+              children: [
+                // Text Size
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          Text(
+                            'Text Size',
+                            style: TextStyle(
+                              fontSize: 15,
+                              fontWeight: FontWeight.w600,
+                              color: isDark ? Colors.white : AppTheme.black,
+                            ),
+                          ),
+                          Text(
+                            accessibilityService.getTextScaleLabel(),
+                            style: TextStyle(
+                              fontSize: 13,
+                              color: AppTheme.primaryBlue,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                      const SizedBox(height: 8),
+                      Row(
+                        children: [
+                          Icon(Icons.text_fields, size: 16, color: AppTheme.mediumGray),
+                          Expanded(
+                            child: Slider(
+                              value: accessibilityService.textScaleFactor,
+                              min: 0.85,
+                              max: 1.5,
+                              divisions: 4,
+                              activeColor: AppTheme.primaryBlue,
+                              inactiveColor: isDark 
+                                  ? AppTheme.darkCard 
+                                  : AppTheme.lightGray,
+                              onChanged: (value) {
+                                accessibilityService.setTextScaleFactor(value);
+                              },
+                            ),
+                          ),
+                          Icon(Icons.text_fields, size: 24, color: AppTheme.mediumGray),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                
+                const Divider(height: 1),
+                
+                // Reduce Motion
+                ListTile(
+                  leading: Icon(
+                    Icons.animation,
+                    color: accessibilityService.reduceMotion 
+                        ? AppTheme.success 
+                        : AppTheme.mediumGray,
+                  ),
+                  title: const Text('Reduce Motion'),
+                  subtitle: Text(
+                    'Minimize animations',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.6)
+                          : AppTheme.mediumGray,
+                    ),
+                  ),
+                  trailing: Switch(
+                    value: accessibilityService.reduceMotion,
+                    onChanged: (value) {
+                      accessibilityService.toggleReduceMotion();
+                    },
+                    activeThumbColor: AppTheme.primaryBlue,
+                  ),
+                ),
+                
+                const Divider(height: 1),
+                
+                // High Contrast
+                ListTile(
+                  leading: Icon(
+                    Icons.contrast,
+                    color: accessibilityService.highContrast 
+                        ? AppTheme.success 
+                        : AppTheme.mediumGray,
+                  ),
+                  title: const Text('High Contrast'),
+                  subtitle: Text(
+                    'Increase color contrast',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.6)
+                          : AppTheme.mediumGray,
+                    ),
+                  ),
+                  trailing: Switch(
+                    value: accessibilityService.highContrast,
+                    onChanged: (value) {
+                      accessibilityService.toggleHighContrast();
+                    },
+                    activeThumbColor: AppTheme.primaryBlue,
+                  ),
+                ),
+                
+                const Divider(height: 1),
+                
+                // Bold Text
+                ListTile(
+                  leading: Icon(
+                    Icons.format_bold,
+                    color: accessibilityService.boldText 
+                        ? AppTheme.success 
+                        : AppTheme.mediumGray,
+                  ),
+                  title: const Text('Bold Text'),
+                  subtitle: Text(
+                    'Make text easier to read',
+                    style: TextStyle(
+                      fontSize: 12,
+                      color: isDark
+                          ? Colors.white.withValues(alpha: 0.6)
+                          : AppTheme.mediumGray,
+                    ),
+                  ),
+                  trailing: Switch(
+                    value: accessibilityService.boldText,
+                    onChanged: (value) {
+                      accessibilityService.toggleBoldText();
+                    },
+                    activeThumbColor: AppTheme.primaryBlue,
+                  ),
+                ),
+                
+                // Reset button
+                Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: TextButton.icon(
+                    onPressed: () {
+                      accessibilityService.resetToDefaults();
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Accessibility settings reset to defaults'),
+                          duration: Duration(seconds: 2),
+                        ),
+                      );
+                    },
+                    icon: const Icon(Icons.refresh_rounded),
+                    label: const Text('Reset to Defaults'),
+                    style: TextButton.styleFrom(
+                      foregroundColor: AppTheme.mediumGray,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ),
         );
