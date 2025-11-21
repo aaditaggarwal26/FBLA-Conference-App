@@ -3,6 +3,7 @@ import '../../services/admin_service.dart';
 import '../../theme/app_theme.dart';
 import 'create_event_screen.dart';
 import 'create_announcement_screen.dart';
+import 'linkedin_settings_screen.dart';
 
 class AdminPanelScreen extends StatelessWidget {
   const AdminPanelScreen({super.key});
@@ -155,6 +156,25 @@ class AdminPanelScreen extends StatelessWidget {
                     ScaffoldMessenger.of(context).showSnackBar(
                       const SnackBar(
                         content: Text('User management coming soon'),
+                      ),
+                    );
+                  },
+                ),
+
+                const SizedBox(height: 16),
+
+                _buildActionCard(
+                  context: context,
+                  isDark: isDark,
+                  title: 'LinkedIn Integration',
+                  description: 'Connect and manage LinkedIn sharing',
+                  icon: Icons.business_rounded,
+                  color: const Color(0xFF0077B5),
+                  onTap: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute(
+                        builder: (context) => const LinkedInSettingsScreen(),
                       ),
                     );
                   },

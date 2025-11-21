@@ -6,6 +6,7 @@ import '../models/announcement_model.dart';
 import '../models/user_model.dart';
 import '../theme/app_theme.dart';
 import '../services/message_service.dart';
+import '../services/linkedin_service.dart';
 import '../screens/messages/chat_screen.dart';
 
 class AnnouncementCard extends StatefulWidget {
@@ -20,6 +21,8 @@ class AnnouncementCard extends StatefulWidget {
 class _AnnouncementCardState extends State<AnnouncementCard> {
   bool _isExpanded = false;
   final MessageService _messageService = MessageService();
+  final LinkedInService _linkedInService = LinkedInService();
+  bool _isSharingToLinkedIn = false;
 
   @override
   Widget build(BuildContext context) {
@@ -335,6 +338,31 @@ class _AnnouncementCardState extends State<AnnouncementCard> {
                           minimumSize: const Size(0, 32),
                         ),
                       ),
+                      const SizedBox(width: 8),
+                      OutlinedButton.icon(
+                        onPressed: _isSharingToLinkedIn
+                            ? null
+                            : _shareToLinkedIn,
+                        icon: _isSharingToLinkedIn
+                            ? const SizedBox(
+                                width: 16,
+                                height: 16,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                            : const Icon(Icons.business_rounded, size: 16),
+                        label: const Text('Share'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: const Color(0xFF0077B5),
+                          side: const BorderSide(color: Color(0xFF0077B5)),
+                          padding: const EdgeInsets.symmetric(
+                            horizontal: 12,
+                            vertical: 8,
+                          ),
+                          minimumSize: const Size(0, 32),
+                        ),
+                      ),
                     ],
                   ),
                 ],
@@ -486,6 +514,57 @@ class _AnnouncementCardState extends State<AnnouncementCard> {
             backgroundColor: AppTheme.error,
           ),
         );
+      }
+    }
+  }
+
+  Future<void> _shareToLinkedIn() async {
+    final isConnected = await _linkedInService.isConnected();
+
+    if (!isConnected) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please connect LinkedIn in Admin Panel first'),
+            backgroundColor: AppTheme.warning,
+          ),
+        );
+      }
+      return;
+    }
+
+    setState(() => _isSharingToLinkedIn = true);
+
+    try {
+      final success = await _linkedInService.shareAnnouncement(
+        title: widget.announcement.title,
+        content: widget.announcement.content,
+      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              success
+                  ? 'Announcement shared on LinkedIn!'
+                  : 'Failed to share on LinkedIn',
+            ),
+            backgroundColor: success ? AppTheme.success : AppTheme.error,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error sharing to LinkedIn: $e'),
+            backgroundColor: AppTheme.error,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSharingToLinkedIn = false);
       }
     }
   }

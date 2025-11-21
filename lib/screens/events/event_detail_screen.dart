@@ -3,6 +3,7 @@ import 'package:intl/intl.dart';
 import '../../models/event_model.dart';
 import '../../services/event_service.dart';
 import '../../services/auth_service.dart';
+import '../../services/linkedin_service.dart';
 import '../../theme/app_theme.dart';
 import 'event_qr_code_screen.dart';
 
@@ -18,8 +19,10 @@ class EventDetailScreen extends StatefulWidget {
 class _EventDetailScreenState extends State<EventDetailScreen> {
   final EventService _eventService = EventService();
   final AuthService _authService = AuthService();
+  final LinkedInService _linkedInService = LinkedInService();
   bool _isRegistered = false;
   bool _isLoading = false;
+  bool _isSharingToLinkedIn = false;
 
   @override
   void initState() {
@@ -93,6 +96,11 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
             expandedHeight: 250,
             pinned: true,
             actions: [
+              IconButton(
+                icon: const Icon(Icons.business_rounded),
+                onPressed: _shareToLinkedIn,
+                tooltip: 'Share on LinkedIn',
+              ),
               IconButton(
                 icon: const Icon(Icons.qr_code_rounded),
                 onPressed: () {
@@ -321,5 +329,58 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
         child: Icon(Icons.event_rounded, size: 80, color: AppTheme.primaryBlue),
       ),
     );
+  }
+
+  Future<void> _shareToLinkedIn() async {
+    final isConnected = await _linkedInService.isConnected();
+    
+    if (!isConnected) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          const SnackBar(
+            content: Text('Please connect LinkedIn in Admin Panel first'),
+            backgroundColor: AppTheme.warning,
+          ),
+        );
+      }
+      return;
+    }
+
+    setState(() => _isSharingToLinkedIn = true);
+
+    try {
+      final success = await _linkedInService.shareEvent(
+        title: widget.event.title,
+        description: widget.event.description,
+        startTime: widget.event.startTime,
+        location: widget.event.location,
+      );
+
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text(
+              success
+                  ? 'Event shared on LinkedIn!'
+                  : 'Failed to share on LinkedIn',
+            ),
+            backgroundColor: success ? AppTheme.success : AppTheme.error,
+          ),
+        );
+      }
+    } catch (e) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Error sharing to LinkedIn: $e'),
+            backgroundColor: AppTheme.error,
+          ),
+        );
+      }
+    } finally {
+      if (mounted) {
+        setState(() => _isSharingToLinkedIn = false);
+      }
+    }
   }
 }

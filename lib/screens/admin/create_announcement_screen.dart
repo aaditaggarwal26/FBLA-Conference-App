@@ -3,6 +3,7 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../theme/app_theme.dart';
 import '../../services/admin_service.dart';
+import '../../services/linkedin_service.dart';
 
 class CreateAnnouncementScreen extends StatefulWidget {
   const CreateAnnouncementScreen({super.key});
@@ -16,15 +17,31 @@ class _CreateAnnouncementScreenState extends State<CreateAnnouncementScreen> {
   final _titleController = TextEditingController();
   final _messageController = TextEditingController();
   final _adminService = AdminService();
+  final _linkedInService = LinkedInService();
   
   String _priority = 'normal';
   bool _isLoading = false;
+  bool _postToLinkedIn = false;
+  bool _isLinkedInConnected = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _checkLinkedInConnection();
+  }
 
   @override
   void dispose() {
     _titleController.dispose();
     _messageController.dispose();
     super.dispose();
+  }
+
+  Future<void> _checkLinkedInConnection() async {
+    final connected = await _linkedInService.isConnected();
+    setState(() {
+      _isLinkedInConnected = connected;
+    });
   }
 
   Future<void> _createAnnouncement() async {
@@ -44,6 +61,7 @@ class _CreateAnnouncementScreenState extends State<CreateAnnouncementScreen> {
     setState(() => _isLoading = true);
 
     try {
+      // Create announcement in Firestore
       await FirebaseFirestore.instance.collection('announcements').add({
         'title': _titleController.text.trim(),
         'message': _messageController.text.trim(),
@@ -52,9 +70,37 @@ class _CreateAnnouncementScreenState extends State<CreateAnnouncementScreen> {
         'createdBy': FirebaseAuth.instance.currentUser!.uid,
       });
 
+      // Post to LinkedIn if enabled
+      if (_postToLinkedIn && _isLinkedInConnected) {
+        try {
+          await _linkedInService.shareAnnouncement(
+            title: _titleController.text.trim(),
+            content: _messageController.text.trim(),
+          );
+        } catch (e) {
+          print('Error posting to LinkedIn: $e');
+          // Don't fail the whole operation if LinkedIn post fails
+          if (mounted) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(
+                content: Text('Announcement posted, but LinkedIn share failed: $e'),
+                backgroundColor: AppTheme.warning,
+              ),
+            );
+          }
+        }
+      }
+
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          const SnackBar(content: Text('Announcement posted successfully')),
+          SnackBar(
+            content: Text(
+              _postToLinkedIn && _isLinkedInConnected
+                  ? 'Announcement posted and shared on LinkedIn!'
+                  : 'Announcement posted successfully',
+            ),
+            backgroundColor: AppTheme.success,
+          ),
         );
         Navigator.pop(context);
       }
@@ -151,6 +197,70 @@ class _CreateAnnouncementScreenState extends State<CreateAnnouncementScreen> {
                 ),
 
                 const SizedBox(height: 16),
+
+                // LinkedIn posting option
+                if (_isLinkedInConnected)
+                  Container(
+                    padding: const EdgeInsets.all(16),
+                    decoration: BoxDecoration(
+                      color: isDark ? AppTheme.darkSurface : Colors.white,
+                      borderRadius: BorderRadius.circular(12),
+                      border: Border.all(
+                        color: isDark ? AppTheme.darkCard : AppTheme.lightGray,
+                      ),
+                    ),
+                    child: Row(
+                      children: [
+                        Container(
+                          padding: const EdgeInsets.all(8),
+                          decoration: BoxDecoration(
+                            color: const Color(0xFF0077B5).withValues(alpha: 0.1),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          child: const Icon(
+                            Icons.business_rounded,
+                            color: Color(0xFF0077B5),
+                            size: 20,
+                          ),
+                        ),
+                        const SizedBox(width: 12),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              Text(
+                                'Share on LinkedIn',
+                                style: TextStyle(
+                                  fontSize: 15,
+                                  fontWeight: FontWeight.w600,
+                                  color: isDark ? Colors.white : AppTheme.black,
+                                ),
+                              ),
+                              const SizedBox(height: 2),
+                              Text(
+                                'Automatically post this announcement to LinkedIn',
+                                style: TextStyle(
+                                  fontSize: 12,
+                                  color: isDark
+                                      ? Colors.white.withValues(alpha: 0.6)
+                                      : AppTheme.mediumGray,
+                                ),
+                              ),
+                            ],
+                          ),
+                        ),
+                        Switch(
+                          value: _postToLinkedIn,
+                          onChanged: (value) {
+                            setState(() => _postToLinkedIn = value);
+                          },
+                          activeColor: const Color(0xFF0077B5),
+                        ),
+                      ],
+                    ),
+                  ),
+
+                if (_isLinkedInConnected) const SizedBox(height: 16),
 
                 // Priority selector
                 Container(
