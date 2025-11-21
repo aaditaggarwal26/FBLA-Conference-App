@@ -155,6 +155,7 @@ class _EventsScreenState extends State<EventsScreen>
       ),
       builder: (context, userSnapshot) {
         final schoolIds = userSnapshot.data?.schoolIds ?? [];
+        final currentUserName = userSnapshot.data?.name ?? '';
 
         return CustomScrollView(
           slivers: [
@@ -221,6 +222,299 @@ class _EventsScreenState extends State<EventsScreen>
               ),
             ),
 
+            // Featured NCCC 2025 block (if user is in a school)
+            if (schoolIds.isNotEmpty)
+              SliverToBoxAdapter(
+                child: Padding(
+                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                  child: GestureDetector(
+                    onTap: () {
+                      Navigator.push(
+                        context,
+                        MaterialPageRoute(
+                          builder: (context) => NCCCEventDetailScreen(
+                            schoolId: schoolIds.first,
+                            currentUserName: currentUserName,
+                          ),
+                        ),
+                      );
+                    },
+                    onLongPress: () async {
+                      // Admin function: Import NCCC events
+                      final confirm = await showDialog<bool>(
+                        context: context,
+                        builder: (context) => AlertDialog(
+                          title: const Text('Import NCCC 2025 Events'),
+                          content: const Text(
+                            'This will import 208 competition events from the NCCC 2025 schedule. '
+                            'Only do this once!\n\n'
+                            'Continue?',
+                          ),
+                          actions: [
+                            TextButton(
+                              onPressed: () => Navigator.pop(context, false),
+                              child: const Text('Cancel'),
+                            ),
+                            ElevatedButton(
+                              onPressed: () => Navigator.pop(context, true),
+                              style: ElevatedButton.styleFrom(
+                                backgroundColor: AppTheme.primaryBlue,
+                              ),
+                              child: const Text('Import'),
+                            ),
+                          ],
+                        ),
+                      );
+
+                      if (confirm == true && mounted) {
+                        await _importNCCCEvents(schoolIds.first);
+                      }
+                    },
+                    child: Container(
+                      decoration: BoxDecoration(
+                        gradient: const LinearGradient(
+                          colors: [Color(0xFF001231), Color(0xFF0A2463)],
+                          begin: Alignment.topLeft,
+                          end: Alignment.bottomRight,
+                        ),
+                        borderRadius: BorderRadius.circular(16),
+                        boxShadow: [
+                          BoxShadow(
+                            color: const Color(
+                              0xFF001231,
+                            ).withValues(alpha: 0.3),
+                            blurRadius: 12,
+                            offset: const Offset(0, 6),
+                          ),
+                        ],
+                      ),
+                      child: Stack(
+                        children: [
+                          // Background pattern
+                          Positioned(
+                            right: -20,
+                            top: -20,
+                            child: Icon(
+                              Icons.event_rounded,
+                              size: 140,
+                              color: Colors.white.withValues(alpha: 0.05),
+                            ),
+                          ),
+                          Padding(
+                            padding: const EdgeInsets.all(20),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 12,
+                                        vertical: 6,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.amber,
+                                        borderRadius: BorderRadius.circular(20),
+                                      ),
+                                      child: const Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            Icons.star_rounded,
+                                            size: 14,
+                                            color: Colors.black,
+                                          ),
+                                          SizedBox(width: 4),
+                                          Text(
+                                            'FEATURED',
+                                            style: TextStyle(
+                                              color: Colors.black,
+                                              fontSize: 11,
+                                              fontWeight: FontWeight.bold,
+                                              letterSpacing: 0.5,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                    const Spacer(),
+                                    Container(
+                                      padding: const EdgeInsets.symmetric(
+                                        horizontal: 10,
+                                        vertical: 4,
+                                      ),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withValues(
+                                          alpha: 0.2,
+                                        ),
+                                        borderRadius: BorderRadius.circular(12),
+                                      ),
+                                      child: const Row(
+                                        mainAxisSize: MainAxisSize.min,
+                                        children: [
+                                          Icon(
+                                            Icons.navigation_rounded,
+                                            size: 12,
+                                            color: Colors.white,
+                                          ),
+                                          SizedBox(width: 4),
+                                          Text(
+                                            'AR Nav',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 10,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 16),
+                                const Text(
+                                  'NCCC 2025',
+                                  style: TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 28,
+                                    fontWeight: FontWeight.bold,
+                                    letterSpacing: 0.5,
+                                  ),
+                                ),
+                                const SizedBox(height: 4),
+                                const Text(
+                                  'WA FBLA West Central Preliminary',
+                                  style: TextStyle(
+                                    color: Colors.white70,
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w500,
+                                  ),
+                                ),
+                                const SizedBox(height: 16),
+                                Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withValues(
+                                          alpha: 0.15,
+                                        ),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: const Icon(
+                                        Icons.calendar_today_rounded,
+                                        size: 16,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    const Column(
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
+                                      children: [
+                                        Text(
+                                          'November 22, 2025',
+                                          style: TextStyle(
+                                            color: Colors.white,
+                                            fontSize: 14,
+                                            fontWeight: FontWeight.w600,
+                                          ),
+                                        ),
+                                        Text(
+                                          'Saturday • Full Day Event',
+                                          style: TextStyle(
+                                            color: Colors.white60,
+                                            fontSize: 12,
+                                          ),
+                                        ),
+                                      ],
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 12),
+                                Row(
+                                  children: [
+                                    Container(
+                                      padding: const EdgeInsets.all(8),
+                                      decoration: BoxDecoration(
+                                        color: Colors.white.withValues(
+                                          alpha: 0.15,
+                                        ),
+                                        borderRadius: BorderRadius.circular(8),
+                                      ),
+                                      child: const Icon(
+                                        Icons.location_on_rounded,
+                                        size: 16,
+                                        color: Colors.white,
+                                      ),
+                                    ),
+                                    const SizedBox(width: 12),
+                                    const Expanded(
+                                      child: Column(
+                                        crossAxisAlignment:
+                                            CrossAxisAlignment.start,
+                                        children: [
+                                          Text(
+                                            'North Creek High School',
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 14,
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                          Text(
+                                            '208 Competition Events',
+                                            style: TextStyle(
+                                              color: Colors.white60,
+                                              fontSize: 12,
+                                            ),
+                                          ),
+                                        ],
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                                const SizedBox(height: 16),
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                    vertical: 12,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white,
+                                    borderRadius: BorderRadius.circular(12),
+                                  ),
+                                  child: const Row(
+                                    mainAxisAlignment: MainAxisAlignment.center,
+                                    children: [
+                                      Text(
+                                        'View My Schedule & Navigate',
+                                        style: TextStyle(
+                                          color: Color(0xFF001231),
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                          letterSpacing: 0.3,
+                                        ),
+                                      ),
+                                      SizedBox(width: 8),
+                                      Icon(
+                                        Icons.arrow_forward_rounded,
+                                        color: Color(0xFF001231),
+                                        size: 18,
+                                      ),
+                                    ],
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+
             // FBLA Events Section
             SliverToBoxAdapter(
               child: Padding(
@@ -250,42 +544,6 @@ class _EventsScreenState extends State<EventsScreen>
                   ? _eventService.getEvents()
                   : _eventService.getEventsByCategory(_selectedCategory),
               builder: (context, snapshot) {
-                if (snapshot.hasError) {
-                  // Check if it's the index error
-                  if (snapshot.error.toString().contains('requires an index')) {
-                    return SliverToBoxAdapter(
-                      child: Padding(
-                        padding: const EdgeInsets.all(16),
-                        child: Card(
-                          color: Colors.orange.shade50,
-                          child: Padding(
-                            padding: const EdgeInsets.all(16),
-                            child: Column(
-                              children: [
-                                const Icon(Icons.warning_amber_rounded, color: Colors.orange, size: 40),
-                                const SizedBox(height: 8),
-                                const Text(
-                                  'Database Index Required',
-                                  style: TextStyle(fontWeight: FontWeight.bold),
-                                ),
-                                const SizedBox(height: 8),
-                                const Text(
-                                  'Please check the debug console for a link to create the required Firestore index.',
-                                  textAlign: TextAlign.center,
-                                  style: TextStyle(fontSize: 12),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-                      ),
-                    );
-                  }
-                  return SliverToBoxAdapter(
-                    child: Center(child: Text('Error: ${snapshot.error}')),
-                  );
-                }
-
                 if (snapshot.connectionState == ConnectionState.waiting) {
                   return const SliverFillRemaining(
                     child: Center(child: CircularProgressIndicator()),
@@ -363,7 +621,9 @@ class _EventsScreenState extends State<EventsScreen>
                 return StreamBuilder<List<SchoolEventModel>>(
                   stream: _schoolService.getSchoolEvents(schoolId),
                   builder: (context, snapshot) {
-                    final schoolEvents = snapshot.data ?? [];
+                    final schoolEvents = (snapshot.data ?? [])
+                        .where((event) => !_isNcccSchoolEvent(event))
+                        .toList();
 
                     if (schoolEvents.isEmpty) {
                       return const SliverToBoxAdapter(child: SizedBox.shrink());
@@ -684,7 +944,9 @@ class _EventsScreenState extends State<EventsScreen>
                                       vertical: 4,
                                     ),
                                     decoration: BoxDecoration(
-                                      color: Colors.white.withValues(alpha: 0.2),
+                                      color: Colors.white.withValues(
+                                        alpha: 0.2,
+                                      ),
                                       borderRadius: BorderRadius.circular(12),
                                     ),
                                     child: const Row(
@@ -734,7 +996,9 @@ class _EventsScreenState extends State<EventsScreen>
                                   Container(
                                     padding: const EdgeInsets.all(8),
                                     decoration: BoxDecoration(
-                                      color: Colors.white.withValues(alpha: 0.15),
+                                      color: Colors.white.withValues(
+                                        alpha: 0.15,
+                                      ),
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: const Icon(
@@ -745,7 +1009,8 @@ class _EventsScreenState extends State<EventsScreen>
                                   ),
                                   const SizedBox(width: 12),
                                   const Column(
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Text(
                                         'November 22, 2025',
@@ -772,7 +1037,9 @@ class _EventsScreenState extends State<EventsScreen>
                                   Container(
                                     padding: const EdgeInsets.all(8),
                                     decoration: BoxDecoration(
-                                      color: Colors.white.withValues(alpha: 0.15),
+                                      color: Colors.white.withValues(
+                                        alpha: 0.15,
+                                      ),
                                       borderRadius: BorderRadius.circular(8),
                                     ),
                                     child: const Icon(
@@ -784,7 +1051,8 @@ class _EventsScreenState extends State<EventsScreen>
                                   const SizedBox(width: 12),
                                   const Expanded(
                                     child: Column(
-                                      crossAxisAlignment: CrossAxisAlignment.start,
+                                      crossAxisAlignment:
+                                          CrossAxisAlignment.start,
                                       children: [
                                         Text(
                                           'North Creek High School',
@@ -847,7 +1115,7 @@ class _EventsScreenState extends State<EventsScreen>
               ),
             ),
 
-            // Regular school events
+            // Regular school events (excluding NCCC block)
             ...schoolIds.map((schoolId) {
               return StreamBuilder<List<SchoolEventModel>>(
                 stream: _schoolService.getSchoolEvents(schoolId),
@@ -859,7 +1127,9 @@ class _EventsScreenState extends State<EventsScreen>
                     );
                   }
 
-                  final events = snapshot.data ?? [];
+                  final events = (snapshot.data ?? [])
+                      .where((event) => !_isNcccSchoolEvent(event))
+                      .toList();
 
                   if (events.isEmpty) {
                     return const SliverToBoxAdapter(child: SizedBox.shrink());
@@ -1304,7 +1574,7 @@ class _EventsScreenState extends State<EventsScreen>
                         : Icons.event_available_rounded,
                     size: 18,
                   ),
-                  label: Text(isRegistered ? "Reg'd" : 'Register'),
+                  label: Text(isRegistered ? 'Registered' : 'Register'),
                   style: OutlinedButton.styleFrom(
                     foregroundColor: isRegistered
                         ? AppTheme.success
@@ -1586,6 +1856,13 @@ class _EventsScreenState extends State<EventsScreen>
     );
   }
 
+  bool _isNcccSchoolEvent(SchoolEventModel event) {
+    final titleLower = event.title.toLowerCase();
+    final tagsLower = event.tags.map((tag) => tag.toLowerCase());
+    return titleLower.contains('nccc') ||
+        tagsLower.any((tag) => tag.contains('nccc'));
+  }
+
   Future<void> _importNCCCEvents(String schoolId) async {
     // Show loading dialog
     showDialog(
@@ -1605,10 +1882,10 @@ class _EventsScreenState extends State<EventsScreen>
 
     try {
       final count = await _eventImportService.importNCCC2025Events(schoolId);
-      
+
       if (mounted) {
         Navigator.pop(context); // Close loading dialog
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Successfully imported $count events!'),
@@ -1620,7 +1897,7 @@ class _EventsScreenState extends State<EventsScreen>
     } catch (e) {
       if (mounted) {
         Navigator.pop(context); // Close loading dialog
-        
+
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text('Error importing events: $e'),

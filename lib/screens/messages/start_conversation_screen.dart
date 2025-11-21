@@ -87,7 +87,7 @@ class _StartConversationScreenState extends State<StartConversationScreen> {
 
   Future<void> _searchUsers(String query) async {
     final queryTrimmed = query.trim();
-    
+
     if (queryTrimmed.isEmpty) {
       // Show admins when search is empty
       setState(() {
@@ -125,7 +125,7 @@ class _StartConversationScreenState extends State<StartConversationScreen> {
         if (doc.id == currentUserId || foundUserIds.contains(doc.id)) {
           continue; // Exclude current user and already found admins
         }
-        
+
         final user = UserModel.fromFirestore(doc);
         if (user.name.toLowerCase().contains(queryLower) ||
             user.email.toLowerCase().contains(queryLower)) {
@@ -142,7 +142,9 @@ class _StartConversationScreenState extends State<StartConversationScreen> {
       final combinedResults = [...matchingAdmins, ...matchingUsers];
 
       setState(() {
-        _searchResults = combinedResults.take(20).toList(); // Limit to 20 results
+        _searchResults = combinedResults
+            .take(20)
+            .toList(); // Limit to 20 results
         _isSearching = false;
       });
     } catch (e) {
@@ -170,10 +172,8 @@ class _StartConversationScreenState extends State<StartConversationScreen> {
         Navigator.pushReplacement(
           context,
           MaterialPageRoute(
-            builder: (context) => ChatScreen(
-              otherUserId: user.id,
-              otherUserName: user.name,
-            ),
+            builder: (context) =>
+                ChatScreen(otherUserId: user.id, otherUserName: user.name),
           ),
         );
       }
@@ -236,73 +236,70 @@ class _StartConversationScreenState extends State<StartConversationScreen> {
             child: _isLoadingAdmins || _isSearching
                 ? const Center(child: CircularProgressIndicator())
                 : _searchResults.isEmpty && _searchController.text.isNotEmpty
-                    ? Center(
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Icon(
-                              Icons.person_search_rounded,
-                              size: 64,
-                              color: AppTheme.mediumGray,
-                            ),
-                            const SizedBox(height: 16),
-                            Text(
-                              'No users found',
-                              style: TextStyle(
-                                fontSize: 18,
-                                fontWeight: FontWeight.w600,
-                                color: isDark ? Colors.white : AppTheme.black,
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Text(
-                              'Try searching with a different name',
-                              style: TextStyle(
-                                color: AppTheme.mediumGray,
-                              ),
-                            ),
-                          ],
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.person_search_rounded,
+                          size: 64,
+                          color: AppTheme.mediumGray,
                         ),
-                      )
-                    : _searchResults.isEmpty
-                        ? Center(
-                            child: Column(
-                              mainAxisAlignment: MainAxisAlignment.center,
-                              children: [
-                                Icon(
-                                  Icons.chat_bubble_outline_rounded,
-                                  size: 64,
-                                  color: AppTheme.mediumGray,
-                                ),
-                                const SizedBox(height: 16),
-                                Text(
-                                  'Start a conversation',
-                                  style: TextStyle(
-                                    fontSize: 18,
-                                    fontWeight: FontWeight.w600,
-                                    color:
-                                        isDark ? Colors.white : AppTheme.black,
-                                  ),
-                                ),
-                                const SizedBox(height: 8),
-                                Text(
-                                  'Search for someone to message',
-                                  style: TextStyle(
-                                    color: AppTheme.mediumGray,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          )
-                        : ListView.builder(
-                            padding: const EdgeInsets.symmetric(horizontal: 16),
-                            itemCount: _searchResults.length,
-                            itemBuilder: (context, index) {
-                              final user = _searchResults[index];
-                              final isAdmin = _adminUsers.any((admin) => admin.id == user.id);
-                              return _buildUserCard(user, isDark, isAdmin: isAdmin);
-                            },
+                        const SizedBox(height: 16),
+                        Text(
+                          'No users found',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: isDark ? Colors.white : AppTheme.black,
                           ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Try searching with a different name',
+                          style: TextStyle(color: AppTheme.mediumGray),
+                        ),
+                      ],
+                    ),
+                  )
+                : _searchResults.isEmpty
+                ? Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Icon(
+                          Icons.chat_bubble_outline_rounded,
+                          size: 64,
+                          color: AppTheme.mediumGray,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          'Start a conversation',
+                          style: TextStyle(
+                            fontSize: 18,
+                            fontWeight: FontWeight.w600,
+                            color: isDark ? Colors.white : AppTheme.black,
+                          ),
+                        ),
+                        const SizedBox(height: 8),
+                        Text(
+                          'Search for someone to message',
+                          style: TextStyle(color: AppTheme.mediumGray),
+                        ),
+                      ],
+                    ),
+                  )
+                : ListView.builder(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    itemCount: _searchResults.length,
+                    itemBuilder: (context, index) {
+                      final user = _searchResults[index];
+                      final isAdmin = _adminUsers.any(
+                        (admin) => admin.id == user.id,
+                      );
+                      return _buildUserCard(user, isDark, isAdmin: isAdmin);
+                    },
+                  ),
           ),
         ],
       ),
@@ -331,9 +328,13 @@ class _StartConversationScreenState extends State<StartConversationScreen> {
               children: [
                 CircleAvatar(
                   radius: 28,
-                  backgroundColor: isDark ? AppTheme.darkCard : AppTheme.lightGray,
+                  backgroundColor: isDark
+                      ? AppTheme.darkCard
+                      : AppTheme.lightGray,
                   backgroundImage:
-                      user.photoUrl != null && user.photoUrl!.isNotEmpty ? NetworkImage(user.photoUrl!) : null,
+                      user.photoUrl != null && user.photoUrl!.isNotEmpty
+                      ? NetworkImage(user.photoUrl!)
+                      : null,
                   child: user.photoUrl == null || user.photoUrl!.isEmpty
                       ? Icon(
                           Icons.person,
@@ -394,7 +395,9 @@ class _StartConversationScreenState extends State<StartConversationScreen> {
                             color: AppTheme.primaryBlue.withValues(alpha: 0.1),
                             borderRadius: BorderRadius.circular(4),
                             border: Border.all(
-                              color: AppTheme.primaryBlue.withValues(alpha: 0.3),
+                              color: AppTheme.primaryBlue.withValues(
+                                alpha: 0.3,
+                              ),
                             ),
                           ),
                           child: Text(
@@ -411,8 +414,7 @@ class _StartConversationScreenState extends State<StartConversationScreen> {
                         const SizedBox(width: 6),
                         SchoolBadgeAsync(
                           schoolId: user.schoolId!,
-                          fetchSchool: (id) =>
-                              _schoolService.getSchool(id),
+                          fetchSchool: (id) => _schoolService.getSchool(id),
                           isOwner: user.isSchoolOwner,
                           fontSize: 10,
                         ),
@@ -422,10 +424,7 @@ class _StartConversationScreenState extends State<StartConversationScreen> {
                   const SizedBox(height: 2),
                   Text(
                     user.email,
-                    style: TextStyle(
-                      fontSize: 14,
-                      color: AppTheme.mediumGray,
-                    ),
+                    style: TextStyle(fontSize: 14, color: AppTheme.mediumGray),
                     overflow: TextOverflow.ellipsis,
                   ),
                 ],
