@@ -1,77 +1,47 @@
 import 'dart:math' show atan2, cos, sin, pi;
 import 'package:geolocator/geolocator.dart';
-import 'package:permission_handler/permission_handler.dart';
 import '../models/location_pin_model.dart';
 
 class ARNavigationService {
-  // Request necessary permissions for AR navigation
-  Future<bool> requestPermissions() async {
+  // Check if location permission is granted (using Geolocator only)
+  Future<bool> checkLocationPermission() async {
     try {
-      Map<Permission, PermissionStatus> statuses = await [
-        Permission.camera,
-        Permission.locationWhenInUse,
-      ].request();
-
-      final cameraGranted = statuses[Permission.camera]?.isGranted ?? false;
-      final locationGranted = statuses[Permission.locationWhenInUse]?.isGranted ?? false;
-
-      return cameraGranted && locationGranted;
+      print('📍 Checking location permission...');
+      final permission = await Geolocator.checkPermission();
+      print('📍 Location permission status: $permission');
+      
+      final granted = permission == LocationPermission.whileInUse || 
+                     permission == LocationPermission.always;
+      print(granted ? '✅ Location permission granted' : '❌ Location permission denied');
+      
+      return granted;
     } catch (e) {
+      print('❌ Error checking location permission: $e');
+      return false;
+    }
+  }
+  
+  // Request location permission (using Geolocator only)
+  Future<bool> requestLocationPermission() async {
+    try {
+      print('🔄 Requesting location permission...');
+      final permission = await Geolocator.requestPermission();
+      print('📍 Location permission after request: $permission');
+      
+      final granted = permission == LocationPermission.whileInUse || 
+                     permission == LocationPermission.always;
+      print(granted ? '✅ Location GRANTED' : '❌ Location DENIED');
+      
+      return granted;
+    } catch (e) {
+      print('❌ Error requesting location permission: $e');
       return false;
     }
   }
 
   // Request only location permission (for dropping pins)
-  Future<bool> requestLocationPermission() async {
-    try {
-      // Check if location services are enabled first
-      final serviceEnabled = await Geolocator.isLocationServiceEnabled();
-      if (!serviceEnabled) {
-        return false;
-      }
-
-      // Check current status
-      final currentStatus = await Permission.locationWhenInUse.status;
-      
-      // If already granted, return true
-      if (currentStatus.isGranted) {
-        return true;
-      }
-      
-      // If permanently denied, cannot request again
-      if (currentStatus.isPermanentlyDenied) {
-        return false;
-      }
-      
-      // Request permission
-      final status = await Permission.locationWhenInUse.request();
-      return status.isGranted;
-    } catch (e) {
-      print('Error requesting location permission: $e');
-      return false;
-    }
-  }
-
-  // Check if location permission is permanently denied
-  Future<bool> isLocationPermanentlyDenied() async {
-    try {
-      final status = await Permission.locationWhenInUse.status;
-      return status.isPermanentlyDenied;
-    } catch (e) {
-      return false;
-    }
-  }
-
-  // Check if all required permissions are granted
-  Future<bool> hasRequiredPermissions() async {
-    try {
-      final cameraStatus = await Permission.camera.status;
-      final locationStatus = await Permission.locationWhenInUse.status;
-      
-      return cameraStatus.isGranted && locationStatus.isGranted;
-    } catch (e) {
-      return false;
-    }
+  Future<bool> requestLocationPermissionForPin() async {
+    return await requestLocationPermission();
   }
 
   // Get current user location with better error handling
@@ -257,7 +227,7 @@ class ARNavigationService {
 
   // Open app settings
   Future<void> openAppSettings() async {
-    await Permission.locationWhenInUse.request();
+    await Geolocator.openAppSettings();
   }
 }
 
