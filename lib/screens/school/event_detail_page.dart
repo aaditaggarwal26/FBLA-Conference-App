@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/parsed_event_model.dart';
 import '../../models/location_pin_model.dart';
 import '../../services/location_pin_service.dart';
@@ -55,7 +56,30 @@ class _EventDetailPageState extends State<EventDetailPage> {
         }
       }
     } else {
-      setState(() => _isLoading = false);
+      // Try to fetch the event from Firestore to see if it has been updated
+      try {
+        final eventDoc = await FirebaseFirestore.instance
+            .collection('parsed_events')
+            .doc(widget.event.id)
+            .get();
+        
+        if (eventDoc.exists && eventDoc.data()?['locationPinId'] != null) {
+          final locationPinId = eventDoc.data()!['locationPinId'] as String;
+          final pin = await _locationPinService.getLocationPinById(locationPinId);
+          
+          if (mounted) {
+            setState(() {
+              _linkedLocation = pin;
+              _isLoading = false;
+            });
+          }
+        } else {
+          setState(() => _isLoading = false);
+        }
+      } catch (e) {
+        print('Error checking for updated location: $e');
+        setState(() => _isLoading = false);
+      }
     }
   }
 

@@ -24,7 +24,7 @@ class ARNavigationScreen extends StatefulWidget {
 }
 
 class _ARNavigationScreenState extends State<ARNavigationScreen>
-    with TickerProviderStateMixin {
+    with TickerProviderStateMixin, WidgetsBindingObserver {
   final ARNavigationService _navService = ARNavigationService();
   final LocationPinService _locationService = LocationPinService();
 
@@ -46,6 +46,8 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
   @override
   void initState() {
     super.initState();
+    WidgetsBinding.instance.addObserver(this);
+    
     _pulseController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
@@ -62,7 +64,24 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
   }
 
   @override
+  void didChangeAppLifecycleState(AppLifecycleState state) {
+    super.didChangeAppLifecycleState(state);
+    
+    // When app resumes from background (e.g., after granting permissions in Settings)
+    if (state == AppLifecycleState.resumed && _errorMessage != null) {
+      // Re-check permissions and reinitialize if there was an error
+      setState(() {
+        _isLoading = true;
+        _errorMessage = null;
+      });
+      _initializeNavigation();
+      _initializeCamera();
+    }
+  }
+
+  @override
   void dispose() {
+    WidgetsBinding.instance.removeObserver(this);
     _positionSubscription?.cancel();
     _compassSubscription?.cancel();
     _cameraController?.dispose();
@@ -112,49 +131,56 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
 
   Future<void> _initializeNavigation() async {
     try {
-      // Check if location services are enabled
+      debugPrint('🚀 ========================================');
+      debugPrint('🚀 Starting AR Navigation Initialization');
+      debugPrint('🚀 ========================================');
+      
+      // Step 1: Check location services
+      debugPrint('📍 Step 1: Checking location services...');
       final serviceEnabled = await Geolocator.isLocationServiceEnabled();
+      debugPrint('📍 Location services: ${serviceEnabled ? "ENABLED ✅" : "DISABLED ❌"}');
+      
       if (!serviceEnabled) {
         setState(() {
-          _errorMessage = 'Location services are disabled. Please enable them in Settings.';
+          _errorMessage = 'Location services are disabled.\n\nPlease enable in:\nSettings → Privacy & Security → Location Services';
           _isLoading = false;
         });
         return;
       }
 
-      // Check location permission
+      // Step 2: Check location permission
+      debugPrint('📍 Step 2: Checking location permission...');
       LocationPermission permission = await Geolocator.checkPermission();
+      debugPrint('📍 Permission status: $permission');
       
       if (permission == LocationPermission.denied) {
+        debugPrint('📍 Requesting location permission...');
         permission = await Geolocator.requestPermission();
-        if (permission == LocationPermission.denied) {
-          setState(() {
-            _errorMessage = 'Location permission is required for AR navigation';
-            _isLoading = false;
-          });
-          return;
-        }
+        debugPrint('📍 Permission after request: $permission');
       }
       
-      if (permission == LocationPermission.deniedForever) {
+      if (permission == LocationPermission.denied || permission == LocationPermission.deniedForever) {
         setState(() {
-          _errorMessage = 'Location permission was permanently denied. Please enable it in Settings → FBLA → Location';
+          _errorMessage = 'Location permission is required for AR navigation.\n\nPlease enable in:\nSettings → FBLA → Location → While Using';
           _isLoading = false;
         });
         return;
       }
+      
+      debugPrint('✅ Step 3: Location permission OK!');
 
-      // Check camera permission (using permission_handler for camera)
-      final cameraPermission = await _navService.requestPermissions();
-      if (!cameraPermission) {
-        setState(() {
-          _errorMessage = 'Camera and location permissions are required';
-          _isLoading = false;
-        });
-        return;
+      // Step 4: Try to initialize camera (don't block on it)
+      debugPrint('📷 Step 4: Initializing camera...');
+      try {
+        await _initializeCamera();
+        debugPrint('📷 Camera initialized successfully');
+      } catch (e) {
+        debugPrint('⚠️ Camera initialization warning: $e');
+        // Don't fail - camera might work later
       }
 
-      // Get destination location pin
+      // Step 5: Get destination location pin
+      debugPrint('📌 Step 5: Loading destination...');
       if (widget.event.locationPinId == null) {
         setState(() {
           _errorMessage = 'This event does not have a location assigned';
@@ -163,8 +189,9 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
         return;
       }
 
-      final destination =
-          await _locationService.getLocationPinById(widget.event.locationPinId!);
+      final destination = await _locationService.getLocationPinById(widget.event.locationPinId!);
+      debugPrint('📌 Destination loaded: ${destination?.name ?? "NULL"}');
+      
       if (destination == null) {
         setState(() {
           _errorMessage = 'Location pin not found';
@@ -177,23 +204,30 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
         _destination = destination;
       });
 
-      // Get initial position
+      // Step 6: Get initial position
+      debugPrint('🌍 Step 6: Getting current location...');
       final position = await _navService.getCurrentLocation();
-      if (position != null) {
+      debugPrint('🌍 Current position: ${position != null ? "${position.latitude}, ${position.longitude}" : "NULL"}');
+      
+      if (position == null) {
         setState(() {
-          _currentPosition = position;
-          _updateNavigation();
-          _isLoading = false;
-        });
-      } else {
-        setState(() {
-          _errorMessage = 'Failed to get current location. Please try again.';
+          _errorMessage = 'Failed to get current location.\n\nPlease ensure:\n• GPS is enabled\n• You are outdoors or near a window';
           _isLoading = false;
         });
         return;
       }
 
-      // Start listening to position updates
+      setState(() {
+        _currentPosition = position;
+        _updateNavigation();
+        _isLoading = false;
+      });
+      
+      debugPrint('✅ ========================================');
+      debugPrint('✅ AR Navigation Ready!');
+      debugPrint('✅ ========================================');
+
+      // Step 7: Start listening to position updates
       _positionSubscription = _navService.getLocationStream().listen(
         (position) {
           setState(() {
@@ -202,12 +236,18 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
           });
         },
         onError: (error) {
+          debugPrint('❌ Location stream error: $error');
           setState(() {
-            _errorMessage = 'Failed to get location: $error';
+            _errorMessage = 'Failed to get location updates: $error';
           });
         },
       );
-    } catch (e) {
+    } catch (e, stackTrace) {
+      debugPrint('❌ ========================================');
+      debugPrint('❌ Navigation initialization failed: $e');
+      debugPrint('❌ Stack trace: $stackTrace');
+      debugPrint('❌ ========================================');
+      
       setState(() {
         _errorMessage = 'Failed to initialize navigation: $e';
         _isLoading = false;
@@ -305,6 +345,22 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
                     label: const Text('Open Settings'),
                     style: ElevatedButton.styleFrom(
                       backgroundColor: const Color(0xFF001231),
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  ElevatedButton.icon(
+                    onPressed: () {
+                      setState(() {
+                        _isLoading = true;
+                        _errorMessage = null;
+                      });
+                      _initializeNavigation();
+                      _initializeCamera();
+                    },
+                    icon: const Icon(Icons.refresh),
+                    label: const Text('Retry'),
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.green,
                     ),
                   ),
                   const SizedBox(height: 12),

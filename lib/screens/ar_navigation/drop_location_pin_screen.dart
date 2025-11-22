@@ -211,7 +211,7 @@ class _DropLocationPinScreenState extends State<DropLocationPinScreen> {
         metadata['roomNumber'] = _roomNumberController.text;
       }
 
-      await _locationService.createLocationPin(
+      final locationPinId = await _locationService.createLocationPin(
         schoolId: widget.schoolId,
         name: _nameController.text,
         description: _descriptionController.text.isEmpty
@@ -236,7 +236,7 @@ class _DropLocationPinScreenState extends State<DropLocationPinScreen> {
             backgroundColor: Colors.green,
           ),
         );
-        Navigator.of(context).pop(true); // Return true to indicate success
+        Navigator.of(context).pop(locationPinId); // Return the location pin ID
       }
     } catch (e) {
       if (mounted) {
