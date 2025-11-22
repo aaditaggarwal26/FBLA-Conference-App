@@ -9,6 +9,7 @@ import '../admin/admin_panel_screen.dart';
 import '../admin/linkedin_settings_screen.dart';
 import 'edit_profile_screen.dart';
 import 'help_support_screen.dart';
+import 'about_screen.dart';
 
 class ProfileScreen extends StatefulWidget {
   const ProfileScreen({super.key});
@@ -278,19 +279,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               );
             }),
             _buildMenuItem(Icons.info_outline, 'About', () {
-              showAboutDialog(
-                context: context,
-                applicationName: 'FBLA Conference App',
-                applicationVersion: '1.0.0',
-                applicationIcon: ClipRRect(
-                  borderRadius: BorderRadius.circular(12),
-                  clipBehavior: Clip.antiAlias,
-                  child: Image.asset(
-                    'assets/logo.png',
-                    height: 48,
-                    width: 48,
-                    fit: BoxFit.cover,
-                  ),
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const AboutScreen(),
                 ),
               );
             }),
