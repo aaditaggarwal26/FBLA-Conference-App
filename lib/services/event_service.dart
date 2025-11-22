@@ -1,10 +1,12 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import '../models/event_model.dart';
 
+/// Service to handle event-related operations in Firestore.
+/// Includes fetching, searching, and registering for events.
 class EventService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Get all events
+  /// Returns a stream of all events, ordered by start time.
   Stream<List<EventModel>> getEvents() {
     return _firestore
         .collection('events')
@@ -17,7 +19,7 @@ class EventService {
         );
   }
 
-  // Get upcoming events
+  /// Returns a stream of the next 10 upcoming events.
   Stream<List<EventModel>> getUpcomingEvents() {
     return _firestore
         .collection('events')
@@ -32,7 +34,7 @@ class EventService {
         );
   }
 
-  // Get featured events
+  /// Returns a stream of events marked as featured.
   Stream<List<EventModel>> getFeaturedEvents() {
     return _firestore
         .collection('events')
@@ -46,7 +48,8 @@ class EventService {
         );
   }
 
-  // Get event by ID
+  /// Fetches a single event by its ID.
+  /// Returns null if the event does not exist.
   Future<EventModel?> getEventById(String eventId) async {
     try {
       final doc = await _firestore.collection('events').doc(eventId).get();
@@ -59,29 +62,35 @@ class EventService {
     }
   }
 
-  // Register for event
+  /// Registers a user for an event.
+  /// Updates both the event document (registeredUsers list) and user document (registeredEvents list).
   Future<void> registerForEvent(String eventId, String userId) async {
+    // Add user ID to event's registered users
     await _firestore.collection('events').doc(eventId).update({
       'registeredUsers': FieldValue.arrayUnion([userId]),
     });
 
+    // Add event ID to user's registered events
     await _firestore.collection('users').doc(userId).update({
       'registeredEvents': FieldValue.arrayUnion([eventId]),
     });
   }
 
-  // Unregister from event
+  /// Unregisters a user from an event.
+  /// Updates both the event document and user document.
   Future<void> unregisterFromEvent(String eventId, String userId) async {
+    // Remove user ID from event's registered users
     await _firestore.collection('events').doc(eventId).update({
       'registeredUsers': FieldValue.arrayRemove([userId]),
     });
 
+    // Remove event ID from user's registered events
     await _firestore.collection('users').doc(userId).update({
       'registeredEvents': FieldValue.arrayRemove([eventId]),
     });
   }
 
-  // Get user's registered events
+  /// Returns a stream of events that the user has registered for.
   Stream<List<EventModel>> getUserRegisteredEvents(String userId) {
     return _firestore
         .collection('events')
@@ -95,7 +104,8 @@ class EventService {
         );
   }
 
-  // Search events
+  /// Searches for events by title.
+  /// Uses a range query for prefix matching.
   Future<List<EventModel>> searchEvents(String query) async {
     try {
       final snapshot = await _firestore
@@ -110,7 +120,7 @@ class EventService {
     }
   }
 
-  // Get events by category
+  /// Returns a stream of events filtered by category.
   Stream<List<EventModel>> getEventsByCategory(String category) {
     return _firestore
         .collection('events')

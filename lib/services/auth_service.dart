@@ -7,15 +7,21 @@ import 'dart:convert';
 import 'dart:math';
 import '../models/user_model.dart';
 
+/// Service to handle user authentication via Firebase Auth.
+/// Supports Email/Password, Google Sign-In, and Apple Sign-In.
 class AuthService {
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final GoogleSignIn _googleSignIn = GoogleSignIn();
 
+  /// Returns the currently signed-in user, or null if none.
   User? get currentUser => _auth.currentUser;
+  
+  /// Stream of auth state changes (user sign-in/sign-out).
   Stream<User?> get authStateChanges => _auth.authStateChanges();
 
-  // Sign in with email and password
+  /// Signs in a user with email and password.
+  /// Returns the UserCredential on success.
   Future<UserCredential?> signInWithEmail(String email, String password) async {
     try {
       return await _auth.signInWithEmailAndPassword(
@@ -27,13 +33,15 @@ class AuthService {
     }
   }
 
-  // Register with email and password
+  /// Registers a new user with email, password, and name.
+  /// Creates a corresponding user document in Firestore.
   Future<UserCredential?> registerWithEmail(
     String email,
     String password,
     String name,
   ) async {
     try {
+      // Create user in Firebase Auth
       final credential = await _auth.createUserWithEmailAndPassword(
         email: email,
         password: password,
@@ -61,28 +69,33 @@ class AuthService {
     }
   }
 
-  // Sign out
+  /// Signs out the current user from all providers.
   Future<void> signOut() async {
     await Future.wait([_googleSignIn.signOut(), _auth.signOut()]);
   }
 
-  // Sign in with Google
+  /// Signs in a user using Google Sign-In.
+  /// Creates a user document if one doesn't exist.
   Future<UserCredential?> signInWithGoogle() async {
     try {
+      // Trigger the Google Authentication flow
       final GoogleSignInAccount? googleUser = await _googleSignIn.signIn();
       if (googleUser == null) return null;
 
+      // Obtain the auth details from the request
       final GoogleSignInAuthentication googleAuth =
           await googleUser.authentication;
 
+      // Create a new credential
       final credential = GoogleAuthProvider.credential(
         accessToken: googleAuth.accessToken,
         idToken: googleAuth.idToken,
       );
 
+      // Sign in to Firebase with the Google credential
       final userCredential = await _auth.signInWithCredential(credential);
 
-      // Create or update user document
+      // Create or update user document in Firestore
       if (userCredential.user != null) {
         final userDoc = await _firestore
             .collection('users')
@@ -112,7 +125,7 @@ class AuthService {
     }
   }
 
-  // Sign in with Apple
+  /// Generates a random nonce for Apple Sign-In security.
   String generateNonce([int length = 32]) {
     const charset =
         '0123456789ABCDEFGHIJKLMNOPQRSTUVXYZabcdefghijklmnopqrstuvwxyz-._';
@@ -123,17 +136,21 @@ class AuthService {
     ).join();
   }
 
+  /// Returns the SHA256 hash of a string.
   String sha256ofString(String input) {
     final bytes = utf8.encode(input);
     final digest = sha256.convert(bytes);
     return digest.toString();
   }
 
+  /// Signs in a user using Apple Sign-In.
+  /// Handles nonce generation and Firestore user creation.
   Future<UserCredential?> signInWithApple() async {
     try {
       final rawNonce = generateNonce();
       final nonce = sha256ofString(rawNonce);
 
+      // Request credential from Apple
       final appleCredential = await SignInWithApple.getAppleIDCredential(
         scopes: [
           AppleIDAuthorizationScopes.email,
@@ -142,10 +159,12 @@ class AuthService {
         nonce: nonce,
       );
 
+      // Create an OAuth Credential with the Apple ID token
       final oauthCredential = OAuthProvider(
         "apple.com",
       ).credential(idToken: appleCredential.identityToken, rawNonce: rawNonce);
 
+      // Sign in to Firebase
       final userCredential = await _auth.signInWithCredential(oauthCredential);
 
       // Create or update user document
@@ -185,7 +204,7 @@ class AuthService {
     }
   }
 
-  // Get user data
+  /// Retrieves user data from Firestore by UID.
   Future<UserModel?> getUserData(String uid) async {
     try {
       final doc = await _firestore.collection('users').doc(uid).get();
@@ -198,7 +217,7 @@ class AuthService {
     }
   }
 
-  // Get user data stream for real-time updates
+  /// Returns a stream of user data for real-time updates.
   Stream<UserModel?> getUserStream(String uid) {
     return _firestore
         .collection('users')
@@ -212,12 +231,13 @@ class AuthService {
         });
   }
 
-  // Update user profile
+  /// Updates specific fields in the user's profile.
   Future<void> updateUserProfile(String uid, Map<String, dynamic> data) async {
     await _firestore.collection('users').doc(uid).update(data);
   }
 
-  // Update user school information
+  /// Updates the user's school association and role.
+  /// Handles backward compatibility for single school ID vs list of school IDs.
   Future<void> updateUserSchoolInfo(
     String uid,
     String schoolId, {
@@ -247,7 +267,7 @@ class AuthService {
         'isSchoolOwner': isOwner,
       });
     } else {
-      // Fallback for new users
+      // Fallback for new users or if user data fetch fails
       await _firestore.collection('users').doc(uid).update({
         'schoolId': schoolId,
         'schoolIds': [schoolId],
@@ -257,12 +277,12 @@ class AuthService {
     }
   }
 
-  // Reset password
+  /// Sends a password reset email to the specified address.
   Future<void> resetPassword(String email) async {
     await _auth.sendPasswordResetEmail(email: email);
   }
 
-  // Delete account
+  /// Deletes the user's account and associated data.
   Future<void> deleteAccount() async {
     final user = _auth.currentUser;
     if (user == null) {
@@ -273,7 +293,7 @@ class AuthService {
     try {
       await _firestore.collection('users').doc(user.uid).delete();
     } catch (e) {
-      // Continue even if Firestore delete fails
+      // Continue even if Firestore delete fails (e.g., permission issues)
       print('Error deleting user document: $e');
     }
 
