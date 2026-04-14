@@ -1,9 +1,7 @@
 import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
-import 'package:permission_handler/permission_handler.dart'; // Add this import
 import '../../services/location_pin_service.dart';
-import '../../services/ar_navigation_service.dart';
 
 class DropLocationPinScreen extends StatefulWidget {
   final String schoolId;
@@ -21,7 +19,6 @@ class DropLocationPinScreen extends StatefulWidget {
 
 class _DropLocationPinScreenState extends State<DropLocationPinScreen> {
   final LocationPinService _locationService = LocationPinService();
-  final ARNavigationService _navService = ARNavigationService();
   
   final _formKey = GlobalKey<FormState>();
   final _nameController = TextEditingController();

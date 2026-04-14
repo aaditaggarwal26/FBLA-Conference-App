@@ -9,6 +9,8 @@ import '../../models/parsed_event_model.dart';
 import '../../services/ar_navigation_service.dart';
 import '../../services/location_pin_service.dart';
 
+/// Screen that displays the AR navigation interface.
+/// Combines camera feed, compass heading, and location data to guide the user.
 class ARNavigationScreen extends StatefulWidget {
   final ParsedEventModel event;
   final String schoolId;
@@ -28,6 +30,7 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
   final ARNavigationService _navService = ARNavigationService();
   final LocationPinService _locationService = LocationPinService();
 
+  // Navigation state
   LocationPinModel? _destination;
   Position? _currentPosition;
   NavigationInstruction? _navInstruction;
@@ -37,17 +40,21 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
   bool _isLoading = true;
   String? _errorMessage;
 
+  // Camera state
   CameraController? _cameraController;
   bool _isCameraInitialized = false;
 
+  // Animation controllers for UI elements
   late AnimationController _pulseController;
   late AnimationController _rotationController;
 
   @override
   void initState() {
     super.initState();
+    // Observe app lifecycle to handle background/foreground transitions
     WidgetsBinding.instance.addObserver(this);
     
+    // Initialize animations
     _pulseController = AnimationController(
       vsync: this,
       duration: const Duration(seconds: 2),
@@ -58,6 +65,7 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
       duration: const Duration(milliseconds: 500),
     );
 
+    // Start initialization process
     _initializeNavigation();
     _initializeCamera();
     _initializeCompass();
@@ -90,6 +98,8 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
     super.dispose();
   }
 
+  /// Initializes the camera controller.
+  /// Selects the back camera and sets resolution.
   Future<void> _initializeCamera() async {
     try {
       final cameras = await availableCameras();
@@ -118,6 +128,8 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
     }
   }
 
+  /// Initializes the compass listener.
+  /// Updates the current heading state on every change.
   void _initializeCompass() {
     _compassSubscription = FlutterCompass.events?.listen((event) {
       if (event.heading != null) {
@@ -129,6 +141,8 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
     });
   }
 
+  /// Main initialization flow for navigation.
+  /// Checks permissions, loads destination, gets initial location, and starts updates.
   Future<void> _initializeNavigation() async {
     try {
       debugPrint('🚀 ========================================');
@@ -255,6 +269,8 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
     }
   }
 
+  /// Updates the navigation instruction based on current position and heading.
+  /// Animates the arrow rotation.
   void _updateNavigation() {
     if (_currentPosition != null && _destination != null) {
       final instruction = _navService.getNavigationInstruction(
@@ -282,6 +298,7 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
     }
   }
 
+  /// Returns a color based on the navigation state (distance, arrival).
   Color _getDirectionColor() {
     if (_navInstruction == null) return Colors.grey;
     if (_navInstruction!.hasArrived) return Colors.green;
@@ -289,6 +306,7 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
     return const Color(0xFF001231);
   }
 
+  /// Returns the appropriate icon for the navigation arrow.
   IconData _getArrowIcon() {
     if (_navInstruction == null) return Icons.navigation;
     
@@ -301,6 +319,7 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
 
   @override
   Widget build(BuildContext context) {
+    // Show loading state
     if (_isLoading) {
       return Scaffold(
         appBar: AppBar(
@@ -313,6 +332,7 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
       );
     }
 
+    // Show error state with retry options
     if (_errorMessage != null) {
       final bool isPermissionError = _errorMessage!.contains('permission') || 
                                       _errorMessage!.contains('Permission');
@@ -376,6 +396,7 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
       );
     }
 
+    // Main AR View
     return Scaffold(
       extendBodyBehindAppBar: true,
       appBar: AppBar(
@@ -405,7 +426,7 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
               ),
             ),
 
-          // Overlay Gradient
+          // Overlay Gradient for better text visibility
           Container(
             decoration: BoxDecoration(
               gradient: LinearGradient(
@@ -420,7 +441,7 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
             ),
           ),
 
-          // Navigation Overlay
+          // Navigation Overlay Elements
           Positioned.fill(
             child: Column(
               children: [

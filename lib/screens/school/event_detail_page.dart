@@ -9,6 +9,9 @@ import '../../services/event_import_service.dart';
 import '../ar_navigation/ar_navigation_screen.dart';
 import '../ar_navigation/drop_location_pin_screen.dart';
 
+/// Screen to display detailed information about a specific event.
+/// Allows users to view details, see location status, and start AR navigation.
+/// Admins can link location pins to events from here.
 class EventDetailPage extends StatefulWidget {
   final ParsedEventModel event;
   final String schoolId;
@@ -37,52 +40,64 @@ class _EventDetailPageState extends State<EventDetailPage> {
     _loadLocationPin();
   }
 
+  /// Loads the location pin associated with this event.
+  /// Fetches fresh data from Firestore to ensure the link is up-to-date.
   Future<void> _loadLocationPin() async {
-    if (widget.event.locationPinId != null) {
-      try {
-        final pin = await _locationPinService.getLocationPinById(
-          widget.event.locationPinId!,
-        );
+    setState(() => _isLoading = true);
+    
+    try {
+      print('🔄 Loading location pin for event: ${widget.event.eventName}');
+      
+      // Always fetch the latest event data from Firestore to ensure we have the most up-to-date locationPinId
+      final eventDoc = await FirebaseFirestore.instance
+          .collection('parsed_events')
+          .doc(widget.event.id)
+          .get(const GetOptions(source: Source.serverAndCache));
+      
+      String? pinId;
+      
+      if (eventDoc.exists) {
+        final data = eventDoc.data();
+        if (data != null && data['locationPinId'] != null) {
+          pinId = data['locationPinId'] as String;
+          print('📍 Found linked pin ID in Firestore: $pinId');
+        }
+      }
+      
+      // Fallback to widget data if Firestore didn't have it (shouldn't happen if linked correctly)
+      if (pinId == null && widget.event.locationPinId != null) {
+        pinId = widget.event.locationPinId;
+        print('📍 Using widget pin ID: $pinId');
+      }
+
+      if (pinId != null) {
+        final pin = await _locationPinService.getLocationPinById(pinId);
+        print('✅ Loaded pin: ${pin?.name}');
+        
         if (mounted) {
           setState(() {
             _linkedLocation = pin;
             _isLoading = false;
           });
         }
-      } catch (e) {
-        print('Error loading location pin: $e');
+      } else {
+        print('❌ No location pin linked to this event');
         if (mounted) {
-          setState(() => _isLoading = false);
+          setState(() {
+            _linkedLocation = null;
+            _isLoading = false;
+          });
         }
       }
-    } else {
-      // Try to fetch the event from Firestore to see if it has been updated
-      try {
-        final eventDoc = await FirebaseFirestore.instance
-            .collection('parsed_events')
-            .doc(widget.event.id)
-            .get();
-        
-        if (eventDoc.exists && eventDoc.data()?['locationPinId'] != null) {
-          final locationPinId = eventDoc.data()!['locationPinId'] as String;
-          final pin = await _locationPinService.getLocationPinById(locationPinId);
-          
-          if (mounted) {
-            setState(() {
-              _linkedLocation = pin;
-              _isLoading = false;
-            });
-          }
-        } else {
-          setState(() => _isLoading = false);
-        }
-      } catch (e) {
-        print('Error checking for updated location: $e');
+    } catch (e) {
+      print('❌ Error loading location pin: $e');
+      if (mounted) {
         setState(() => _isLoading = false);
       }
     }
   }
 
+  /// Determines the color theme for the event based on its name/category.
   Color _getEventColor() {
     final eventName = widget.event.eventName.toLowerCase();
     if (eventName.contains('coding') ||
@@ -100,6 +115,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
     return const Color(0xFF001231);
   }
 
+  /// Determines the icon for the event based on its name/category.
   IconData _getEventIcon() {
     final eventName = widget.event.eventName.toLowerCase();
     if (eventName.contains('coding') || eventName.contains('programming')) {
@@ -134,7 +150,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
       backgroundColor: isDark ? const Color(0xFF121212) : Colors.white,
       body: CustomScrollView(
         slivers: [
-          // App Bar with gradient
+          // App Bar with gradient and event icon
           SliverAppBar(
             expandedHeight: 200,
             pinned: true,
@@ -216,14 +232,14 @@ class _EventDetailPageState extends State<EventDetailPage> {
             ),
           ),
 
-          // Content
+          // Main Content
           SliverToBoxAdapter(
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Quick Info Cards
+                  // Quick Info Cards (Time, Room, Date, Participants count)
                   Row(
                     children: [
                       Expanded(
@@ -274,7 +290,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
 
                   const SizedBox(height: 24),
 
-                  // Participants Section
+                  // Participants List Section
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
@@ -354,7 +370,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
 
                   const SizedBox(height: 24),
 
-                  // Location Status
+                  // Location & Navigation Section
                   Container(
                     padding: const EdgeInsets.all(20),
                     decoration: BoxDecoration(
@@ -525,8 +541,10 @@ class _EventDetailPageState extends State<EventDetailPage> {
                                             widget.event.id,
                                             result,
                                           );
-                                          _loadLocationPin();
+                                          // Small delay to ensure Firestore propagation
+                                          await Future.delayed(const Duration(milliseconds: 500));
                                           if (mounted) {
+                                            await _loadLocationPin();
                                             ScaffoldMessenger.of(context).showSnackBar(
                                               const SnackBar(
                                                 content: Text('Location pin linked successfully!'),
@@ -567,7 +585,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
 
                   const SizedBox(height: 24),
 
-                  // Additional Details
+                  // Additional Details Section
                   if (widget.event.performLocation != null ||
                       widget.event.prepLocation != null)
                     Container(
@@ -635,6 +653,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
     );
   }
 
+  /// Helper widget to build a small info card with an icon, label, and value.
   Widget _buildInfoCard(
     bool isDark,
     IconData icon,
@@ -684,6 +703,7 @@ class _EventDetailPageState extends State<EventDetailPage> {
     );
   }
 
+  /// Helper widget to build a row for additional details.
   Widget _buildDetailRow(bool isDark, IconData icon, String label, String value) {
     return Row(
       crossAxisAlignment: CrossAxisAlignment.start,
