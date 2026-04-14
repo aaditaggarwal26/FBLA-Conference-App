@@ -4,12 +4,16 @@ import 'package:firebase_storage/firebase_storage.dart';
 import 'package:image_picker/image_picker.dart';
 import '../models/location_pin_model.dart';
 
+/// Service to manage location pins in Firestore and Storage.
+/// Handles creation, retrieval, updating, and deletion of pins.
 class LocationPinService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseStorage _storage = FirebaseStorage.instance;
   final ImagePicker _imagePicker = ImagePicker();
 
-  // Create a new location pin
+  /// Creates a new location pin in Firestore.
+  /// Uploads associated images to Firebase Storage if provided.
+  /// Returns the ID of the newly created pin.
   Future<String> createLocationPin({
     required String schoolId,
     required String name,
@@ -27,7 +31,7 @@ class LocationPinService {
       String? imageUrl;
       String? arReferenceImageUrl;
 
-      // Upload images if provided
+      // Upload main location image if provided
       if (imageFile != null) {
         imageUrl = await _uploadImage(
           schoolId,
@@ -36,6 +40,7 @@ class LocationPinService {
         );
       }
 
+      // Upload AR reference image if provided
       if (arReferenceImageFile != null) {
         arReferenceImageUrl = await _uploadImage(
           schoolId,
@@ -44,8 +49,9 @@ class LocationPinService {
         );
       }
 
+      // Create the pin model
       final locationPin = LocationPinModel(
-        id: '',
+        id: '', // ID will be assigned by Firestore
         schoolId: schoolId,
         name: name,
         description: description,
@@ -60,6 +66,7 @@ class LocationPinService {
         metadata: metadata,
       );
 
+      // Add to Firestore
       final docRef = await _firestore
           .collection('location_pins')
           .add(locationPin.toFirestore());
@@ -70,7 +77,8 @@ class LocationPinService {
     }
   }
 
-  // Upload image to Firebase Storage
+  /// Helper method to upload an image to Firebase Storage.
+  /// Returns the download URL of the uploaded image.
   Future<String> _uploadImage(
     String schoolId,
     String folder,
@@ -82,7 +90,8 @@ class LocationPinService {
     return await ref.getDownloadURL();
   }
 
-  // Get all location pins for a school
+  /// Returns a stream of all location pins for a specific school.
+  /// Ordered by creation date (newest first).
   Stream<List<LocationPinModel>> getLocationPins(String schoolId) {
     return _firestore
         .collection('location_pins')
@@ -93,7 +102,8 @@ class LocationPinService {
             snapshot.docs.map((doc) => LocationPinModel.fromFirestore(doc)).toList());
   }
 
-  // Get a specific location pin by ID
+  /// Fetches a specific location pin by its ID.
+  /// Returns null if the pin does not exist.
   Future<LocationPinModel?> getLocationPinById(String pinId) async {
     try {
       final doc = await _firestore.collection('location_pins').doc(pinId).get();
@@ -106,7 +116,7 @@ class LocationPinService {
     }
   }
 
-  // Update a location pin
+  /// Updates an existing location pin in Firestore.
   Future<void> updateLocationPin(LocationPinModel pin) async {
     try {
       await _firestore
@@ -118,7 +128,8 @@ class LocationPinService {
     }
   }
 
-  // Delete a location pin
+  /// Deletes a location pin from Firestore.
+  /// Note: Does not currently delete associated images from Storage.
   Future<void> deleteLocationPin(String pinId) async {
     try {
       await _firestore.collection('location_pins').doc(pinId).delete();
@@ -127,7 +138,8 @@ class LocationPinService {
     }
   }
 
-  // Get location pins near a coordinate (within radius in meters)
+  /// Finds location pins within a specified radius of a coordinate.
+  /// Returns a list of pins sorted by distance (closest first).
   Future<List<LocationPinModel>> getLocationPinsNearby({
     required String schoolId,
     required double latitude,
@@ -135,6 +147,8 @@ class LocationPinService {
     double radiusMeters = 1000,
   }) async {
     try {
+      // Fetch all pins for the school first (filtering by distance happens in memory)
+      // Note: For large datasets, use GeoFlutterFire or similar for server-side filtering.
       final allPins = await _firestore
           .collection('location_pins')
           .where('schoolId', isEqualTo: schoolId)
@@ -159,7 +173,8 @@ class LocationPinService {
     }
   }
 
-  // Pick image from gallery or camera
+  /// Opens the image picker to select an image from gallery or camera.
+  /// Returns the selected File, or null if cancelled.
   Future<File?> pickImage({bool fromCamera = false}) async {
     try {
       final XFile? image = await _imagePicker.pickImage(
@@ -178,7 +193,8 @@ class LocationPinService {
     }
   }
 
-  // Search location pins by name
+  /// Searches for location pins by name, building name, or description.
+  /// Performs client-side filtering on the stream.
   Stream<List<LocationPinModel>> searchLocationPins(
     String schoolId,
     String searchTerm,

@@ -2,8 +2,12 @@ import 'dart:math' show atan2, cos, sin, pi;
 import 'package:geolocator/geolocator.dart';
 import '../models/location_pin_model.dart';
 
+/// Service to handle AR navigation logic, including location tracking,
+/// bearing calculation, and navigation instructions.
 class ARNavigationService {
-  // Check if location permission is granted (using Geolocator only)
+  
+  /// Checks if location permission is currently granted.
+  /// Returns true if permission is 'whileInUse' or 'always'.
   Future<bool> checkLocationPermission() async {
     try {
       print('📍 Checking location permission...');
@@ -21,7 +25,8 @@ class ARNavigationService {
     }
   }
   
-  // Request location permission (using Geolocator only)
+  /// Requests location permission from the user.
+  /// Returns true if permission is granted after the request.
   Future<bool> requestLocationPermission() async {
     try {
       print('🔄 Requesting location permission...');
@@ -39,22 +44,24 @@ class ARNavigationService {
     }
   }
 
-  // Request only location permission (for dropping pins)
+  /// Wrapper to request location permission specifically for dropping pins.
   Future<bool> requestLocationPermissionForPin() async {
     return await requestLocationPermission();
   }
 
-  // Get current user location with better error handling
+  /// Retrieves the current user location with high accuracy.
+  /// Handles permission checks and service status checks internally.
+  /// Returns null if location cannot be retrieved.
   Future<Position?> getCurrentLocation() async {
     try {
-      // Check if location services are enabled
+      // Verify that location services are enabled on the device
       final serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
         print('Location services are disabled');
         return null;
       }
 
-      // Check location permission status
+      // Check and request permissions if necessary
       LocationPermission permission = await Geolocator.checkPermission();
       
       if (permission == LocationPermission.denied) {
@@ -70,7 +77,7 @@ class ARNavigationService {
         return null;
       }
 
-      // Get position with timeout
+      // Fetch the current position with a 10-second timeout
       return await Geolocator.getCurrentPosition(
         desiredAccuracy: LocationAccuracy.high,
         timeLimit: const Duration(seconds: 10),
@@ -81,17 +88,18 @@ class ARNavigationService {
     }
   }
 
-  // Get continuous location stream
+  /// Returns a stream of position updates.
+  /// Useful for real-time navigation.
   Stream<Position> getLocationStream() {
     final LocationSettings locationSettings = const LocationSettings(
       accuracy: LocationAccuracy.high,
-      distanceFilter: 1,
+      distanceFilter: 1, // Update every 1 meter
     );
     
     return Geolocator.getPositionStream(locationSettings: locationSettings);
   }
 
-  // Calculate distance between two points in meters
+  /// Calculates the distance in meters between two coordinates.
   double calculateDistance({
     required double fromLatitude,
     required double fromLongitude,
@@ -106,8 +114,8 @@ class ARNavigationService {
     );
   }
 
-  // Calculate bearing (direction) from current location to destination
-  // Returns angle in degrees (0-360) where 0 is North, 90 is East, 180 is South, 270 is West
+  /// Calculates the bearing (direction) from the start point to the end point.
+  /// Returns the angle in degrees (0-360), where 0 is North.
   double calculateBearing({
     required double fromLatitude,
     required double fromLongitude,
@@ -122,17 +130,21 @@ class ARNavigationService {
     final x = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(dLon);
 
     final bearing = atan2(y, x);
-    return (_toDegrees(bearing) + 360) % 360; // Normalize to 0-360
+    return (_toDegrees(bearing) + 360) % 360; // Normalize to 0-360 range
   }
 
+  /// Converts degrees to radians.
   double _toRadians(double degrees) => degrees * pi / 180.0;
+  
+  /// Converts radians to degrees.
   double _toDegrees(double radians) => radians * 180.0 / pi;
 
-  // Get navigation instructions based on distance and bearing
+  /// Generates navigation instructions based on current position and destination.
+  /// Calculates distance, bearing, and directional cues (e.g., "Turn left").
   NavigationInstruction getNavigationInstruction({
     required Position currentPosition,
     required LocationPinModel destination,
-    required double currentHeading, // User's current heading in degrees
+    required double currentHeading, // User's current compass heading in degrees
   }) {
     final distance = calculateDistance(
       fromLatitude: currentPosition.latitude,
@@ -148,17 +160,17 @@ class ARNavigationService {
       toLongitude: destination.longitude,
     );
 
-    // Calculate relative bearing (difference between destination bearing and current heading)
+    // Calculate relative bearing (difference between target bearing and user heading)
     double relativeBearing = bearing - currentHeading;
     if (relativeBearing < 0) relativeBearing += 360;
     if (relativeBearing > 360) relativeBearing -= 360;
     
-    // Ensure relativeBearing is finite
+    // Handle edge cases where calculation might result in NaN or infinite
     if (!relativeBearing.isFinite) {
       relativeBearing = 0.0;
     }
 
-    // Determine direction instruction
+    // Determine the text instruction and arrow icon based on relative bearing
     String direction;
     String arrowDirection;
 
@@ -198,13 +210,13 @@ class ARNavigationService {
       direction: direction,
       arrowDirection: arrowDirection,
       destination: destination,
-      currentFloor: 0, // TODO: Implement floor detection
+      currentFloor: 0, // Placeholder for floor detection logic
       destinationFloor: destination.floorLevel,
       needsFloorChange: destination.floorLevel != 0,
     );
   }
 
-  // Get formatted distance string
+  /// Formats a distance in meters to a human-readable string (m or km).
   String formatDistance(double meters) {
     if (meters < 1) {
       return '${meters.toStringAsFixed(1)} m';
@@ -215,33 +227,33 @@ class ARNavigationService {
     }
   }
 
-  // Check if location services are enabled
+  /// Checks if location services are enabled on the device.
   Future<bool> isLocationServiceEnabled() async {
     return await Geolocator.isLocationServiceEnabled();
   }
 
-  // Open location settings
+  /// Opens the device's location settings.
   Future<void> openLocationSettings() async {
     await Geolocator.openLocationSettings();
   }
 
-  // Open app settings
+  /// Opens the app's settings (permissions).
   Future<void> openAppSettings() async {
     await Geolocator.openAppSettings();
   }
 }
 
-// Navigation instruction model
+/// Model class to hold navigation instruction details.
 class NavigationInstruction {
-  final double distance; // in meters
-  final double bearing; // absolute bearing in degrees
-  final double relativeBearing; // relative to user's heading
-  final String direction; // human-readable direction
-  final String arrowDirection; // direction for AR arrow rendering
-  final LocationPinModel destination;
-  final int currentFloor;
-  final int destinationFloor;
-  final bool needsFloorChange;
+  final double distance; // Distance to target in meters
+  final double bearing; // Absolute bearing to target in degrees
+  final double relativeBearing; // Bearing relative to user's heading
+  final String direction; // Text instruction (e.g., "Turn left")
+  final String arrowDirection; // Icon identifier for UI
+  final LocationPinModel destination; // Target location
+  final int currentFloor; // User's current floor (estimated)
+  final int destinationFloor; // Target floor
+  final bool needsFloorChange; // Whether a floor change is required
 
   NavigationInstruction({
     required this.distance,
@@ -255,8 +267,10 @@ class NavigationInstruction {
     required this.needsFloorChange,
   });
 
+  /// Returns true if the user is within 3 meters of the destination.
   bool get hasArrived => distance < 3;
 
+  /// Returns a formatted string representation of the distance.
   String get distanceFormatted {
     if (distance < 1) {
       return '${distance.toStringAsFixed(1)} m';
@@ -267,6 +281,7 @@ class NavigationInstruction {
     }
   }
 
+  /// Returns instructions for changing floors if necessary.
   String get floorInstructions {
     if (!needsFloorChange) return '';
     
