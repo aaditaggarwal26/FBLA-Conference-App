@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import '../../services/event_service.dart';
 import '../../services/school_service.dart';
@@ -15,6 +16,8 @@ import 'package:url_launcher/url_launcher.dart';
 import '../school/create_school_event_screen.dart';
 import '../school/nccc_event_detail_screen.dart';
 import '../../services/event_import_service.dart';
+import '../../models/parsed_event_model.dart';
+import '../school/event_detail_page.dart';
 
 class EventsScreen extends StatefulWidget {
   const EventsScreen({super.key});
@@ -31,6 +34,7 @@ class _EventsScreenState extends State<EventsScreen>
   final EventImportService _eventImportService = EventImportService();
   late TabController _tabController;
   String _selectedCategory = 'All';
+  int _myEventsRefreshKey = 0;
 
   // Calendar state
   CalendarFormat _calendarFormat = CalendarFormat.month;
@@ -122,7 +126,7 @@ class _EventsScreenState extends State<EventsScreen>
                     ),
                     tabs: const [
                       Tab(text: 'All Events'),
-                      Tab(text: 'FBLA'),
+                      Tab(text: 'My Events'),
                       Tab(text: 'School'),
                       Tab(text: 'Calendar'),
                     ],
@@ -137,7 +141,7 @@ class _EventsScreenState extends State<EventsScreen>
               controller: _tabController,
               children: [
                 _buildAllEventsTab(isDark),
-                _buildFBLAEventsTab(isDark),
+                _buildMyEventsTab(isDark),
                 _buildSchoolEventsTab(isDark),
                 _buildCalendarTab(isDark),
               ],
@@ -222,53 +226,21 @@ class _EventsScreenState extends State<EventsScreen>
               ),
             ),
 
-            // Featured NCCC 2025 block (if user is in a school)
-            if (schoolIds.isNotEmpty)
-              SliverToBoxAdapter(
-                child: Padding(
-                  padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
-                  child: GestureDetector(
+            // Featured FBLA State block (always visible)
+            SliverToBoxAdapter(
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
+                child: GestureDetector(
                     onTap: () {
                       Navigator.push(
                         context,
                         MaterialPageRoute(
                           builder: (context) => NCCCEventDetailScreen(
-                            schoolId: schoolIds.first,
+                            schoolId: schoolIds.isNotEmpty ? schoolIds.first : '',
                             currentUserName: currentUserName,
                           ),
                         ),
                       );
-                    },
-                    onLongPress: () async {
-                      // Admin function: Import NCCC events
-                      final confirm = await showDialog<bool>(
-                        context: context,
-                        builder: (context) => AlertDialog(
-                          title: const Text('Import NCCC 2025 Events'),
-                          content: const Text(
-                            'This will import 208 competition events from the NCCC 2025 schedule. '
-                            'Only do this once!\n\n'
-                            'Continue?',
-                          ),
-                          actions: [
-                            TextButton(
-                              onPressed: () => Navigator.pop(context, false),
-                              child: const Text('Cancel'),
-                            ),
-                            ElevatedButton(
-                              onPressed: () => Navigator.pop(context, true),
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppTheme.primaryBlue,
-                              ),
-                              child: const Text('Import'),
-                            ),
-                          ],
-                        ),
-                      );
-
-                      if (confirm == true && mounted) {
-                        await _importNCCCEvents(schoolIds.first);
-                      }
                     },
                     child: Container(
                       decoration: BoxDecoration(
@@ -373,7 +345,7 @@ class _EventsScreenState extends State<EventsScreen>
                                 ),
                                 const SizedBox(height: 16),
                                 const Text(
-                                  'NCCC 2025',
+                                  'FBLA State',
                                   style: TextStyle(
                                     color: Colors.white,
                                     fontSize: 28,
@@ -383,7 +355,7 @@ class _EventsScreenState extends State<EventsScreen>
                                 ),
                                 const SizedBox(height: 4),
                                 const Text(
-                                  'WA FBLA West Central Preliminary',
+                                  'WA SBLC 2026 State Competition',
                                   style: TextStyle(
                                     color: Colors.white70,
                                     fontSize: 14,
@@ -413,7 +385,7 @@ class _EventsScreenState extends State<EventsScreen>
                                           CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          'November 22, 2025',
+                                          'April 21–23, 2026',
                                           style: TextStyle(
                                             color: Colors.white,
                                             fontSize: 14,
@@ -654,126 +626,275 @@ class _EventsScreenState extends State<EventsScreen>
     );
   }
 
-  Widget _buildFBLAEventsTab(bool isDark) {
-    return CustomScrollView(
-      slivers: [
-        // Category Filter
-        SliverToBoxAdapter(
-          child: Container(
-            height: 56,
-            padding: const EdgeInsets.symmetric(vertical: 8),
-            child: ListView.builder(
-              scrollDirection: Axis.horizontal,
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              itemCount: _categories.length,
-              itemBuilder: (context, index) {
-                final category = _categories[index];
-                final isSelected = _selectedCategory == category;
-
-                return Padding(
-                  padding: const EdgeInsets.only(right: 8),
-                  child: GestureDetector(
-                    onTap: () {
-                      setState(() => _selectedCategory = category);
-                    },
-                    child: Container(
-                      padding: const EdgeInsets.symmetric(
-                        horizontal: 16,
-                        vertical: 8,
-                      ),
-                      decoration: BoxDecoration(
-                        color: isSelected
-                            ? AppTheme.primaryBlue
-                            : (isDark ? AppTheme.darkSurface : Colors.white),
-                        borderRadius: BorderRadius.circular(10),
-                        border: Border.all(
-                          color: isSelected
-                              ? AppTheme.primaryBlue
-                              : (isDark
-                                    ? Colors.white.withValues(alpha: 0.1)
-                                    : Colors.grey.shade300),
-                        ),
-                      ),
-                      child: Center(
-                        child: Text(
-                          category,
-                          style: TextStyle(
-                            color: isSelected
-                                ? Colors.white
-                                : (isDark
-                                      ? Colors.white.withValues(alpha: 0.7)
-                                      : Colors.grey.shade700),
-                            fontWeight: isSelected
-                                ? FontWeight.w600
-                                : FontWeight.normal,
-                            fontSize: 13,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-          ),
-        ),
-
-        // Events List
-        StreamBuilder<List<EventModel>>(
-          stream: _selectedCategory == 'All'
-              ? _eventService.getEvents()
-              : _eventService.getEventsByCategory(_selectedCategory),
-          builder: (context, snapshot) {
-            if (snapshot.connectionState == ConnectionState.waiting) {
-              return const SliverFillRemaining(
-                child: Center(child: CircularProgressIndicator()),
-              );
-            }
-
-            if (!snapshot.hasData || snapshot.data!.isEmpty) {
-              return SliverFillRemaining(
-                child: Center(
-                  child: Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    children: [
-                      Icon(
-                        Icons.event_busy_rounded,
-                        size: 64,
+  Widget _buildMyEventsTab(bool isDark) {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      return _buildSignedOutState(isDark);
+    }
+    return FutureBuilder<List<ParsedEventModel>>(
+      key: ValueKey(_myEventsRefreshKey),
+      future: _loadMyEvents(user.uid),
+      builder: (context, snap) {
+        if (snap.connectionState == ConnectionState.waiting) {
+          return const Center(child: CircularProgressIndicator());
+        }
+        final myEvents = snap.data ?? [];
+        if (myEvents.isEmpty) {
+          return Center(
+            child: Padding(
+              padding: const EdgeInsets.all(32),
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  Icon(Icons.bookmark_border_rounded,
+                      size: 72,
+                      color: isDark ? const Color(0xFF30363D) : Colors.grey[300]),
+                  const SizedBox(height: 16),
+                  Text('No saved events yet',
+                      style: TextStyle(
+                          fontSize: 17,
+                          fontWeight: FontWeight.w600,
+                          color: isDark ? Colors.white : AppTheme.black)),
+                  const SizedBox(height: 8),
+                  Text(
+                    'Open FBLA State and your events\nwill be automatically detected.',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                        fontSize: 13,
                         color: isDark
-                            ? Colors.white.withValues(alpha: 0.3)
-                            : Colors.grey,
-                      ),
-                      const SizedBox(height: 16),
+                            ? Colors.white.withValues(alpha: 0.5)
+                            : AppTheme.mediumGray),
+                  ),
+                ],
+              ),
+            ),
+          );
+        }
+
+        // Group by date
+        final now = DateTime.now();
+        final byDate = <DateTime, List<ParsedEventModel>>{};
+        for (final e in myEvents) {
+          final day = DateTime(e.startTime.year, e.startTime.month, e.startTime.day);
+          byDate.putIfAbsent(day, () => []).add(e);
+        }
+        final dates = byDate.keys.toList()..sort();
+
+        return ListView.builder(
+          padding: const EdgeInsets.fromLTRB(16, 12, 16, 24),
+          itemCount: dates.length,
+          itemBuilder: (context, di) {
+            final day = dates[di];
+            final events = byDate[day]!..sort((a, b) => a.startTime.compareTo(b.startTime));
+            final isPast = day.isBefore(DateTime(now.year, now.month, now.day));
+            return Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Padding(
+                  padding: const EdgeInsets.fromLTRB(0, 12, 0, 8),
+                  child: Row(
+                    children: [
                       Text(
-                        'No events found',
+                        _formatDate(day),
                         style: TextStyle(
-                          color: isDark
-                              ? Colors.white.withValues(alpha: 0.6)
-                              : Colors.grey,
-                          fontSize: 16,
+                          fontSize: 13,
+                          fontWeight: FontWeight.w700,
+                          color: isPast
+                              ? (isDark ? Colors.white38 : Colors.grey)
+                              : (isDark ? const Color(0xFF58A6FF) : AppTheme.primaryBlue),
                         ),
                       ),
+                      if (!isPast) ...[const SizedBox(width: 6), _upcomingBadge(isDark)],
                     ],
                   ),
                 ),
-              );
-            }
-
-            return SliverPadding(
-              padding: const EdgeInsets.all(16),
-              sliver: SliverList(
-                delegate: SliverChildBuilderDelegate(
-                  (context, index) => Padding(
-                    padding: const EdgeInsets.only(bottom: 12),
-                    child: EventCard(event: snapshot.data![index]),
-                  ),
-                  childCount: snapshot.data!.length,
-                ),
-              ),
+                ...events.map((e) => _myEventCard(e, isDark, isPast)),
+              ],
             );
           },
+        );
+      },
+    );
+  }
+
+  String _formatDate(DateTime d) {
+    const days = ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'];
+    const months = ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
+        'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec'];
+    return '${days[d.weekday - 1]}, ${months[d.month - 1]} ${d.day}';
+  }
+
+  Widget _upcomingBadge(bool isDark) {
+    return Container(
+      padding: const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+      decoration: BoxDecoration(
+        color: Colors.green.withValues(alpha: 0.12),
+        borderRadius: BorderRadius.circular(6),
+        border: Border.all(color: Colors.green.withValues(alpha: 0.35)),
+      ),
+      child: Text('Upcoming',
+          style: TextStyle(
+              fontSize: 10,
+              fontWeight: FontWeight.w600,
+              color: isDark ? Colors.green[300] : Colors.green[700])),
+    );
+  }
+
+  Widget _myEventCard(ParsedEventModel e, bool isDark, bool isPast) {
+    final cardBg = isDark ? const Color(0xFF21262D) : Colors.white;
+    final border = isDark ? const Color(0xFF30363D) : const Color(0xFFE5E7EB);
+    final textPrimary = isDark ? const Color(0xFFE6EDF3) : const Color(0xFF1A1D26);
+    final textSec = isDark ? const Color(0xFF8B949E) : const Color(0xFF6B7280);
+    final timeColor = isPast ? textSec : (isDark ? const Color(0xFF58A6FF) : AppTheme.primaryBlue);
+    final hour = DateFormat('h:mm a').format(e.startTime);
+    return Opacity(
+      opacity: isPast ? 0.5 : 1.0,
+      child: Container(
+        margin: const EdgeInsets.only(bottom: 10),
+        decoration: BoxDecoration(
+          color: cardBg,
+          borderRadius: BorderRadius.circular(12),
+          border: Border.all(color: border),
         ),
-      ],
+        child: Material(
+          color: Colors.transparent,
+          child: InkWell(
+            borderRadius: BorderRadius.circular(12),
+            onTap: () => _openEventGroup(e),
+            child: Padding(
+              padding: const EdgeInsets.fromLTRB(14, 12, 8, 12),
+              child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
+                children: [
+                  Container(
+                    width: 56,
+                    alignment: Alignment.topCenter,
+                    child: Text(hour,
+                        style: TextStyle(
+                            fontSize: 12,
+                            fontWeight: FontWeight.w700,
+                            color: timeColor)),
+                  ),
+                  Container(
+                      width: 1,
+                      height: 48,
+                      margin: const EdgeInsets.symmetric(horizontal: 12),
+                      color: isDark ? const Color(0xFF30363D) : const Color(0xFFE5E7EB)),
+                  Expanded(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(e.eventName,
+                            style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                                color: textPrimary)),
+                        const SizedBox(height: 4),
+                        if (e.schoolName != null)
+                          Text(e.schoolName!,
+                              style: TextStyle(fontSize: 12, color: textSec),
+                              overflow: TextOverflow.ellipsis),
+                        if (e.location.isNotEmpty)
+                          Text(e.location,
+                              style: TextStyle(fontSize: 11.5, color: textSec),
+                              overflow: TextOverflow.ellipsis),
+                      ],
+                    ),
+                  ),
+                  // Remove button
+                  IconButton(
+                    icon: Icon(Icons.bookmark_remove_rounded,
+                        size: 20,
+                        color: isDark
+                            ? Colors.white.withValues(alpha: 0.35)
+                            : Colors.grey[400]),
+                    tooltip: 'Remove from My Events',
+                    onPressed: () => _removeFromMyEvents(e),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Future<void> _openEventGroup(ParsedEventModel e) async {
+    final user = await _authService.getUserData(
+        FirebaseAuth.instance.currentUser?.uid ?? '');
+    if (!mounted) return;
+    Navigator.push(
+      context,
+      MaterialPageRoute(
+        builder: (_) => EventDetailPage(
+          event: e,
+          schoolId: user?.schoolIds.firstOrNull ?? '',
+          isAdmin: user?.isAdmin ?? false,
+        ),
+      ),
+    ).then((_) {
+      // Refresh list in case the user added/removed this event on the detail page
+      if (mounted) setState(() => _myEventsRefreshKey++);
+    });
+  }
+
+  Future<void> _removeFromMyEvents(ParsedEventModel e) async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+    final id = '${e.eventName}::${e.schoolName ?? ""}';
+    try {
+      final ref = FirebaseFirestore.instance.collection('users').doc(user.uid);
+      final doc = await ref.get();
+      if (!doc.exists) return;
+      final current =
+          List<String>.from(doc.data()?['registeredEvents'] ?? []);
+      current.remove(id);
+      await ref.update({'registeredEvents': current});
+      if (mounted) {
+        setState(() => _myEventsRefreshKey++);
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(
+            content: Text('Removed "${e.eventName}"'),
+            backgroundColor: Colors.orange[700],
+            action: SnackBarAction(
+              label: 'Undo',
+              textColor: Colors.white,
+              onPressed: () async {
+                await ref.update({'registeredEvents': current..add(id)});
+                if (mounted) setState(() => _myEventsRefreshKey++);
+              },
+            ),
+          ),
+        );
+      }
+    } catch (err) {
+      if (mounted) {
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text('Error: $err'), backgroundColor: Colors.red),
+        );
+      }
+    }
+  }
+
+  Future<List<ParsedEventModel>> _loadMyEvents(String uid) async {
+    final doc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    if (!doc.exists) return [];
+    final saved = List<String>.from(doc.data()?['registeredEvents'] ?? []);
+    if (saved.isEmpty) return [];
+    final allEvents = await _eventImportService.loadSBLCSchedule();
+    return allEvents.where((e) {
+      final id = '${e.eventName}::${e.schoolName ?? ""}';
+      return saved.contains(id);
+    }).toList()
+      ..sort((a, b) => a.startTime.compareTo(b.startTime));
+  }
+
+  Widget _buildSignedOutState(bool isDark) {
+    return Center(
+      child: Text('Sign in to see your events',
+          style: TextStyle(
+              color: isDark ? Colors.white60 : AppTheme.mediumGray)),
     );
   }
 
@@ -786,46 +907,9 @@ class _EventsScreenState extends State<EventsScreen>
         final schoolIds = userSnapshot.data?.schoolIds ?? [];
         final currentUserName = userSnapshot.data?.name ?? '';
 
-        if (schoolIds.isEmpty) {
-          return Center(
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.center,
-              children: [
-                Icon(
-                  Icons.school_outlined,
-                  size: 64,
-                  color: isDark
-                      ? Colors.white.withValues(alpha: 0.3)
-                      : Colors.grey,
-                ),
-                const SizedBox(height: 16),
-                Text(
-                  'No school events',
-                  style: TextStyle(
-                    color: isDark
-                        ? Colors.white.withValues(alpha: 0.6)
-                        : Colors.grey,
-                    fontSize: 16,
-                  ),
-                ),
-                const SizedBox(height: 8),
-                Text(
-                  'Join a school to see school events',
-                  style: TextStyle(
-                    color: isDark
-                        ? Colors.white.withValues(alpha: 0.4)
-                        : Colors.grey.shade600,
-                    fontSize: 14,
-                  ),
-                ),
-              ],
-            ),
-          );
-        }
-
         return CustomScrollView(
           slivers: [
-            // NCCC 2025 Event Card (Featured)
+            // FBLA State 2026 Event Card (Featured)
             SliverToBoxAdapter(
               child: Padding(
                 padding: const EdgeInsets.fromLTRB(16, 16, 16, 8),
@@ -835,42 +919,11 @@ class _EventsScreenState extends State<EventsScreen>
                       context,
                       MaterialPageRoute(
                         builder: (context) => NCCCEventDetailScreen(
-                          schoolId: schoolIds.first,
+                          schoolId: schoolIds.isNotEmpty ? schoolIds.first : '',
                           currentUserName: currentUserName,
                         ),
                       ),
                     );
-                  },
-                  onLongPress: () async {
-                    // Admin function: Import NCCC events
-                    final confirm = await showDialog<bool>(
-                      context: context,
-                      builder: (context) => AlertDialog(
-                        title: const Text('Import NCCC 2025 Events'),
-                        content: const Text(
-                          'This will import 208 competition events from the NCCC 2025 schedule. '
-                          'Only do this once!\n\n'
-                          'Continue?',
-                        ),
-                        actions: [
-                          TextButton(
-                            onPressed: () => Navigator.pop(context, false),
-                            child: const Text('Cancel'),
-                          ),
-                          ElevatedButton(
-                            onPressed: () => Navigator.pop(context, true),
-                            style: ElevatedButton.styleFrom(
-                              backgroundColor: AppTheme.primaryBlue,
-                            ),
-                            child: const Text('Import'),
-                          ),
-                        ],
-                      ),
-                    );
-
-                    if (confirm == true && mounted) {
-                      await _importNCCCEvents(schoolIds.first);
-                    }
                   },
                   child: Container(
                     decoration: BoxDecoration(
@@ -973,7 +1026,7 @@ class _EventsScreenState extends State<EventsScreen>
                               ),
                               const SizedBox(height: 16),
                               const Text(
-                                'NCCC 2025',
+                                'FBLA State',
                                 style: TextStyle(
                                   color: Colors.white,
                                   fontSize: 28,
@@ -983,7 +1036,7 @@ class _EventsScreenState extends State<EventsScreen>
                               ),
                               const SizedBox(height: 4),
                               const Text(
-                                'WA FBLA West Central Preliminary',
+                                'WA SBLC 2026 State Competition',
                                 style: TextStyle(
                                   color: Colors.white70,
                                   fontSize: 14,
@@ -1013,7 +1066,7 @@ class _EventsScreenState extends State<EventsScreen>
                                         CrossAxisAlignment.start,
                                     children: [
                                       Text(
-                                        'November 22, 2025',
+                                        'April 21–23, 2026',
                                         style: TextStyle(
                                           color: Colors.white,
                                           fontSize: 14,
@@ -1021,7 +1074,7 @@ class _EventsScreenState extends State<EventsScreen>
                                         ),
                                       ),
                                       Text(
-                                        'Saturday • Full Day Event',
+                                        'Tue–Thu • State Competition',
                                         style: TextStyle(
                                           color: Colors.white60,
                                           fontSize: 12,
@@ -1863,49 +1916,4 @@ class _EventsScreenState extends State<EventsScreen>
         tagsLower.any((tag) => tag.contains('nccc'));
   }
 
-  Future<void> _importNCCCEvents(String schoolId) async {
-    // Show loading dialog
-    showDialog(
-      context: context,
-      barrierDismissible: false,
-      builder: (context) => const AlertDialog(
-        content: Column(
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            CircularProgressIndicator(),
-            SizedBox(height: 16),
-            Text('Importing NCCC 2025 events...'),
-          ],
-        ),
-      ),
-    );
-
-    try {
-      final count = await _eventImportService.importNCCC2025Events(schoolId);
-
-      if (mounted) {
-        Navigator.pop(context); // Close loading dialog
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Successfully imported $count events!'),
-            backgroundColor: AppTheme.success,
-            duration: const Duration(seconds: 3),
-          ),
-        );
-      }
-    } catch (e) {
-      if (mounted) {
-        Navigator.pop(context); // Close loading dialog
-
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error importing events: $e'),
-            backgroundColor: AppTheme.error,
-            duration: const Duration(seconds: 4),
-          ),
-        );
-      }
-    }
-  }
 }
