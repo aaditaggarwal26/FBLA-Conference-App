@@ -155,9 +155,16 @@ class _NCCCEventGroupPageState extends State<NCCCEventGroupPage> {
 
   bool _isMyEvent(ParsedEventModel event) {
     if (widget.currentUserName == null) return false;
+    final pWords = (p) => (p as String).toLowerCase().split(RegExp(r'\s+'));
+    final sWords = widget.currentUserName!.toLowerCase().trim()
+        .split(RegExp(r'\s+'))
+        .where((w) => w.isNotEmpty)
+        .toList();
+    if (sWords.isEmpty) return false;
     return event.participants.any(
-      (participant) =>
-          participant.toLowerCase().contains(widget.currentUserName!.toLowerCase()),
+      (participant) => sWords.every(
+        (sw) => pWords(participant).any((pw) => pw == sw),
+      ),
     );
   }
 
@@ -254,11 +261,14 @@ class _NCCCEventGroupPageState extends State<NCCCEventGroupPage> {
                                       : Colors.white70,
                                 ),
                                 const SizedBox(width: 4),
-                                Text(
-                                  'Room ${sortedEvents.first.location}',
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    color: Colors.white70,
+                                Flexible(
+                                  child: Text(
+                                    sortedEvents.first.location,
+                                    style: const TextStyle(
+                                      fontSize: 14,
+                                      color: Colors.white70,
+                                    ),
+                                    overflow: TextOverflow.ellipsis,
                                   ),
                                 ),
                               ],
@@ -351,32 +361,35 @@ class _NCCCEventGroupPageState extends State<NCCCEventGroupPage> {
                           // Time and My Event badge
                           Row(
                             children: [
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 6,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: widget.eventColor.withOpacity(0.2),
-                                  borderRadius: BorderRadius.circular(8),
-                                ),
-                                child: Row(
-                                  children: [
-                                    Icon(
-                                      Icons.access_time,
-                                      size: 16,
-                                      color: widget.eventColor,
-                                    ),
-                                    const SizedBox(width: 6),
-                                    Text(
-                                      DateFormat('h:mm a').format(event.startTime),
-                                      style: TextStyle(
-                                        fontSize: 14,
-                                        fontWeight: FontWeight.bold,
-                                        color: isDark ? Colors.white : Colors.black87,
+                              Flexible(
+                                child: Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 12,
+                                    vertical: 6,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: widget.eventColor.withOpacity(0.2),
+                                    borderRadius: BorderRadius.circular(8),
+                                  ),
+                                  child: Row(
+                                    mainAxisSize: MainAxisSize.min,
+                                    children: [
+                                      Icon(
+                                        Icons.access_time,
+                                        size: 16,
+                                        color: widget.eventColor,
                                       ),
-                                    ),
-                                  ],
+                                      const SizedBox(width: 6),
+                                      Text(
+                                        DateFormat('h:mm a').format(event.startTime),
+                                        style: TextStyle(
+                                          fontSize: 14,
+                                          fontWeight: FontWeight.bold,
+                                          color: isDark ? Colors.white : Colors.black87,
+                                        ),
+                                      ),
+                                    ],
+                                  ),
                                 ),
                               ),
                               if (isMyTimeSlot) ...[
@@ -479,14 +492,16 @@ class _NCCCEventGroupPageState extends State<NCCCEventGroupPage> {
                                 color: isDark ? Colors.white60 : Colors.black54,
                               ),
                               const SizedBox(width: 6),
-                              Text(
-                                'Room ${event.location}',
-                                style: TextStyle(
-                                  fontSize: 13,
-                                  color: isDark ? Colors.white70 : Colors.black54,
+                              Expanded(
+                                child: Text(
+                                  event.location.isNotEmpty ? event.location : 'TBD',
+                                  style: TextStyle(
+                                    fontSize: 13,
+                                    color: isDark ? Colors.white70 : Colors.black54,
+                                  ),
+                                  overflow: TextOverflow.ellipsis,
                                 ),
                               ),
-                              const Spacer(),
                               Icon(
                                 Icons.arrow_forward_ios,
                                 size: 14,

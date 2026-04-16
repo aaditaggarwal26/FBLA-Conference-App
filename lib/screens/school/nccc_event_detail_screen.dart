@@ -1,13 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:shared_preferences/shared_preferences.dart';
 import '../../models/parsed_event_model.dart';
 import '../../services/event_import_service.dart';
 import 'nccc_event_group_page.dart';
 
 class NCCCEventDetailScreen extends StatefulWidget {
   final String schoolId;
-  final String? currentUserName; // For highlighting user's events
+  final String? currentUserName;
 
   const NCCCEventDetailScreen({
     super.key,
@@ -19,92 +20,81 @@ class NCCCEventDetailScreen extends StatefulWidget {
   State<NCCCEventDetailScreen> createState() => _NCCCEventDetailScreenState();
 }
 
-class _NCCCEventDetailScreenState extends State<NCCCEventDetailScreen>
-    with SingleTickerProviderStateMixin {
+class _NCCCEventDetailScreenState extends State<NCCCEventDetailScreen> {
   final EventImportService _eventService = EventImportService();
-  late TabController _tabController;
-  String _searchQuery = '';
-  bool _showOnlyMyEvents = false;
-  bool _hasCheckedForUserEvents = false;
+  late Future<List<ParsedEventModel>> _eventsFuture;
 
-  final List<String> _eventCategories = [
-    'All Events',
-    'Technology',
-    'Business',
-    'Design',
-    'Speaking',
-  ];
+  final TextEditingController _searchController = TextEditingController();
+  String _searchQuery = '';
+  String? _selectedEvent;
+  bool _showOnlyMyEvents = false;
+  bool _hasPromptedClaim = false;
+
+  static const _darkBg = Color(0xFF0D1117);
+  static const _darkSurface = Color(0xFF161B22);
+  static const _darkCard = Color(0xFF21262D);
+  static const _darkInput = Color(0xFF30363D);
+  static const _darkBorder = Color(0xFF30363D);
+  static const _darkTextPrimary = Color(0xFFE6EDF3);
+  static const _darkTextSecondary = Color(0xFF8B949E);
+  static const _darkAccent = Color(0xFF58A6FF);
 
   @override
   void initState() {
     super.initState();
-    _tabController = TabController(
-      length: _eventCategories.length,
-      vsync: this,
-    );
-    _checkAndImportEvents();
+    _eventsFuture = _eventService.loadSBLCSchedule();
   }
 
-  Future<void> _checkAndImportEvents() async {
-    // Check if events already exist
-    try {
-      final snapshot = await FirebaseFirestore.instance
-          .collection('parsed_events')
-          .where('schoolId', isEqualTo: widget.schoolId)
-          .limit(1)
-          .get();
-
-      if (snapshot.docs.isEmpty) {
-        // Auto-import events on first load
-        await _eventService.importNCCC2025Events(widget.schoolId);
-      }
-
-      // Check for user's events by name matching
-      if (!_hasCheckedForUserEvents && widget.currentUserName != null) {
-        _checkForUserEvents();
-      }
-    } catch (e) {
-      print('Error checking/importing events: $e');
-    }
+  @override
+  void dispose() {
+    _searchController.dispose();
+    super.dispose();
   }
 
-  Future<void> _checkForUserEvents() async {
-    setState(() => _hasCheckedForUserEvents = true);
+  // Word-boundary name matching: all search name words must appear as exact
+  // words in the participant string. Prevents "John" matching "Johnson".
+  bool _nameMatches(String participant, String searchName) {
+    final pWords = participant.toLowerCase().split(RegExp(r'\s+'));
+    final sWords = searchName.toLowerCase().trim().split(RegExp(r'\s+'))
+        .where((w) => w.isNotEmpty)
+        .toList();
+    if (sWords.isEmpty) return false;
+    return sWords.every((sw) => pWords.any((pw) => pw == sw));
+  }
 
-    try {
-      final user = FirebaseAuth.instance.currentUser;
-      if (user == null) return;
+  Future<bool> _claimAlreadyShown() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return true;
+    final prefs = await SharedPreferences.getInstance();
+    return prefs.getBool('sblc_claim_shown_$uid') ?? false;
+  }
 
-      // Get all events where user's name appears
-      final eventsSnapshot = await FirebaseFirestore.instance
-          .collection('parsed_events')
-          .where('schoolId', isEqualTo: widget.schoolId)
-          .get();
+  Future<void> _markClaimShown() async {
+    final uid = FirebaseAuth.instance.currentUser?.uid;
+    if (uid == null) return;
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setBool('sblc_claim_shown_$uid', true);
+  }
 
-      final matchingEvents = <ParsedEventModel>[];
-      for (final doc in eventsSnapshot.docs) {
-        final event = ParsedEventModel.fromFirestore(doc);
-        // Check if user's name matches exactly (case-insensitive)
-        final hasExactMatch = event.participants.any(
-          (participant) =>
-              participant.trim().toLowerCase() ==
-              widget.currentUserName!.trim().toLowerCase(),
-        );
+  void _onEventsLoaded(List<ParsedEventModel> events) {
+    if (_hasPromptedClaim || !mounted || widget.currentUserName == null) return;
+    _hasPromptedClaim = true;
 
-        if (hasExactMatch) {
-          matchingEvents.add(event);
-        }
+    _claimAlreadyShown().then((alreadyShown) {
+      if (alreadyShown || !mounted) return;
+      final myEvents = events
+          .where((e) => e.participants.any((p) => _nameMatches(p, widget.currentUserName!)))
+          .toList();
+      if (myEvents.isNotEmpty) {
+        WidgetsBinding.instance.addPostFrameCallback((_) {
+          if (mounted) _showEventClaimDialog(myEvents);
+        });
       }
-
-      if (matchingEvents.isNotEmpty && mounted) {
-        _showEventClaimDialog(matchingEvents);
-      }
-    } catch (e) {
-      print('Error checking for user events: $e');
-    }
+    });
   }
 
   Future<void> _showEventClaimDialog(List<ParsedEventModel> events) async {
+    await _markClaimShown();
     final result = await showDialog<bool>(
       context: context,
       barrierDismissible: false,
@@ -121,98 +111,44 @@ class _NCCCEventDetailScreenState extends State<NCCCEventDetailScreen>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'We found ${events.length} event(s) with your name "${widget.currentUserName}":',
+              'Found ${events.length} event${events.length == 1 ? "" : "s"} with "${widget.currentUserName}":',
               style: const TextStyle(fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 12),
-            events.length <= 3
-                ? Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: events.map((event) {
-                      return Padding(
-                        padding: const EdgeInsets.symmetric(vertical: 4),
-                        child: Row(
-                          children: [
-                            const Icon(
-                              Icons.check_circle,
-                              size: 16,
-                              color: Colors.green,
-                            ),
-                            const SizedBox(width: 8),
-                            Expanded(
-                              child: Column(
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    event.eventName,
-                                    style: const TextStyle(
-                                      fontSize: 13,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  Text(
-                                    'Room ${event.location} - ${event.startTime.hour}:${event.startTime.minute.toString().padLeft(2, '0')}',
-                                    style: TextStyle(
-                                      fontSize: 11,
-                                      color: Colors.grey[600],
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ),
-                          ],
-                        ),
-                      );
-                    }).toList(),
-                  )
-                : SizedBox(
-                    height: 200,
-                    child: ListView.builder(
-                      shrinkWrap: true,
-                      physics: const AlwaysScrollableScrollPhysics(),
-                      itemCount: events.length,
-                      itemBuilder: (context, index) {
-                        final event = events[index];
-                        return Padding(
-                          padding: const EdgeInsets.symmetric(vertical: 4),
-                          child: Row(
+            ConstrainedBox(
+              constraints: const BoxConstraints(maxHeight: 220),
+              child: SingleChildScrollView(
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  children: events.map((event) => Padding(
+                    padding: const EdgeInsets.symmetric(vertical: 4),
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        const Icon(Icons.check_circle, size: 16, color: Colors.green),
+                        const SizedBox(width: 8),
+                        Expanded(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              const Icon(
-                                Icons.check_circle,
-                                size: 16,
-                                color: Colors.green,
-                              ),
-                              const SizedBox(width: 8),
-                              Expanded(
-                                child: Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    Text(
-                                      event.eventName,
-                                      style: const TextStyle(
-                                        fontSize: 13,
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                    Text(
-                                      'Room ${event.location} - ${event.startTime.hour}:${event.startTime.minute.toString().padLeft(2, '0')}',
-                                      style: TextStyle(
-                                        fontSize: 11,
-                                        color: Colors.grey[600],
-                                      ),
-                                    ),
-                                  ],
-                                ),
+                              Text(event.eventName,
+                                  style: const TextStyle(fontSize: 13, fontWeight: FontWeight.w600)),
+                              Text(
+                                '${event.schoolName ?? ""} \u00b7 ${event.location}',
+                                style: TextStyle(fontSize: 11, color: Colors.grey[600]),
                               ),
                             ],
                           ),
-                        );
-                      },
+                        ),
+                      ],
                     ),
-                  ),
+                  )).toList(),
+                ),
+              ),
+            ),
             const SizedBox(height: 16),
             const Text(
-              'Would you like to add these to your profile and receive notifications?',
+              'Add these to your profile to receive reminders?',
               style: TextStyle(fontSize: 13),
             ),
           ],
@@ -224,13 +160,12 @@ class _NCCCEventDetailScreenState extends State<NCCCEventDetailScreen>
           ),
           ElevatedButton(
             onPressed: () => Navigator.pop(context, true),
-            style: ElevatedButton.styleFrom(backgroundColor: Colors.green),
-            child: const Text('Yes, Add to Profile'),
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.green, foregroundColor: Colors.white),
+            child: const Text('Add to Profile'),
           ),
         ],
       ),
     );
-
     if (result == true && mounted) {
       await _claimEvents(events);
     }
@@ -240,569 +175,620 @@ class _NCCCEventDetailScreenState extends State<NCCCEventDetailScreen>
     try {
       final user = FirebaseAuth.instance.currentUser;
       if (user == null) return;
-
-      // Get user document
-      final userDoc = await FirebaseFirestore.instance
+      final userDoc = await FirebaseFirestore.instance.collection('users').doc(user.uid).get();
+      if (!userDoc.exists) return;
+      final current = List<String>.from(userDoc.data()?['registeredEvents'] ?? []);
+      final newIds = events.map((e) => '${e.eventName}::${e.schoolName ?? ""}').toSet();
+      final updated = {...current, ...newIds}.toList();
+      await FirebaseFirestore.instance
           .collection('users')
           .doc(user.uid)
-          .get();
-
-      if (!userDoc.exists) return;
-
-      // Get current registered events
-      final currentEvents = List<String>.from(
-        userDoc.data()?['registeredEvents'] ?? [],
-      );
-
-      // Add event IDs to user's registered events
-      final eventIds = events.map((e) => e.id).toSet();
-      final updatedEvents = {...currentEvents, ...eventIds}.toList();
-
-      // Update user document
-      await FirebaseFirestore.instance.collection('users').doc(user.uid).update(
-        {'registeredEvents': updatedEvents},
-      );
-
-      // Enable notifications for each event (you can implement notification logic here)
-      // For now, we'll just update a field in the event document
-      for (final event in events) {
-        await FirebaseFirestore.instance
-            .collection('parsed_events')
-            .doc(event.id)
-            .update({
-              'notifyUsers': FieldValue.arrayUnion([user.uid]),
-            });
-      }
-
+          .update({'registeredEvents': updated});
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('✅ Added ${events.length} event(s) to your profile!'),
-            backgroundColor: Colors.green,
-            action: SnackBarAction(
-              label: 'View',
-              textColor: Colors.white,
-              onPressed: () {
-                setState(() => _showOnlyMyEvents = true);
-              },
-            ),
-          ),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('\u2705 Added ${events.length} event${events.length == 1 ? "" : "s"} to your profile!'),
+          backgroundColor: Colors.green,
+        ));
       }
     } catch (e) {
-      print('Error claiming events: $e');
       if (mounted) {
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(
-            content: Text('Error adding events: $e'),
-            backgroundColor: Colors.red,
-          ),
-        );
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Could not save: $e'),
+          backgroundColor: Colors.red,
+        ));
       }
     }
   }
 
-  @override
-  void dispose() {
-    _tabController.dispose();
-    super.dispose();
-  }
-
-  List<ParsedEventModel> _filterEvents(List<ParsedEventModel> events) {
-    var filtered = events;
-
-    // Filter by search query
-    if (_searchQuery.isNotEmpty) {
-      filtered = filtered.where((event) {
-        return event.eventName.toLowerCase().contains(
-              _searchQuery.toLowerCase(),
-            ) ||
-            event.location.toLowerCase().contains(_searchQuery.toLowerCase()) ||
-            event.participants.any(
-              (name) => name.toLowerCase().contains(_searchQuery.toLowerCase()),
-            );
-      }).toList();
+  void _showStatisticsDialog(List<ParsedEventModel> events) {
+    final schools = events.map((e) => e.schoolName ?? 'Unknown').toSet();
+    final dates = events
+        .map((e) => DateTime(e.startTime.year, e.startTime.month, e.startTime.day))
+        .toSet()
+        .toList()
+      ..sort();
+    final eventTypes = <String, int>{};
+    for (final e in events) {
+      eventTypes[e.eventName] = (eventTypes[e.eventName] ?? 0) + 1;
     }
+    final sorted = eventTypes.entries.toList()..sort((a, b) => b.value.compareTo(a.value));
 
-    // Filter by category
-    final currentCategory = _eventCategories[_tabController.index];
-    if (currentCategory != 'All Events') {
-      filtered = filtered.where((event) {
-        switch (currentCategory) {
-          case 'Technology':
-            return event.eventName.toLowerCase().contains('coding') ||
-                event.eventName.toLowerCase().contains('programming') ||
-                event.eventName.toLowerCase().contains('website') ||
-                event.eventName.toLowerCase().contains('mobile') ||
-                event.eventName.toLowerCase().contains('computer') ||
-                event.eventName.toLowerCase().contains('data');
-          case 'Business':
-            return event.eventName.toLowerCase().contains('business') ||
-                event.eventName.toLowerCase().contains('financial') ||
-                event.eventName.toLowerCase().contains('management');
-          case 'Design':
-            return event.eventName.toLowerCase().contains('design') ||
-                event.eventName.toLowerCase().contains('animation') ||
-                event.eventName.toLowerCase().contains('visual') ||
-                event.eventName.toLowerCase().contains('graphic');
-          case 'Speaking':
-            return event.eventName.toLowerCase().contains('speaking') ||
-                event.eventName.toLowerCase().contains('presentation');
-          default:
-            return true;
-        }
-      }).toList();
-    }
-
-    // Filter by user's events
-    if (_showOnlyMyEvents && widget.currentUserName != null) {
-      filtered = filtered.where((event) {
-        return event.participants.any(
-          (name) => name.toLowerCase().contains(
-            widget.currentUserName!.toLowerCase(),
-          ),
-        );
-      }).toList();
-    }
-
-    return filtered;
-  }
-
-  bool _isMyEvent(ParsedEventModel event) {
-    if (widget.currentUserName == null) return false;
-    return event.participants.any(
-      (name) =>
-          name.toLowerCase().contains(widget.currentUserName!.toLowerCase()),
-    );
-  }
-
-  Color _getEventColor(String eventName) {
-    if (eventName.toLowerCase().contains('coding') ||
-        eventName.toLowerCase().contains('programming') ||
-        eventName.toLowerCase().contains('website') ||
-        eventName.toLowerCase().contains('mobile')) {
-      return Colors.blue;
-    } else if (eventName.toLowerCase().contains('design') ||
-        eventName.toLowerCase().contains('animation')) {
-      return Colors.purple;
-    } else if (eventName.toLowerCase().contains('business') ||
-        eventName.toLowerCase().contains('financial')) {
-      return Colors.green;
-    } else if (eventName.toLowerCase().contains('speaking') ||
-        eventName.toLowerCase().contains('presentation')) {
-      return Colors.orange;
-    }
-    return const Color(0xFF001231);
-  }
-
-  IconData _getEventIcon(String eventName) {
-    if (eventName.toLowerCase().contains('coding') ||
-        eventName.toLowerCase().contains('programming')) {
-      return Icons.code;
-    } else if (eventName.toLowerCase().contains('website')) {
-      return Icons.web;
-    } else if (eventName.toLowerCase().contains('mobile')) {
-      return Icons.phone_android;
-    } else if (eventName.toLowerCase().contains('design')) {
-      return Icons.design_services;
-    } else if (eventName.toLowerCase().contains('animation')) {
-      return Icons.animation;
-    } else if (eventName.toLowerCase().contains('business')) {
-      return Icons.business_center;
-    } else if (eventName.toLowerCase().contains('financial')) {
-      return Icons.attach_money;
-    } else if (eventName.toLowerCase().contains('speaking')) {
-      return Icons.mic;
-    } else if (eventName.toLowerCase().contains('presentation')) {
-      return Icons.present_to_all;
-    }
-    return Icons.event;
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final isDark = Theme.of(context).brightness == Brightness.dark;
-    return Scaffold(
-      backgroundColor: isDark ? const Color(0xFF121212) : Colors.white,
-      appBar: AppBar(
-        title: Text(
-          'NCCC 2025',
-          style: TextStyle(color: isDark ? Colors.white : Colors.black87),
-        ),
-        backgroundColor: isDark ? const Color(0xFF121212) : Colors.white,
-        iconTheme: IconThemeData(color: isDark ? Colors.white : Colors.black87),
-        elevation: 0,
-        bottom: PreferredSize(
-          preferredSize: const Size.fromHeight(110),
-          child: Column(
-            children: [
-              // Search Bar
-              Padding(
-                padding: const EdgeInsets.all(8.0),
-                child: TextField(
-                  onChanged: (value) => setState(() => _searchQuery = value),
-                  decoration: InputDecoration(
-                    hintText: 'Search events, participants, or rooms...',
-                    prefixIcon: Icon(
-                      Icons.search,
-                      color: isDark ? Colors.white70 : Colors.grey,
-                    ),
-                    suffixIcon: _searchQuery.isNotEmpty
-                        ? IconButton(
-                            icon: const Icon(Icons.clear),
-                            onPressed: () => setState(() => _searchQuery = ''),
-                          )
-                        : null,
-                    filled: true,
-                    fillColor: isDark
-                        ? const Color(0xFF1E1E1E)
-                        : const Color(0xFFF5F5F5),
-                    hintStyle: TextStyle(
-                      color: isDark ? Colors.white54 : Colors.grey,
-                    ),
-                    border: OutlineInputBorder(
-                      borderRadius: BorderRadius.circular(30),
-                      borderSide: BorderSide.none,
-                    ),
-                  ),
-                  style: TextStyle(color: isDark ? Colors.white : Colors.black),
-                ),
-              ),
-              // Tabs
-              TabBar(
-                controller: _tabController,
-                isScrollable: true,
-                indicatorColor: const Color(0xFF4A90E2),
-                labelColor: const Color(0xFF4A90E2),
-                unselectedLabelColor: isDark ? Colors.white60 : Colors.black54,
-                onTap: (_) => setState(() {}),
-                tabs: _eventCategories
-                    .map((category) => Tab(text: category))
-                    .toList(),
-              ),
-            ],
-          ),
-        ),
-        actions: [
-          if (widget.currentUserName != null)
-            IconButton(
-              icon: Icon(
-                _showOnlyMyEvents ? Icons.person : Icons.person_outline,
-                color: _showOnlyMyEvents ? Colors.yellow : Colors.white,
-              ),
-              tooltip: 'Show only my events',
-              onPressed: () {
-                setState(() => _showOnlyMyEvents = !_showOnlyMyEvents);
-              },
-            ),
-        ],
-      ),
-      body: StreamBuilder<List<ParsedEventModel>>(
-        stream: _eventService.getParsedEvents(widget.schoolId),
-        builder: (context, snapshot) {
-          if (snapshot.hasError) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  const Icon(Icons.error_outline, size: 60, color: Colors.red),
-                  const SizedBox(height: 16),
-                  Text('Error: ${snapshot.error}'),
-                  const SizedBox(height: 16),
-                  ElevatedButton(
-                    onPressed: () => setState(() {}),
-                    child: const Text('Retry'),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          if (!snapshot.hasData) {
-            return const Center(child: CircularProgressIndicator());
-          }
-
-          final allEvents = snapshot.data!;
-          final filteredEvents = _filterEvents(allEvents);
-
-          if (filteredEvents.isEmpty) {
-            return Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  Icon(
-                    _searchQuery.isNotEmpty
-                        ? Icons.search_off
-                        : Icons.event_busy,
-                    size: 80,
-                    color: Colors.grey,
-                  ),
-                  const SizedBox(height: 16),
-                  Text(
-                    _searchQuery.isNotEmpty
-                        ? 'No events found for "$_searchQuery"'
-                        : 'No events available',
-                    style: const TextStyle(fontSize: 18, color: Colors.grey),
-                  ),
-                ],
-              ),
-            );
-          }
-
-          // Group events by event name
-          final Map<String, List<ParsedEventModel>> groupedEvents = {};
-          for (final event in filteredEvents) {
-            groupedEvents.putIfAbsent(event.eventName, () => []).add(event);
-          }
-
-          return ListView.builder(
-            padding: const EdgeInsets.all(16),
-            itemCount: groupedEvents.length,
-            itemBuilder: (context, index) {
-              final eventName = groupedEvents.keys.elementAt(index);
-              final events = groupedEvents[eventName]!;
-              events.sort((a, b) => a.startTime.compareTo(b.startTime));
-
-              final eventColor = _getEventColor(eventName);
-              final eventIcon = _getEventIcon(eventName);
-              final hasMyEvent = events.any(_isMyEvent);
-
-              return Card(
-                margin: const EdgeInsets.only(bottom: 16),
-                elevation: hasMyEvent ? 4 : 2,
-                color: isDark ? const Color(0xFF1E1E1E) : Colors.white,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(12),
-                  side: hasMyEvent
-                      ? const BorderSide(color: Colors.amber, width: 2)
-                      : BorderSide.none,
-                ),
-                child: InkWell(
-                  borderRadius: BorderRadius.circular(12),
-                  onTap: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => NCCCEventGroupPage(
-                          eventName: eventName,
-                          events: events,
-                          schoolId: widget.schoolId,
-                          eventColor: eventColor,
-                          eventIcon: eventIcon,
-                          currentUserName: widget.currentUserName,
-                          isAdmin: true, // TODO: Get from user role
-                        ),
-                      ),
-                    );
-                  },
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Row(
-                      children: [
-                        Container(
-                          width: 50,
-                          height: 50,
-                          decoration: BoxDecoration(
-                            color: eventColor.withOpacity(0.2),
-                            borderRadius: BorderRadius.circular(10),
-                          ),
-                          child: Icon(eventIcon, color: eventColor, size: 28),
-                        ),
-                        const SizedBox(width: 16),
-                        Expanded(
-                          child: Column(
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                children: [
-                                  Expanded(
-                                    child: Text(
-                                      eventName,
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.bold,
-                                        fontSize: 16,
-                                        color: hasMyEvent
-                                            ? Colors.amber.shade900
-                                            : (isDark
-                                                  ? Colors.white
-                                                  : Colors.black87),
-                                      ),
-                                    ),
-                                  ),
-                                  if (hasMyEvent)
-                                    Container(
-                                      padding: const EdgeInsets.symmetric(
-                                        horizontal: 8,
-                                        vertical: 4,
-                                      ),
-                                      decoration: BoxDecoration(
-                                        color: Colors.amber,
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
-                                      child: const Text(
-                                        'MY EVENT',
-                                        style: TextStyle(
-                                          fontSize: 10,
-                                          fontWeight: FontWeight.bold,
-                                          color: Colors.black,
-                                        ),
-                                      ),
-                                    ),
-                                ],
-                              ),
-                              const SizedBox(height: 8),
-                              Row(
-                                children: [
-                                  Icon(
-                                    Icons.location_on,
-                                    size: 14,
-                                    color: isDark
-                                        ? Colors.white60
-                                        : Colors.grey[600],
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    'Room ${events.first.location}',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      color: isDark
-                                          ? Colors.white70
-                                          : Colors.black54,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 16),
-                                  Icon(
-                                    Icons.access_time,
-                                    size: 14,
-                                    color: isDark
-                                        ? Colors.white60
-                                        : Colors.grey[600],
-                                  ),
-                                  const SizedBox(width: 4),
-                                  Text(
-                                    '${events.length} time slots',
-                                    style: TextStyle(
-                                      fontSize: 13,
-                                      color: isDark
-                                          ? Colors.white70
-                                          : Colors.black54,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
-                          ),
-                        ),
-                        Icon(
-                          Icons.arrow_forward_ios,
-                          size: 16,
-                          color: isDark ? Colors.white60 : Colors.grey,
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-              );
-            },
-          );
-        },
-      ),
-      floatingActionButton: FloatingActionButton.extended(
-        onPressed: () async {
-          final stats = await _eventService.getEventStatistics(widget.schoolId);
-          if (context.mounted) {
-            _showStatisticsDialog(stats);
-          }
-        },
-        icon: const Icon(Icons.analytics),
-        label: const Text('Stats'),
-        backgroundColor: const Color(0xFF001231),
-      ),
-    );
-  }
-
-  void _showStatisticsDialog(Map<String, dynamic> stats) {
     showDialog(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('NCCC 2025 Statistics'),
+        title: const Text('FBLA State 2026 Stats'),
         content: SingleChildScrollView(
           child: Column(
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              _buildStatRow('Total Events', stats['totalEvents'].toString()),
-              _buildStatRow(
-                'With Location',
-                stats['eventsWithLocation'].toString(),
-                color: Colors.green,
-              ),
-              _buildStatRow(
-                'Without Location',
-                stats['eventsWithoutLocation'].toString(),
-                color: Colors.orange,
-              ),
+              _statRow('Total Entries', '${events.length}'),
+              _statRow('Unique Events', '${eventTypes.length}'),
+              _statRow('Schools Competing', '${schools.length}'),
+              _statRow('Days', '${dates.length}'),
               const Divider(height: 24),
-              const Text(
-                'Event Types:',
-                style: TextStyle(fontWeight: FontWeight.bold),
-              ),
+              const Text('Top Events:', style: TextStyle(fontWeight: FontWeight.bold)),
               const SizedBox(height: 8),
-              ...((stats['eventTypes'] as Map<String, dynamic>).entries.toList()
-                    ..sort(
-                      (a, b) => (b.value as int).compareTo(a.value as int),
-                    ))
-                  .take(10)
-                  .map(
-                    (entry) => Padding(
-                      padding: const EdgeInsets.symmetric(vertical: 2),
-                      child: Row(
-                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                        children: [
-                          Expanded(
-                            child: Text(
-                              entry.key,
-                              style: const TextStyle(fontSize: 13),
-                              overflow: TextOverflow.ellipsis,
-                            ),
-                          ),
-                          Text(
-                            entry.value.toString(),
-                            style: const TextStyle(fontWeight: FontWeight.bold),
-                          ),
-                        ],
-                      ),
-                    ),
-                  ),
+              ...sorted.take(10).map((entry) => Padding(
+                padding: const EdgeInsets.symmetric(vertical: 2),
+                child: Row(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    Expanded(child: Text(entry.key, style: const TextStyle(fontSize: 13), overflow: TextOverflow.ellipsis)),
+                    Text('${entry.value}', style: const TextStyle(fontWeight: FontWeight.bold)),
+                  ],
+                ),
+              )),
             ],
           ),
         ),
         actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context),
-            child: const Text('Close'),
-          ),
+          TextButton(onPressed: () => Navigator.pop(context), child: const Text('Close')),
         ],
       ),
     );
   }
 
-  Widget _buildStatRow(String label, String value, {Color? color}) {
+  Widget _statRow(String label, String value) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           Text(label),
-          Text(
-            value,
-            style: TextStyle(
-              fontWeight: FontWeight.bold,
-              fontSize: 18,
-              color: color,
+          Text(value, style: const TextStyle(fontWeight: FontWeight.bold, fontSize: 16)),
+        ],
+      ),
+    );
+  }
+
+  List<ParsedEventModel> _filterEvents(List<ParsedEventModel> events) {
+    var filtered = events;
+    if (_searchQuery.isNotEmpty) {
+      final q = _searchQuery.toLowerCase();
+      filtered = filtered.where((e) =>
+        (e.schoolName ?? '').toLowerCase().contains(q) ||
+        e.eventName.toLowerCase().contains(q) ||
+        e.participants.any((p) => p.toLowerCase().contains(q))
+      ).toList();
+    }
+    if (_selectedEvent != null) {
+      filtered = filtered.where((e) => e.eventName == _selectedEvent).toList();
+    }
+    if (_showOnlyMyEvents && widget.currentUserName != null) {
+      filtered = filtered
+          .where((e) => e.participants.any((p) => _nameMatches(p, widget.currentUserName!)))
+          .toList();
+    }
+    return filtered;
+  }
+
+  bool _isMyEvent(ParsedEventModel event) {
+    if (widget.currentUserName == null) return false;
+    return event.participants.any((p) => _nameMatches(p, widget.currentUserName!));
+  }
+
+  Color _getEventColor(String eventName) {
+    final lower = eventName.toLowerCase();
+    if (lower.contains('coding') || lower.contains('programming') || lower.contains('website') ||
+        lower.contains('mobile') || lower.contains('computer') || lower.contains('data')) {
+      return Colors.blue;
+    }
+    if (lower.contains('design') || lower.contains('animation') || lower.contains('visual')) {
+      return Colors.purple;
+    }
+    if (lower.contains('business') || lower.contains('financial') || lower.contains('management') ||
+        lower.contains('marketing') || lower.contains('accounting')) {
+      return Colors.green;
+    }
+    if (lower.contains('speaking') || lower.contains('presentation') || lower.contains('debate')) {
+      return Colors.orange;
+    }
+    return const Color(0xFF001231);
+  }
+
+  IconData _getEventIcon(String eventName) {
+    final lower = eventName.toLowerCase();
+    if (lower.contains('coding') || lower.contains('programming')) return Icons.code;
+    if (lower.contains('website')) return Icons.web;
+    if (lower.contains('mobile')) return Icons.phone_android;
+    if (lower.contains('visual') || lower.contains('design')) return Icons.design_services;
+    if (lower.contains('animation')) return Icons.animation;
+    if (lower.contains('marketing')) return Icons.campaign;
+    if (lower.contains('business') || lower.contains('management')) return Icons.business_center;
+    if (lower.contains('financial') || lower.contains('accounting')) return Icons.attach_money;
+    if (lower.contains('speaking')) return Icons.mic;
+    if (lower.contains('presentation')) return Icons.present_to_all;
+    return Icons.event;
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    final isDark = Theme.of(context).brightness == Brightness.dark;
+
+    final bgColor = isDark ? _darkBg : const Color(0xFFF5F6FA);
+    final surfaceColor = isDark ? _darkSurface : Colors.white;
+    final cardColor = isDark ? _darkCard : Colors.white;
+    final inputColor = isDark ? _darkInput : const Color(0xFFEEF0F5);
+    final textPrimary = isDark ? _darkTextPrimary : const Color(0xFF1A1D26);
+    final textSecondary = isDark ? _darkTextSecondary : const Color(0xFF6B7280);
+    final accent = isDark ? _darkAccent : const Color(0xFF4A90E2);
+    final divider = isDark ? _darkBorder : const Color(0xFFE5E7EB);
+
+    return Scaffold(
+      backgroundColor: bgColor,
+      appBar: AppBar(
+        title: Text(
+          'FBLA State',
+          style: TextStyle(color: textPrimary, fontWeight: FontWeight.w700, fontSize: 18),
+        ),
+        backgroundColor: surfaceColor,
+        iconTheme: IconThemeData(color: textPrimary),
+        elevation: 0,
+        scrolledUnderElevation: 0,
+        bottom: PreferredSize(
+          preferredSize: const Size.fromHeight(1),
+          child: Divider(height: 1, thickness: 1, color: divider),
+        ),
+        actions: [
+          if (widget.currentUserName != null)
+            Padding(
+              padding: const EdgeInsets.only(right: 4),
+              child: IconButton(
+                icon: Icon(
+                  _showOnlyMyEvents ? Icons.person_rounded : Icons.person_outline_rounded,
+                  color: _showOnlyMyEvents ? Colors.amber : textSecondary,
+                ),
+                tooltip: 'My events only',
+                onPressed: () => setState(() => _showOnlyMyEvents = !_showOnlyMyEvents),
+              ),
+            ),
+        ],
+      ),
+      body: FutureBuilder<List<ParsedEventModel>>(
+        future: _eventsFuture,
+        builder: (context, snapshot) {
+          if (snapshot.hasError) {
+            return Center(
+              child: Padding(
+                padding: const EdgeInsets.all(32),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(Icons.error_outline_rounded, size: 64, color: Colors.red[300]),
+                    const SizedBox(height: 16),
+                    Text('Failed to load schedule',
+                        style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold, color: textPrimary)),
+                    const SizedBox(height: 8),
+                    Text('${snapshot.error}',
+                        style: TextStyle(fontSize: 12, color: textSecondary), textAlign: TextAlign.center),
+                    const SizedBox(height: 24),
+                    FilledButton.icon(
+                      onPressed: () =>
+                          setState(() => _eventsFuture = _eventService.loadSBLCSchedule()),
+                      icon: const Icon(Icons.refresh_rounded),
+                      label: const Text('Retry'),
+                      style: FilledButton.styleFrom(backgroundColor: accent),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+
+          if (snapshot.connectionState == ConnectionState.waiting) {
+            return Center(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: [
+                  CircularProgressIndicator(color: accent, strokeWidth: 2.5),
+                  const SizedBox(height: 20),
+                  Text('Loading FBLA State schedule\u2026',
+                      style: TextStyle(color: textSecondary, fontSize: 14)),
+                ],
+              ),
+            );
+          }
+
+          final allEvents = snapshot.data ?? [];
+          _onEventsLoaded(allEvents);
+
+          final uniqueEventNames =
+              allEvents.map((e) => e.eventName).toSet().toList()..sort();
+          final filteredEvents = _filterEvents(allEvents);
+          final groupedEvents = <String, List<ParsedEventModel>>{};
+          for (final event in filteredEvents) {
+            groupedEvents.putIfAbsent(event.eventName, () => []).add(event);
+          }
+          final sortedKeys = groupedEvents.keys.toList()..sort();
+
+          return Column(
+            children: [
+              // Search bar
+              Container(
+                color: surfaceColor,
+                padding: const EdgeInsets.fromLTRB(14, 10, 14, 10),
+                child: TextField(
+                  controller: _searchController,
+                  onChanged: (v) => setState(() => _searchQuery = v),
+                  style: TextStyle(color: textPrimary, fontSize: 14),
+                  decoration: InputDecoration(
+                    hintText: 'Search by school, name or event\u2026',
+                    hintStyle: TextStyle(color: textSecondary, fontSize: 14),
+                    prefixIcon: Icon(Icons.search_rounded, color: textSecondary, size: 20),
+                    suffixIcon: _searchQuery.isNotEmpty
+                        ? IconButton(
+                            icon: Icon(Icons.close_rounded, color: textSecondary, size: 18),
+                            onPressed: () {
+                              _searchController.clear();
+                              setState(() => _searchQuery = '');
+                            },
+                          )
+                        : null,
+                    filled: true,
+                    fillColor: inputColor,
+                    border: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide.none,
+                    ),
+                    enabledBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: isDark ? _darkBorder : Colors.transparent),
+                    ),
+                    focusedBorder: OutlineInputBorder(
+                      borderRadius: BorderRadius.circular(10),
+                      borderSide: BorderSide(color: accent, width: 1.5),
+                    ),
+                    contentPadding: const EdgeInsets.symmetric(vertical: 10),
+                    isDense: true,
+                  ),
+                ),
+              ),
+              Divider(height: 1, thickness: 1, color: divider),
+
+              // Filter chips
+              Container(
+                color: surfaceColor,
+                height: 46,
+                child: ListView(
+                  scrollDirection: Axis.horizontal,
+                  padding: const EdgeInsets.fromLTRB(12, 6, 12, 6),
+                  children: [
+                    _chip('All Events', _selectedEvent == null, isDark, accent,
+                        () => setState(() => _selectedEvent = null)),
+                    ...uniqueEventNames.map((name) => _chip(
+                          name,
+                          _selectedEvent == name,
+                          isDark,
+                          accent,
+                          () => setState(
+                              () => _selectedEvent = _selectedEvent == name ? null : name),
+                        )),
+                  ],
+                ),
+              ),
+              Divider(height: 1, thickness: 1, color: divider),
+
+              // Stats bar
+              Container(
+                color: isDark ? const Color(0xFF0D1117) : const Color(0xFFF9FAFB),
+                padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 7),
+                child: Row(
+                  children: [
+                    Text(
+                      '${filteredEvents.length} entries \u00b7 ${sortedKeys.length} event${sortedKeys.length == 1 ? "" : "s"}',
+                      style: TextStyle(
+                          fontSize: 12, color: textSecondary, fontWeight: FontWeight.w500),
+                    ),
+                    if (_showOnlyMyEvents) ...[
+                      const SizedBox(width: 10),
+                      Container(
+                        padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                        decoration: BoxDecoration(
+                          color: Colors.amber.withOpacity(isDark ? 0.15 : 0.12),
+                          borderRadius: BorderRadius.circular(6),
+                          border: Border.all(
+                              color: Colors.amber.withOpacity(isDark ? 0.4 : 0.3)),
+                        ),
+                        child: Text('My Events',
+                            style: TextStyle(
+                                fontSize: 11,
+                                color: isDark ? Colors.amber[300] : Colors.amber[800],
+                                fontWeight: FontWeight.w600)),
+                      ),
+                    ],
+                    if (_searchQuery.isNotEmpty) ...[
+                      const SizedBox(width: 10),
+                      Flexible(
+                        child: Container(
+                          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 2),
+                          decoration: BoxDecoration(
+                            color: accent.withOpacity(0.1),
+                            borderRadius: BorderRadius.circular(6),
+                            border: Border.all(color: accent.withOpacity(0.3)),
+                          ),
+                          child: Text(
+                            _searchQuery,
+                            style: TextStyle(
+                                fontSize: 11, color: accent, fontWeight: FontWeight.w600),
+                            overflow: TextOverflow.ellipsis,
+                          ),
+                        ),
+                      ),
+                    ],
+                  ],
+                ),
+              ),
+
+              // List
+              Expanded(
+                child: sortedKeys.isEmpty
+                    ? _emptyState(isDark, textPrimary, textSecondary)
+                    : ListView.separated(
+                        padding: const EdgeInsets.fromLTRB(14, 10, 14, 80),
+                        itemCount: sortedKeys.length,
+                        separatorBuilder: (_, __) => const SizedBox(height: 8),
+                        itemBuilder: (context, i) {
+                          final name = sortedKeys[i];
+                          final events = groupedEvents[name]!
+                            ..sort((a, b) => a.startTime.compareTo(b.startTime));
+                          final color = _getEventColor(name);
+                          final icon = _getEventIcon(name);
+                          final hasMe = events.any(_isMyEvent);
+                          final schools = events.map((e) => e.schoolName ?? '').toSet().length;
+                          return _eventCard(context, isDark, name, events, color, icon, hasMe,
+                              schools, cardColor, textPrimary, textSecondary, divider, accent);
+                        },
+                      ),
+              ),
+            ],
+          );
+        },
+      ),
+      floatingActionButton: FutureBuilder<List<ParsedEventModel>>(
+        future: _eventsFuture,
+        builder: (context, snap) {
+          if (!snap.hasData || snap.data!.isEmpty) return const SizedBox.shrink();
+          return FloatingActionButton.extended(
+            onPressed: () => _showStatisticsDialog(snap.data!),
+            icon: const Icon(Icons.analytics_outlined),
+            label: const Text('Stats', style: TextStyle(fontWeight: FontWeight.w600)),
+            backgroundColor: isDark ? const Color(0xFF1F6FEB) : const Color(0xFF001231),
+            foregroundColor: Colors.white,
+            elevation: isDark ? 2 : 4,
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _chip(
+      String label, bool selected, bool isDark, Color accent, VoidCallback onTap) {
+    return Padding(
+      padding: const EdgeInsets.only(right: 8),
+      child: GestureDetector(
+        onTap: onTap,
+        child: AnimatedContainer(
+          duration: const Duration(milliseconds: 150),
+          padding: const EdgeInsets.symmetric(horizontal: 14, vertical: 5),
+          decoration: BoxDecoration(
+            color: selected
+                ? accent.withOpacity(isDark ? 0.2 : 0.1)
+                : (isDark ? const Color(0xFF21262D) : const Color(0xFFF0F2F5)),
+            borderRadius: BorderRadius.circular(20),
+            border: Border.all(
+              color: selected
+                  ? accent.withOpacity(isDark ? 0.7 : 0.5)
+                  : (isDark ? const Color(0xFF30363D) : Colors.transparent),
+              width: selected ? 1.5 : 1,
             ),
           ),
-        ],
+          child: Text(
+            label,
+            style: TextStyle(
+              fontSize: 12.5,
+              fontWeight: selected ? FontWeight.w600 : FontWeight.w400,
+              color: selected
+                  ? accent
+                  : (isDark ? const Color(0xFF8B949E) : const Color(0xFF6B7280)),
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _emptyState(bool isDark, Color textPrimary, Color textSecondary) {
+    final hasFilters = _searchQuery.isNotEmpty || _selectedEvent != null || _showOnlyMyEvents;
+    return Center(
+      child: Padding(
+        padding: const EdgeInsets.all(32),
+        child: Column(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: [
+            Icon(
+              hasFilters ? Icons.search_off_rounded : Icons.event_busy_rounded,
+              size: 72,
+              color: isDark ? const Color(0xFF30363D) : Colors.grey[300],
+            ),
+            const SizedBox(height: 16),
+            Text(
+              _searchQuery.isNotEmpty
+                  ? 'No results for "$_searchQuery"'
+                  : _selectedEvent != null
+                      ? 'No entries for "$_selectedEvent"'
+                      : _showOnlyMyEvents
+                          ? 'No events found for you'
+                          : 'No events found',
+              style: TextStyle(
+                  fontSize: 16, fontWeight: FontWeight.w600, color: textPrimary),
+              textAlign: TextAlign.center,
+            ),
+            const SizedBox(height: 8),
+            if (hasFilters)
+              Text('Try adjusting your search or filters',
+                  style: TextStyle(fontSize: 13, color: textSecondary),
+                  textAlign: TextAlign.center),
+          ],
+        ),
+      ),
+    );
+  }
+
+  Widget _eventCard(
+      BuildContext context,
+      bool isDark,
+      String eventName,
+      List<ParsedEventModel> events,
+      Color eventColor,
+      IconData eventIcon,
+      bool hasMe,
+      int schools,
+      Color cardColor,
+      Color textPrimary,
+      Color textSecondary,
+      Color divider,
+      Color accent) {
+    return Material(
+      color: Colors.transparent,
+      borderRadius: BorderRadius.circular(12),
+      child: InkWell(
+        borderRadius: BorderRadius.circular(12),
+        onTap: () => Navigator.push(
+          context,
+          MaterialPageRoute(
+            builder: (context) => NCCCEventGroupPage(
+              eventName: eventName,
+              events: events,
+              schoolId: widget.schoolId,
+              eventColor: eventColor,
+              eventIcon: eventIcon,
+              currentUserName: widget.currentUserName,
+              isAdmin: false,
+            ),
+          ),
+        ),
+        child: Ink(
+          decoration: BoxDecoration(
+            color: cardColor,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(
+              color: hasMe
+                  ? Colors.amber.withOpacity(0.5)
+                  : (isDark ? const Color(0xFF30363D) : const Color(0xFFE5E7EB)),
+              width: hasMe ? 1.5 : 1,
+            ),
+          ),
+          child: Padding(
+            padding: const EdgeInsets.all(14),
+            child: Row(
+              children: [
+                Container(
+                  width: 44,
+                  height: 44,
+                  decoration: BoxDecoration(
+                    color: eventColor.withOpacity(isDark ? 0.15 : 0.1),
+                    borderRadius: BorderRadius.circular(10),
+                  ),
+                  child: Icon(eventIcon, color: eventColor, size: 22),
+                ),
+                const SizedBox(width: 14),
+                Expanded(
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Row(
+                        children: [
+                          Expanded(
+                            child: Text(
+                              eventName,
+                              style: TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontSize: 14,
+                                color: hasMe
+                                    ? (isDark ? Colors.amber[300] : Colors.amber[800])
+                                    : textPrimary,
+                              ),
+                            ),
+                          ),
+                          if (hasMe)
+                            Container(
+                              padding:
+                                  const EdgeInsets.symmetric(horizontal: 7, vertical: 2),
+                              decoration: BoxDecoration(
+                                color: Colors.amber.withOpacity(isDark ? 0.15 : 0.12),
+                                borderRadius: BorderRadius.circular(6),
+                                border: Border.all(
+                                    color: Colors.amber.withOpacity(0.4), width: 1),
+                              ),
+                              child: Text(
+                                'MY EVENT',
+                                style: TextStyle(
+                                    fontSize: 9,
+                                    fontWeight: FontWeight.bold,
+                                    color: isDark
+                                        ? Colors.amber[300]
+                                        : Colors.amber[800],
+                                    letterSpacing: 0.5),
+                              ),
+                            ),
+                        ],
+                      ),
+                      const SizedBox(height: 6),
+                      Row(
+                        children: [
+                          Icon(Icons.location_on_outlined, size: 11, color: textSecondary),
+                          const SizedBox(width: 2),
+                          Flexible(
+                            child: Text(
+                              events.first.location.isNotEmpty
+                                  ? events.first.location
+                                  : 'TBD',
+                              style: TextStyle(fontSize: 11.5, color: textSecondary),
+                              overflow: TextOverflow.ellipsis,
+                            ),
+                          ),
+                          const SizedBox(width: 10),
+                          Icon(Icons.groups_outlined, size: 11, color: textSecondary),
+                          const SizedBox(width: 2),
+                          Text('$schools school${schools == 1 ? "" : "s"}',
+                              style: TextStyle(fontSize: 11.5, color: textSecondary)),
+                          const SizedBox(width: 10),
+                          Icon(Icons.schedule_outlined, size: 11, color: textSecondary),
+                          const SizedBox(width: 2),
+                          Text('${events.length} slot${events.length == 1 ? "" : "s"}',
+                              style: TextStyle(fontSize: 11.5, color: textSecondary)),
+                        ],
+                      ),
+                    ],
+                  ),
+                ),
+                const SizedBox(width: 6),
+                Icon(Icons.chevron_right_rounded, size: 20, color: textSecondary),
+              ],
+            ),
+          ),
+        ),
       ),
     );
   }

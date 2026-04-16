@@ -5,7 +5,6 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/parsed_event_model.dart';
 import '../../models/location_pin_model.dart';
 import '../../services/location_pin_service.dart';
-import '../../services/event_import_service.dart';
 import '../ar_navigation/ar_navigation_screen.dart';
 import '../ar_navigation/drop_location_pin_screen.dart';
 
@@ -30,50 +29,115 @@ class EventDetailPage extends StatefulWidget {
 
 class _EventDetailPageState extends State<EventDetailPage> {
   final LocationPinService _locationPinService = LocationPinService();
-  final EventImportService _eventImportService = EventImportService();
   LocationPinModel? _linkedLocation;
   bool _isLoading = true;
+  bool _isSaved = false;
+  bool _isSaving = false;
+
+  String get _eventId =>
+      '${widget.event.eventName}::${widget.event.schoolName ?? ""}';
 
   @override
   void initState() {
     super.initState();
     _loadLocationPin();
+    _checkIfSaved();
+  }
+
+  Future<void> _checkIfSaved() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+    final doc = await FirebaseFirestore.instance
+        .collection('users')
+        .doc(user.uid)
+        .get();
+    if (!mounted) return;
+    final saved =
+        List<String>.from(doc.data()?['registeredEvents'] ?? []);
+    setState(() => _isSaved = saved.contains(_eventId));
+  }
+
+  Future<void> _toggleSave() async {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) return;
+    setState(() => _isSaving = true);
+    try {
+      final ref =
+          FirebaseFirestore.instance.collection('users').doc(user.uid);
+      final doc = await ref.get();
+      final current =
+          List<String>.from(doc.data()?['registeredEvents'] ?? []);
+      if (_isSaved) {
+        current.remove(_eventId);
+      } else {
+        if (!current.contains(_eventId)) current.add(_eventId);
+      }
+      await ref.update({'registeredEvents': current});
+      if (mounted) {
+        setState(() {
+          _isSaved = !_isSaved;
+          _isSaving = false;
+        });
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text(_isSaved
+              ? '✅ Added to My Events'
+              : 'Removed from My Events'),
+          backgroundColor:
+              _isSaved ? Colors.green : Colors.orange[700],
+          duration: const Duration(seconds: 2),
+        ));
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() => _isSaving = false);
+        ScaffoldMessenger.of(context).showSnackBar(SnackBar(
+          content: Text('Error: $e'),
+          backgroundColor: Colors.red,
+        ));
+      }
+    }
+  }
+
+  static String _floorLabel(int level) {
+    if (level == 0) return 'Ground Floor';
+    if (level == -1) return 'Basement';
+    if (level < -1) return 'Level $level';
+    return 'Floor $level';
   }
 
   /// Loads the location pin associated with this event.
-  /// Fetches fresh data from Firestore to ensure the link is up-to-date.
+  /// Uses a composite key (eventName::schoolName) so JSON-loaded events
+  /// (which have no Firestore document ID) work correctly.
   Future<void> _loadLocationPin() async {
     setState(() => _isLoading = true);
-    
     try {
-      print('🔄 Loading location pin for event: ${widget.event.eventName}');
-      
-      // Always fetch the latest event data from Firestore to ensure we have the most up-to-date locationPinId
-      final eventDoc = await FirebaseFirestore.instance
-          .collection('parsed_events')
-          .doc(widget.event.id)
-          .get(const GetOptions(source: Source.serverAndCache));
-      
       String? pinId;
-      
-      if (eventDoc.exists) {
-        final data = eventDoc.data();
-        if (data != null && data['locationPinId'] != null) {
-          pinId = data['locationPinId'] as String;
-          print('📍 Found linked pin ID in Firestore: $pinId');
-        }
-      }
-      
-      // Fallback to widget data if Firestore didn't have it (shouldn't happen if linked correctly)
-      if (pinId == null && widget.event.locationPinId != null) {
-        pinId = widget.event.locationPinId;
-        print('📍 Using widget pin ID: $pinId');
+
+      // Primary: look up via composite event key stored in event_location_links
+      final linkDoc = await FirebaseFirestore.instance
+          .collection('event_location_links')
+          .doc(_eventId)
+          .get();
+      if (linkDoc.exists) {
+        pinId = linkDoc.data()?['locationPinId'] as String?;
       }
 
-      if (pinId != null) {
+      // Fallback: event has a real Firestore ID — check parsed_events collection
+      if (pinId == null && widget.event.id.isNotEmpty) {
+        final eventDoc = await FirebaseFirestore.instance
+            .collection('parsed_events')
+            .doc(widget.event.id)
+            .get();
+        if (eventDoc.exists) {
+          pinId = eventDoc.data()?['locationPinId'] as String?;
+        }
+      }
+
+      // Fallback: use locationPinId already present on the model
+      pinId ??= widget.event.locationPinId;
+
+      if (pinId != null && pinId.isNotEmpty) {
         final pin = await _locationPinService.getLocationPinById(pinId);
-        print('✅ Loaded pin: ${pin?.name}');
-        
         if (mounted) {
           setState(() {
             _linkedLocation = pin;
@@ -81,7 +145,6 @@ class _EventDetailPageState extends State<EventDetailPage> {
           });
         }
       } else {
-        print('❌ No location pin linked to this event');
         if (mounted) {
           setState(() {
             _linkedLocation = null;
@@ -90,10 +153,8 @@ class _EventDetailPageState extends State<EventDetailPage> {
         }
       }
     } catch (e) {
-      print('❌ Error loading location pin: $e');
-      if (mounted) {
-        setState(() => _isLoading = false);
-      }
+      debugPrint('Error loading location pin: $e');
+      if (mounted) setState(() => _isLoading = false);
     }
   }
 
@@ -159,6 +220,28 @@ class _EventDetailPageState extends State<EventDetailPage> {
               icon: Icon(Icons.arrow_back, color: isDark ? Colors.white : Colors.black87),
               onPressed: () => Navigator.pop(context),
             ),
+            actions: [
+              _isSaving
+                  ? const Padding(
+                      padding: EdgeInsets.all(12),
+                      child: SizedBox(
+                          width: 20,
+                          height: 20,
+                          child: CircularProgressIndicator(
+                              strokeWidth: 2,
+                              color: Colors.white)),
+                    )
+                  : IconButton(
+                      icon: Icon(
+                        _isSaved
+                            ? Icons.bookmark_rounded
+                            : Icons.bookmark_border_rounded,
+                        color: _isSaved ? Colors.amber : Colors.white,
+                      ),
+                      tooltip: _isSaved ? 'Remove from My Events' : 'Save to My Events',
+                      onPressed: _toggleSave,
+                    ),
+            ],
             flexibleSpace: FlexibleSpaceBar(
               background: Container(
                 decoration: BoxDecoration(
@@ -281,11 +364,44 @@ class _EventDetailPageState extends State<EventDetailPage> {
                           isDark,
                           Icons.people_rounded,
                           'Participants',
-                          '${widget.event.participants.length}',
+                          widget.event.totalParticipants > widget.event.participants.length
+                              ? '${widget.event.participants.length} of ${widget.event.totalParticipants}'
+                              : '${widget.event.participants.length}',
                           eventColor,
                         ),
                       ),
                     ],
+                  ),
+
+                  const SizedBox(height: 24),
+
+                  // Save to My Events button
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton.icon(
+                      onPressed: _isSaving ? null : _toggleSave,
+                      icon: _isSaving
+                          ? const SizedBox(
+                              width: 16,
+                              height: 16,
+                              child: CircularProgressIndicator(
+                                  strokeWidth: 2, color: Colors.white))
+                          : Icon(_isSaved
+                              ? Icons.bookmark_rounded
+                              : Icons.bookmark_border_rounded),
+                      label: Text(_isSaved
+                          ? 'Saved to My Events'
+                          : 'Save to My Events'),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: _isSaved
+                            ? Colors.green[600]
+                            : eventColor,
+                        foregroundColor: Colors.white,
+                        padding: const EdgeInsets.symmetric(vertical: 14),
+                        shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(12)),
+                      ),
+                    ),
                   ),
 
                   const SizedBox(height: 24),
@@ -436,23 +552,36 @@ class _EventDetailPageState extends State<EventDetailPage> {
                                       crossAxisAlignment: CrossAxisAlignment.start,
                                       children: [
                                         Text(
-                                          'Location Pin Set',
+                                          _linkedLocation!.name,
                                           style: TextStyle(
                                             fontSize: 14,
                                             fontWeight: FontWeight.bold,
                                             color: isDark ? Colors.white : Colors.black87,
                                           ),
                                         ),
-                                        const SizedBox(height: 4),
+                                        const SizedBox(height: 2),
                                         Text(
-                                          (_linkedLocation!.description?.isNotEmpty ?? false)
-                                              ? _linkedLocation!.description!
-                                              : 'Floor ${_linkedLocation!.floorLevel}',
+                                          [
+                                            _floorLabel(_linkedLocation!.floorLevel),
+                                            if (_linkedLocation!.buildingName?.isNotEmpty ?? false)
+                                              _linkedLocation!.buildingName!,
+                                          ].join(' · '),
                                           style: TextStyle(
-                                            fontSize: 12,
-                                            color: isDark ? Colors.white60 : Colors.black54,
+                                            fontSize: 13,
+                                            fontWeight: FontWeight.w500,
+                                            color: isDark ? Colors.white70 : Colors.black54,
                                           ),
                                         ),
+                                        if (_linkedLocation!.description?.isNotEmpty ?? false) ...[
+                                          const SizedBox(height: 2),
+                                          Text(
+                                            _linkedLocation!.description!,
+                                            style: TextStyle(
+                                              fontSize: 12,
+                                              color: isDark ? Colors.white54 : Colors.black45,
+                                            ),
+                                          ),
+                                        ],
                                       ],
                                     ),
                                   ),
@@ -535,14 +664,19 @@ class _EventDetailPageState extends State<EventDetailPage> {
                                         ),
                                       );
                                       if (result != null && mounted) {
-                                        // Link the created pin to this event
+                                        // Link the created pin to this event using the composite key
+                                        // so it works for JSON-loaded events (no Firestore document ID)
                                         try {
-                                          await _eventImportService.linkEventToLocation(
-                                            widget.event.id,
-                                            result,
-                                          );
-                                          // Small delay to ensure Firestore propagation
-                                          await Future.delayed(const Duration(milliseconds: 500));
+                                          await FirebaseFirestore.instance
+                                              .collection('event_location_links')
+                                              .doc(_eventId)
+                                              .set({
+                                            'locationPinId': result,
+                                            'schoolId': widget.schoolId,
+                                            'eventName': widget.event.eventName,
+                                            'schoolName': widget.event.schoolName,
+                                          });
+                                          await Future.delayed(const Duration(milliseconds: 300));
                                           if (mounted) {
                                             await _loadLocationPin();
                                             ScaffoldMessenger.of(context).showSnackBar(
