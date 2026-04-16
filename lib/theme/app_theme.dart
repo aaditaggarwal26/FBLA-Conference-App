@@ -40,12 +40,12 @@ class AppTheme {
   static const Color lightBlue = Color(0xFFDEEBFF);
   static const Color accentBlue = Color(0xFF60A5FA);
 
-  // Dark Mode Colors - Improved for visual appeal
-  static const Color darkPrimary = Color(0xFF60A5FA); // Brighter blue
-  static const Color darkSecondary = Color(0xFF818CF8); // Softer indigo
-  static const Color darkBackground = Color(0xFF0F172A); // Deep slate
-  static const Color darkSurface = Color(0xFF1E293B); // Elevated slate
-  static const Color darkCard = Color(0xFF334155); // Card background
+  // Dark Mode Colors - GitHub-style dark palette
+  static const Color darkPrimary = Color(0xFF58A6FF); // GitHub accent blue
+  static const Color darkSecondary = Color(0xFF79C0FF); // Lighter blue
+  static const Color darkBackground = Color(0xFF0D1117); // GitHub dark bg
+  static const Color darkSurface = Color(0xFF161B22); // GitHub surface
+  static const Color darkCard = Color(0xFF21262D); // GitHub card
 
   // Neutral Colors
   static const Color white = Color(0xFFFFFFFF);
@@ -240,8 +240,8 @@ class AppTheme {
       ),
       elevatedButtonTheme: ElevatedButtonThemeData(
         style: ElevatedButton.styleFrom(
-          backgroundColor: darkPrimary,
-          foregroundColor: white,
+          backgroundColor: white,
+          foregroundColor: darkBackground,
           elevation: 0,
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
           shape: RoundedRectangleBorder(
@@ -252,8 +252,8 @@ class AppTheme {
       ),
       outlinedButtonTheme: OutlinedButtonThemeData(
         style: OutlinedButton.styleFrom(
-          foregroundColor: darkPrimary,
-          side: const BorderSide(color: darkPrimary, width: 2),
+          foregroundColor: white,
+          side: const BorderSide(color: white, width: 2),
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 14),
           shape: RoundedRectangleBorder(
             borderRadius: BorderRadius.circular(12),

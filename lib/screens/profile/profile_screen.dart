@@ -7,6 +7,7 @@ import '../../models/user_model.dart';
 import '../../theme/app_theme.dart';
 import '../admin/admin_panel_screen.dart';
 import '../admin/linkedin_settings_screen.dart';
+import '../school/school_screen.dart';
 import 'edit_profile_screen.dart';
 import 'help_support_screen.dart';
 import 'about_screen.dart';
@@ -250,6 +251,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                 }
               }
             }),
+            _buildMenuItem(Icons.school_rounded, 'My School', () {
+              Navigator.push(
+                context,
+                MaterialPageRoute(
+                  builder: (context) => const SchoolScreen(),
+                ),
+              );
+            }),
             _buildDarkModeToggle(),
             _buildMenuItem(
               Icons.business_rounded,
@@ -366,11 +375,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
             gradient: LinearGradient(
               colors: themeProvider.isDarkMode
                   ? [const Color(0xFF1E293B), const Color(0xFF334155)]
-                  : [const Color(0xFFE0E7FF), const Color(0xFFDDD6FE)],
+                  : [Colors.white, const Color(0xFFF9FAFB)],
               begin: Alignment.topLeft,
               end: Alignment.bottomRight,
             ),
             borderRadius: BorderRadius.circular(12),
+            border: themeProvider.isDarkMode
+                ? null
+                : Border.all(color: const Color(0xFFE5E7EB)),
             boxShadow: [
               BoxShadow(
                 color: Colors.black.withValues(alpha: 0.05),
@@ -386,14 +398,14 @@ class _ProfileScreenState extends State<ProfileScreen> {
                   : Icons.light_mode_rounded,
               color: themeProvider.isDarkMode
                   ? const Color(0xFFFDB813)
-                  : const Color(0xFF4F46E5),
+                  : const Color(0xFF6B7280),
             ),
             title: Text(
               'Dark Mode',
               style: TextStyle(
                 color: themeProvider.isDarkMode
                     ? Colors.white
-                    : const Color(0xFF0F1113),
+                    : const Color(0xFF111827),
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -411,10 +423,10 @@ class _ProfileScreenState extends State<ProfileScreen> {
               onChanged: (value) {
                 themeProvider.toggleTheme();
               },
-              activeThumbColor: const Color(0xFF4F46E5),
-              activeTrackColor: const Color(0xFF8B7DFF),
+              activeThumbColor: Colors.white,
+              activeTrackColor: const Color(0xFF3B82F6),
               inactiveThumbColor: Colors.white,
-              inactiveTrackColor: const Color(0xFFE0E3E7),
+              inactiveTrackColor: const Color(0xFFD1D5DB),
             ),
           ),
         );

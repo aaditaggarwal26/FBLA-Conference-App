@@ -1,18 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:url_launcher/url_launcher.dart';
 import '../../services/event_service.dart';
 import '../../services/announcement_service.dart';
 import '../../services/school_service.dart';
 import '../../services/auth_service.dart';
 import '../../services/linkedin_service.dart';
+import '../../services/event_import_service.dart';
 import '../../models/event_model.dart';
 import '../../models/announcement_model.dart';
 import '../../models/school_announcement_model.dart';
 import '../../models/school_event_model.dart';
 import '../../models/school_model.dart';
 import '../../models/user_model.dart';
+import '../../models/parsed_event_model.dart';
 import '../../theme/app_theme.dart';
 import '../../widgets/event_card.dart';
 import '../../widgets/announcement_card.dart';
@@ -31,6 +34,7 @@ class _HomeScreenState extends State<HomeScreen> {
   final SchoolService _schoolService = SchoolService();
   final AuthService _authService = AuthService();
   final LinkedInService _linkedInService = LinkedInService();
+  final EventImportService _eventImportService = EventImportService();
   late Future<String> _firstNameFuture;
   late Future<UserModel?> _userDataFuture;
   final Map<String, bool> _expandedAnnouncements = {};
@@ -533,6 +537,17 @@ class _HomeScreenState extends State<HomeScreen> {
 
                 const SizedBox(height: 32),
 
+                // SBLC Upcoming Events Section
+                _buildSectionHeader(
+                  'Your FBLA State Events',
+                  Icons.school_rounded,
+                  isDark,
+                ),
+                const SizedBox(height: 16),
+                _buildUpcomingSBLCEvents(isDark),
+
+                const SizedBox(height: 32),
+
                 // Upcoming Events Section (merged: school events + featured FBLA events)
                 _buildSectionHeader(
                   'Upcoming Events',
@@ -1009,6 +1024,125 @@ class _HomeScreenState extends State<HomeScreen> {
         });
       }
     }
+  }
+
+  Widget _buildUpcomingSBLCEvents(bool isDark) {
+    final user = FirebaseAuth.instance.currentUser;
+    if (user == null) {
+      return _buildEmptyState(
+        'Sign in to see your schedule',
+        'Your FBLA State events will appear here',
+        Icons.school_rounded,
+        isDark,
+      );
+    }
+    return FutureBuilder<List<ParsedEventModel>>(
+      future: _loadUpcomingSBLCEvents(user.uid),
+      builder: (context, snap) {
+        if (snap.connectionState == ConnectionState.waiting) {
+          return _buildLoadingShimmer(isDark);
+        }
+        final events = snap.data ?? [];
+        if (events.isEmpty) {
+          return _buildEmptyState(
+            'No upcoming FBLA State events',
+            'Open FBLA State and your events will appear here',
+            Icons.school_rounded,
+            isDark,
+          );
+        }
+        return Column(
+          children: events.map((e) {
+            final cardBg = isDark ? const Color(0xFF21262D) : Colors.white;
+            final border = isDark ? const Color(0xFF30363D) : const Color(0xFFE5E7EB);
+            final textPrimary = isDark ? const Color(0xFFE6EDF3) : const Color(0xFF1A1D26);
+            final textSec = isDark ? const Color(0xFF8B949E) : const Color(0xFF6B7280);
+            final timeStr = DateFormat('h:mm a').format(e.startTime);
+            final dateStr = DateFormat('EEE, MMM d').format(e.startTime);
+            return Padding(
+              padding: const EdgeInsets.only(bottom: 10),
+              child: Container(
+                decoration: BoxDecoration(
+                  color: cardBg,
+                  borderRadius: BorderRadius.circular(12),
+                  border: Border.all(color: border),
+                ),
+                child: Padding(
+                  padding: const EdgeInsets.all(14),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 52,
+                        alignment: Alignment.topCenter,
+                        child: Column(
+                          children: [
+                            Text(timeStr,
+                                style: TextStyle(
+                                    fontSize: 11,
+                                    fontWeight: FontWeight.w700,
+                                    color: isDark
+                                        ? const Color(0xFF58A6FF)
+                                        : AppTheme.primaryBlue)),
+                            Text(dateStr,
+                                style: TextStyle(
+                                    fontSize: 9,
+                                    color: textSec),
+                                textAlign: TextAlign.center),
+                          ],
+                        ),
+                      ),
+                      Container(
+                          width: 1,
+                          height: 44,
+                          margin: const EdgeInsets.symmetric(horizontal: 12),
+                          color: border),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(e.eventName,
+                                style: TextStyle(
+                                    fontWeight: FontWeight.w600,
+                                    fontSize: 14,
+                                    color: textPrimary),
+                                overflow: TextOverflow.ellipsis),
+                            const SizedBox(height: 3),
+                            if (e.schoolName != null)
+                              Text(e.schoolName!,
+                                  style: TextStyle(fontSize: 12, color: textSec),
+                                  overflow: TextOverflow.ellipsis),
+                            if (e.location.isNotEmpty)
+                              Text(e.location,
+                                  style: TextStyle(fontSize: 11.5, color: textSec),
+                                  overflow: TextOverflow.ellipsis),
+                          ],
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+            );
+          }).toList(),
+        );
+      },
+    );
+  }
+
+  Future<List<ParsedEventModel>> _loadUpcomingSBLCEvents(String uid) async {
+    final doc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+    if (!doc.exists) return [];
+    final saved = List<String>.from(doc.data()?['registeredEvents'] ?? []);
+    if (saved.isEmpty) return [];
+    final allEvents = await _eventImportService.loadSBLCSchedule();
+    final now = DateTime.now();
+    final filtered = allEvents.where((e) {
+      final id = '${e.eventName}::${e.schoolName ?? ""}';
+      return saved.contains(id) && e.startTime.isAfter(now);
+    }).toList()
+      ..sort((a, b) => a.startTime.compareTo(b.startTime));
+    return filtered.take(5).toList();
   }
 
   Widget _buildMergedUpcomingEvents(bool isDark) {
