@@ -4,6 +4,7 @@ import 'package:firebase_auth/firebase_auth.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'firebase_options.dart';
 import 'theme/app_theme.dart';
 import 'services/accessibility_service.dart';
@@ -21,6 +22,11 @@ void main() async {
   
   // Preserve the splash screen until initialization is complete
   FlutterNativeSplash.preserve(widgetsBinding: widgetsBinding);
+
+  // Load environment variables
+  await dotenv.load(fileName: '.env').catchError((_) {
+    // .env missing — ChatService will surface an error when used
+  });
 
   try {
     // Initialize Firebase with platform-specific options

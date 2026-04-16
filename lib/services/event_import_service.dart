@@ -6,6 +6,51 @@ import '../models/parsed_event_model.dart';
 class EventImportService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
+  // Load SBLC 2026 schedule directly from bundled JSON asset (no Firestore needed)
+  Future<List<ParsedEventModel>> loadSBLCSchedule() async {
+    final jsonString = await rootBundle.loadString('lib/data/nccc_2025_events.json');
+    final jsonData = json.decode(jsonString) as Map<String, dynamic>;
+    final eventsJson = jsonData['events'] as List<dynamic>;
+
+    final eventTotals = <String, Set<String>>{};
+    for (final raw in eventsJson) {
+      final e = raw as Map<String, dynamic>;
+      final eventName = e['eventName'] as String?;
+      if (eventName == null) continue;
+      final participants = ((e['participants'] as List<dynamic>?) ?? []).cast<String>().toSet();
+      eventTotals.putIfAbsent(eventName, () => <String>{}).addAll(participants);
+    }
+
+    final results = <ParsedEventModel>[];
+    for (final raw in eventsJson) {
+      final e = raw as Map<String, dynamic>;
+      final startTimeStr = e['startTime'] as String?;
+      if (startTimeStr == null) continue;
+      final startTime = DateTime.tryParse(startTimeStr);
+      if (startTime == null) continue;
+      final eventName = e['eventName'] as String?;
+      if (eventName == null) continue;
+      final participants = ((e['participants'] as List<dynamic>?) ?? []).cast<String>().toList();
+      results.add(ParsedEventModel(
+        id: '',
+        schoolId: '',
+        schoolName: e['school'] as String?,
+        eventName: eventName,
+        location: (e['location'] as String?) ?? '',
+        startTime: startTime,
+        endTime: startTime.add(const Duration(minutes: 20)),
+        participants: participants,
+        totalParticipants: eventTotals[eventName]?.length ?? participants.length,
+        performLocation: e['location'] as String?,
+        prepLocation: null,
+        locationPinId: null,
+        metadata: null,
+      ));
+    }
+    results.sort((a, b) => a.startTime.compareTo(b.startTime));
+    return results;
+  }
+
   // Import NCCC 2025 events from the bundled JSON asset
   Future<int> importNCCC2025Events(String schoolId) async {
     try {
@@ -20,6 +65,15 @@ class EventImportService {
       final List<dynamic> eventsJson = jsonData['events'];
       final batch = _firestore.batch();
       int importedCount = 0;
+
+      final eventTotals = <String, Set<String>>{};
+      for (final eventJson in eventsJson) {
+        final eventName = eventJson['eventName'] as String?;
+        if (eventName == null) continue;
+        final participantsJson = eventJson['participants'] as List<dynamic>?;
+        final participants = (participantsJson ?? []).cast<String>().toSet();
+        eventTotals.putIfAbsent(eventName, () => <String>{}).addAll(participants);
+      }
 
       for (final eventJson in eventsJson) {
         try {
@@ -43,6 +97,7 @@ class EventImportService {
             startTime: startTime,
             endTime: endTime,
             participants: participants,
+            totalParticipants: eventTotals[eventName]?.length ?? participants.length,
             performLocation: location,
             prepLocation: null,
             locationPinId: null,
@@ -83,6 +138,13 @@ class EventImportService {
       int importedCount = 0;
       final batch = _firestore.batch();
 
+      final eventTotals = <String, Set<String>>{};
+      for (final eventData in jsonData) {
+        final eventName = eventData['eventName'] ?? 'Unknown Event';
+        final participants = List<String>.from(eventData['participants'] ?? []);
+        eventTotals.putIfAbsent(eventName, () => <String>{}).addAll(participants);
+      }
+
       for (final eventData in jsonData) {
         // Parse the event data
         final eventName = eventData['eventName'] ?? 'Unknown Event';
@@ -106,6 +168,7 @@ class EventImportService {
           startTime: startTime,
           endTime: endTime,
           participants: participants,
+          totalParticipants: eventTotals[eventName]?.length ?? participants.length,
           performLocation: performLocation,
           prepLocation: prepLocation.isEmpty ? null : prepLocation,
           locationPinId: null,

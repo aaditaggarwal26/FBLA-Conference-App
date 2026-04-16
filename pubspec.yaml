@@ -50,12 +50,14 @@ dependencies:
   crypto: ^3.0.5
   url_launcher: ^6.3.1
   qr_flutter: ^4.1.0
-  mobile_scanner: ^6.0.2
+  mobile_scanner: ^7.2.0
   share_plus: ^10.1.2
   flutter_native_splash: ^2.4.7
   http: ^1.2.2
   html: ^0.15.4
   table_calendar: ^3.2.0
+  flutter_dotenv: ^5.2.1
+  flutter_markdown: ^0.7.7+1
   # AR Navigation packages
   # ar_flutter_plugin: ^0.7.3
   geolocator: ^9.0.2
@@ -105,6 +107,7 @@ flutter:
   assets:
     - assets/logo.png
     - lib/data/nccc_2025_events.json
+    - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

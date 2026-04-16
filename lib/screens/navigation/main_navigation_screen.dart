@@ -4,7 +4,7 @@ import '../events/events_screen.dart';
 import '../pins/pin_trading_screen.dart';
 import '../profile/profile_screen.dart';
 import '../messages/messages_list_screen.dart';
-import '../school/school_screen.dart';
+import '../chat/chat_screen.dart';
 import '../../theme/app_theme.dart';
 
 class MainNavigationScreen extends StatefulWidget {
@@ -21,7 +21,6 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     HomeScreen(),
     EventsScreen(),
     PinTradingScreen(),
-    SchoolScreen(),
     MessagesListScreen(),
     ProfileScreen(),
   ];
@@ -32,6 +31,18 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
     return Scaffold(
       body: _screens[_currentIndex],
+      floatingActionButton: FloatingActionButton(
+        onPressed: () {
+          Navigator.of(context).push(
+            MaterialPageRoute(
+              builder: (context) => const AIChatScreen(),
+            ),
+          );
+        },
+        backgroundColor: isDark ? AppTheme.darkPrimary : AppTheme.primaryBlue,
+        foregroundColor: Colors.white,
+        child: const Icon(Icons.auto_awesome_rounded),
+      ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: isDark ? AppTheme.darkSurface : Colors.white,
@@ -52,9 +63,8 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
                 _buildNavItem(0, Icons.home_rounded, 'Home', isDark),
                 _buildNavItem(1, Icons.event_rounded, 'Events', isDark),
                 _buildNavItem(2, Icons.push_pin_rounded, 'Pins', isDark),
-                _buildNavItem(3, Icons.school_rounded, 'School', isDark),
-                _buildNavItem(4, Icons.chat_bubble_rounded, 'Messages', isDark),
-                _buildNavItem(5, Icons.person_rounded, 'Profile', isDark),
+                _buildNavItem(3, Icons.chat_bubble_rounded, 'Messages', isDark),
+                _buildNavItem(4, Icons.person_rounded, 'Profile', isDark),
               ],
             ),
           ),
@@ -67,62 +77,29 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
     final isSelected = _currentIndex == index;
 
     return Flexible(
-      flex: isSelected ? 3 : 1,
+      flex: isSelected ? 2 : 1,
       child: GestureDetector(
         onTap: () => setState(() => _currentIndex = index),
         child: AnimatedContainer(
-          duration: const Duration(milliseconds: 250),
+          duration: const Duration(milliseconds: 200),
           curve: Curves.easeInOutCubic,
-          padding: EdgeInsets.symmetric(
-            horizontal: isSelected ? 12 : 4,
-            vertical: 8,
-          ),
+          padding: const EdgeInsets.symmetric(horizontal: 8, vertical: 8),
           decoration: BoxDecoration(
             color: isSelected
                 ? (isDark
-                      ? AppTheme.darkPrimary.withValues(alpha: 0.2)
-                      : AppTheme.primaryBlue.withValues(alpha: 0.1))
+                    ? AppTheme.darkPrimary.withValues(alpha: 0.2)
+                    : AppTheme.primaryBlue.withValues(alpha: 0.1))
                 : Colors.transparent,
             borderRadius: BorderRadius.circular(12),
           ),
-          child: Row(
-            mainAxisSize: MainAxisSize.min,
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Icon(
-                icon,
-                color: isSelected
-                    ? (isDark ? AppTheme.darkPrimary : AppTheme.primaryBlue)
-                    : (isDark
-                          ? Colors.white.withValues(alpha: 0.5)
-                          : Colors.grey),
-                size: isSelected ? 26 : 24,
-              ),
-              if (isSelected) ...[
-                const SizedBox(width: 6),
-                AnimatedOpacity(
-                  opacity: isSelected ? 1.0 : 0.0,
-                  duration: const Duration(milliseconds: 200),
-                  child: AnimatedDefaultTextStyle(
-                    duration: const Duration(milliseconds: 200),
-                    style: TextStyle(
-                      color: isSelected
-                          ? (isDark
-                                ? AppTheme.darkPrimary
-                                : AppTheme.primaryBlue)
-                          : Colors.transparent,
-                      fontWeight: FontWeight.w600,
-                      fontSize: 12,
-                    ),
-                    child: Text(
-                      label,
-                      overflow: TextOverflow.ellipsis,
-                      maxLines: 1,
-                    ),
-                  ),
-                ),
-              ],
-            ],
+          child: Icon(
+            icon,
+            color: isSelected
+                ? (isDark ? AppTheme.darkPrimary : AppTheme.primaryBlue)
+                : (isDark
+                    ? Colors.white.withValues(alpha: 0.5)
+                    : Colors.grey),
+            size: isSelected ? 26 : 22,
           ),
         ),
       ),
