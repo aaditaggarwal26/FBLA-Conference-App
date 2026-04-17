@@ -290,7 +290,17 @@ service cloud.firestore {
 
     match /location_pins/{pinId} {
 
-      allow read: if isSignedIn() && isSchoolMember(resource.data.schoolId);
+      allow read: if isSignedIn();
+
+      allow create: if isSignedIn() && isSchoolAdmin(request.resource.data.schoolId);
+
+      allow update, delete: if isSignedIn() && isSchoolAdmin(resource.data.schoolId);
+
+    }
+
+    match /event_location_links/{eventKey} {
+
+      allow read: if isSignedIn();
 
       allow create: if isSignedIn() && isSchoolAdmin(request.resource.data.schoolId);
 
