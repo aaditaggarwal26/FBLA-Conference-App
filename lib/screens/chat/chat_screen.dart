@@ -75,40 +75,36 @@ class _AIChatScreenState extends State<AIChatScreen> {
           return sameName && sameSchool;
         }).toList();
 
-        if (candidates.isEmpty) {
-          final fallbackList = byEventName[eventName] ?? [];
-          final allSchools = fallbackList
+        final eventList = byEventName[eventName] ?? [];
+        final competitorSchools = eventList
             .map((e) => (e.schoolName ?? '').trim())
-            .where((name) => name.isNotEmpty)
-            .toSet();
-        details.add(RegisteredEventContext(
-          eventName: eventName,
-          schoolName: schoolName,
-          participants: const [],
-          totalParticipants: fallbackList.fold<int>(0, (sum, e) => sum + e.participants.length),
-          totalTeams: allSchools.length,
-          competitorSchools: allSchools
-              .where((name) => name != schoolName.trim())
-              .toList(),
-        ));
+            .where((name) => name.isNotEmpty && name != schoolName)
+            .toSet()
+            .toList();
+
+        if (candidates.isEmpty) {
+          details.add(RegisteredEventContext(
+            eventName: eventName,
+            schoolName: schoolName,
+            participants: const [],
+            totalParticipants: eventList.fold<int>(0, (sum, e) => sum + e.participants.length),
+            totalTeams: competitorSchools.length + (schoolName.isNotEmpty ? 1 : 0),
+            competitorSchools: competitorSchools,
+          ));
           continue;
         }
 
         final event = candidates.first;
-        final eventList = byEventName[eventName] ?? [];
-        final allSchools = eventList
-            .map((e) => (e.schoolName ?? '').trim())
-            .where((name) => name.isNotEmpty)
-            .toSet();
-        final competitorSchools = allSchools
-            .where((name) => name != (event.schoolName ?? schoolName).trim())
-            .toList();
         details.add(RegisteredEventContext(
           eventName: event.eventName,
           schoolName: event.schoolName ?? schoolName,
           participants: event.participants,
           totalParticipants: event.totalParticipants,
-          totalTeams: allSchools.length,
+          totalTeams: eventList
+              .map((e) => (e.schoolName ?? '').trim())
+              .where((name) => name.isNotEmpty)
+              .toSet()
+              .length,
           competitorSchools: competitorSchools,
         ));
       }

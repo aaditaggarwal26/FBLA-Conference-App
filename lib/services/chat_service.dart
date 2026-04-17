@@ -57,14 +57,14 @@ class ChatService {
         final members = detail.participants.isNotEmpty
             ? detail.participants.join(', ')
             : 'No competitor names available';
-        final opponents = detail.competitorSchools.isNotEmpty
+        final competitorSchools = detail.competitorSchools.isNotEmpty
             ? detail.competitorSchools.join(', ')
-            : 'Competitor schools unavailable';
+            : 'No competitor schools available';
         buffer.writeln(
-            '  - ${detail.eventName} at ${detail.schoolName}: team members $members. Total participants in this event: ${detail.totalParticipants}. Total competing teams: ${detail.totalTeams}. Competitor schools: $opponents.');
+            '  - ${detail.eventName} at ${detail.schoolName}: team members $members. Total participants in this event: ${detail.totalParticipants}. Total competing teams: ${detail.totalTeams}. Competitor schools: $competitorSchools.');
       }
       buffer.writeln(
-          'When the student asks about their events, focus on these specific registered events and competitors.');
+          'When the student asks about their events, focus on these specific registered events and competitors. Do not mention a host school; only include competitor schools for the user\'s events.');
     } else if (registeredEvents != null && registeredEvents.isNotEmpty) {
       buffer.writeln(
           'They are registered for the following events at SBLC 2026:');
