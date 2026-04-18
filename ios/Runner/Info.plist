@@ -33,6 +33,8 @@
 			</array>
 		</dict>
 	</array>
+	<key>GIDClientID</key>
+	<string>518774774037-u8t6pfdumr2a449hrnif8c0jiu4esmmh.apps.googleusercontent.com</string>
 	<key>CFBundleVersion</key>
 	<string>$(FLUTTER_BUILD_NUMBER)</string>
 	<key>LSRequiresIPhoneOS</key>
@@ -49,6 +51,8 @@
 	<string>This app needs motion sensor access for AR navigation</string>
 	<key>NSPhotoLibraryUsageDescription</key>
 	<string>This app needs photo library access to select and share event images</string>
+	<key>NSSiriUsageDescription</key>
+	<string>Used to navigate app with siri</string>
 	<key>UIApplicationSceneManifest</key>
 	<dict>
 		<key>UIApplicationSupportsMultipleScenes</key>
