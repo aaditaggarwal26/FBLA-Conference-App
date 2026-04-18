@@ -97,6 +97,7 @@ class _HomeScreenState extends State<HomeScreen> {
     return Scaffold(
       backgroundColor: isDark ? AppTheme.darkBackground : AppTheme.background,
       body: CustomScrollView(
+        physics: const ClampingScrollPhysics(),
         slivers: [
           // Elegant Minimal Header
           SliverAppBar(

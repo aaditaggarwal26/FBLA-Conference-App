@@ -13,6 +13,8 @@ import 'screens/auth/register_screen.dart';
 import 'screens/auth/forgot_password_screen.dart';
 import 'screens/navigation/main_navigation_screen.dart';
 import 'services/notification_service.dart';
+import 'services/siri_integration_service.dart';
+import 'widgets/siri_action_coordinator.dart';
 
 /// Entry point of the application.
 /// Initializes Firebase, sets up notifications, and runs the app.
@@ -42,6 +44,8 @@ void main() async {
     notificationService.initialize().catchError((e) {
       print('Notification init error (non-critical): $e');
     });
+
+    await SiriIntegrationService.instance.initialize();
   } catch (e) {
     print('Firebase initialization error: $e');
   }
@@ -82,7 +86,7 @@ class MyApp extends StatelessWidget {
               : ThemeMode.light,
           debugShowCheckedModeBanner: false,
           // Set the initial screen based on authentication state
-          home: const AuthWrapper(),
+          home: const SiriActionCoordinator(child: AuthWrapper()),
           // Define named routes for navigation
           routes: {
             '/login': (context) => const LoginScreen(),

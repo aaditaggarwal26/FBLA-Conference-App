@@ -188,6 +188,7 @@ class _AIChatScreenState extends State<AIChatScreen> {
     final isDark = Theme.of(context).brightness == Brightness.dark;
 
     return Scaffold(
+      resizeToAvoidBottomInset: true,
       backgroundColor:
           isDark ? AppTheme.darkBackground : AppTheme.background,
       appBar: AppBar(
@@ -542,8 +543,7 @@ class _AIChatScreenState extends State<AIChatScreen> {
 
   Widget _buildInputBar(bool isDark) {
     return Container(
-      padding: EdgeInsets.fromLTRB(
-          16, 10, 16, MediaQuery.of(context).viewInsets.bottom + 16),
+      padding: const EdgeInsets.fromLTRB(16, 10, 16, 16),
       decoration: BoxDecoration(
         color: isDark ? AppTheme.darkSurface : Colors.white,
         border: Border(

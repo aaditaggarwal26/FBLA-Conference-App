@@ -25,7 +25,7 @@ fi
 
 # Alternative: Reset permissions for specific bundle ID
 # Uncomment and modify the bundle ID if needed
-# BUNDLE_ID="com.example.fblaConferenceApp"
+# BUNDLE_ID="com.convex.fblaConferenceApp"
 # xcrun simctl privacy booted revoke location $BUNDLE_ID
 # xcrun simctl privacy booted revoke camera $BUNDLE_ID
 # echo "✅ Permissions reset for $BUNDLE_ID"
