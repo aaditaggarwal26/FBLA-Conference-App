@@ -1,0 +1,4715 @@
+{
+  "events": [
+    {
+      "school": "Heritage High School",
+      "eventName": "Community Service Project - Final - Presentation",
+      "location": "Davenport Grand - Room 1",
+      "participants": [
+        "Justin Levin",
+        "Henry Ngo",
+        "Haven Taylor"
+      ],
+      "startTime": "2026-04-23T08:03:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:00 AM",
+      "performTime": "8:03 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Cheney High School",
+      "eventName": "Community Service Project - Final - Presentation",
+      "location": "Davenport Grand - Room 1",
+      "participants": [
+        "Hannah Ge",
+        "Isabella Murray",
+        "Lainey Tillman"
+      ],
+      "startTime": "2026-04-23T08:20:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:17 AM",
+      "performTime": "8:20 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Community Service Project - Final - Presentation",
+      "location": "Davenport Grand - Room 1",
+      "participants": [
+        "Gagana Bodala",
+        "Prakruthi Venugopalan"
+      ],
+      "startTime": "2026-04-23T08:37:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:34 AM",
+      "performTime": "8:37 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Oak Harbor High School",
+      "eventName": "Community Service Project - Final - Presentation",
+      "location": "Davenport Grand - Room 1",
+      "participants": [
+        "Julianne Socorro Dalire",
+        "Lixin Lin",
+        "Dale Matro"
+      ],
+      "startTime": "2026-04-23T08:54:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:51 AM",
+      "performTime": "8:54 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Davenport High School",
+      "eventName": "Community Service Project - Final - Presentation",
+      "location": "Davenport Grand - Room 1",
+      "participants": [
+        "Faith Bell",
+        "McCall Knopp",
+        "Everett Prewitt"
+      ],
+      "startTime": "2026-04-23T09:11:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:08 AM",
+      "performTime": "9:11 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Stanwood High School",
+      "eventName": "Community Service Project - Final - Presentation",
+      "location": "Davenport Grand - Room 1",
+      "participants": [
+        "Jovee Holmes",
+        "Jordan Rancourt"
+      ],
+      "startTime": "2026-04-23T09:28:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:25 AM",
+      "performTime": "9:28 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "University High School",
+      "eventName": "Community Service Project - Final - Presentation",
+      "location": "Davenport Grand - Room 1",
+      "participants": [
+        "Tristan Hills",
+        "Carson Keeney"
+      ],
+      "startTime": "2026-04-23T09:45:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:42 AM",
+      "performTime": "9:45 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Skyline High School",
+      "eventName": "Community Service Project - Final - Presentation",
+      "location": "Davenport Grand - Room 1",
+      "participants": [
+        "Ahilya Dhole"
+      ],
+      "startTime": "2026-04-23T10:08:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:05 AM",
+      "performTime": "10:08 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Bothell High School",
+      "eventName": "Community Service Project - Final - Presentation",
+      "location": "Davenport Grand - Room 1",
+      "participants": [
+        "Santhosh Ilaiyaraja",
+        "Druthi Nandigam"
+      ],
+      "startTime": "2026-04-23T10:25:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:22 AM",
+      "performTime": "10:25 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Pe Ell High School",
+      "eventName": "Community Service Project - Final - Presentation",
+      "location": "Davenport Grand - Room 1",
+      "participants": [
+        "Sofie Goode",
+        "Kassidy Hayes",
+        "Evey Larkin"
+      ],
+      "startTime": "2026-04-23T10:42:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:39 AM",
+      "performTime": "10:42 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Mount Vernon High School",
+      "eventName": "Community Service Project - Final - Presentation",
+      "location": "Davenport Grand - Room 1",
+      "participants": [
+        "Heaven Castro",
+        "Karla Pitones Angon"
+      ],
+      "startTime": "2026-04-23T10:59:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:56 AM",
+      "performTime": "10:59 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Ridgeline High School",
+      "eventName": "Community Service Project - Final - Presentation",
+      "location": "Davenport Grand - Room 1",
+      "participants": [
+        "Sydney Barrie",
+        "Ethan Rumpler",
+        "Kaila Zener"
+      ],
+      "startTime": "2026-04-23T11:18:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:15 AM",
+      "performTime": "11:18 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Hockinson High School",
+      "eventName": "Local Chapter Annual Business Report - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 69",
+      "participants": [
+        "Graysen Aldridge",
+        "Sydney Aldridge",
+        "Christina Chhor"
+      ],
+      "startTime": "2026-04-23T08:03:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:00 AM",
+      "performTime": "8:03 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Columbia Junior High - 9th",
+      "eventName": "Local Chapter Annual Business Report - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 69",
+      "participants": [
+        "Kora Garcia",
+        "Sienna Henry",
+        "Mikaela Riggins"
+      ],
+      "startTime": "2026-04-23T08:20:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:17 AM",
+      "performTime": "8:20 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Marysville Getchell High School",
+      "eventName": "Local Chapter Annual Business Report - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 69",
+      "participants": [
+        "Leila Hammond",
+        "Edward Rabchenyuk",
+        "Yashasvi Ungarala"
+      ],
+      "startTime": "2026-04-23T08:37:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:34 AM",
+      "performTime": "8:37 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Lynden High School",
+      "eventName": "Local Chapter Annual Business Report - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 69",
+      "participants": [
+        "Luke Bright",
+        "Brady Stewart"
+      ],
+      "startTime": "2026-04-23T08:54:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:51 AM",
+      "performTime": "8:54 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Cedarcrest High School",
+      "eventName": "Local Chapter Annual Business Report - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 69",
+      "participants": [
+        "Julian Rotoli",
+        "Sysha Shaikh",
+        "Elaine Varghese"
+      ],
+      "startTime": "2026-04-23T09:11:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:08 AM",
+      "performTime": "9:11 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Toutle Lake High School",
+      "eventName": "Local Chapter Annual Business Report - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 69",
+      "participants": [
+        "Addison Blizzard",
+        "Alessandra White"
+      ],
+      "startTime": "2026-04-23T09:28:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:25 AM",
+      "performTime": "9:28 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Union High School",
+      "eventName": "Local Chapter Annual Business Report - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 69",
+      "participants": [
+        "Andrea Chang",
+        "Kauanoe Hatori",
+        "Camille Huang"
+      ],
+      "startTime": "2026-04-23T09:51:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:48 AM",
+      "performTime": "9:51 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Local Chapter Annual Business Report - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 69",
+      "participants": [
+        "Vedant Gopalan",
+        "Om Kharade",
+        "Aarav Sharma"
+      ],
+      "startTime": "2026-04-23T10:08:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:05 AM",
+      "performTime": "10:08 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Heritage High School",
+      "eventName": "Local Chapter Annual Business Report - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 69",
+      "participants": [
+        "Adrian Benitez",
+        "Clemente Chavez",
+        "Edna Maya Garcia"
+      ],
+      "startTime": "2026-04-23T10:25:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:22 AM",
+      "performTime": "10:25 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Fife High School",
+      "eventName": "Local Chapter Annual Business Report - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 69",
+      "participants": [
+        "Lillian Banham",
+        "Anthony Huynh"
+      ],
+      "startTime": "2026-04-23T10:42:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:39 AM",
+      "performTime": "10:42 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "STEM High School",
+      "eventName": "Local Chapter Annual Business Report - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 69",
+      "participants": [
+        "Jeswanth Sri Sai Battula",
+        "Raghav Krishnan",
+        "Maximillian Uypeckcuat"
+      ],
+      "startTime": "2026-04-23T10:59:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:56 AM",
+      "performTime": "10:59 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Odessa High School",
+      "eventName": "Local Chapter Annual Business Report - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 69",
+      "participants": [
+        "Hadyn Reynolds",
+        "Kolter Watson",
+        "Katie Williams"
+      ],
+      "startTime": "2026-04-23T11:16:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:13 AM",
+      "performTime": "11:16 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Timberline High School",
+      "eventName": "Business Ethics - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 6",
+      "participants": [
+        "Daejalynn Lenard"
+      ],
+      "startTime": "2026-04-23T08:33:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:30 AM",
+      "performTime": "8:33 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Royal High School",
+      "eventName": "Business Ethics - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 6",
+      "participants": [
+        "Rolando Cedillo",
+        "Abel Garcia",
+        "Logan Piper"
+      ],
+      "startTime": "2026-04-23T08:50:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:47 AM",
+      "performTime": "8:50 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Davenport High School",
+      "eventName": "Business Ethics - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 6",
+      "participants": [
+        "Joel Odenrider",
+        "Josie Wynecoop"
+      ],
+      "startTime": "2026-04-23T09:07:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:04 AM",
+      "performTime": "9:07 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Squalicum High School",
+      "eventName": "Business Ethics - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 6",
+      "participants": [
+        "Chloe Putney",
+        "Natalie Ravitsky"
+      ],
+      "startTime": "2026-04-23T09:24:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:21 AM",
+      "performTime": "9:24 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Bothell High School",
+      "eventName": "Business Ethics - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 6",
+      "participants": [
+        "Aadyaa Arora",
+        "Derin Muhittinoglu"
+      ],
+      "startTime": "2026-04-23T09:41:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:38 AM",
+      "performTime": "9:41 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Bothell High School",
+      "eventName": "Business Ethics - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 6",
+      "participants": [
+        "Anishka Gogoi",
+        "Kavya Tayal"
+      ],
+      "startTime": "2026-04-23T09:58:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:55 AM",
+      "performTime": "9:58 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Henry M. Jackson High School",
+      "eventName": "Business Ethics - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 6",
+      "participants": [
+        "Sara Kim",
+        "Claire Swander"
+      ],
+      "startTime": "2026-04-23T10:21:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:18 AM",
+      "performTime": "10:21 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Fife High School",
+      "eventName": "Business Ethics - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 6",
+      "participants": [
+        "Lucianna Flores"
+      ],
+      "startTime": "2026-04-23T10:38:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:35 AM",
+      "performTime": "10:38 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Woodinville High School",
+      "eventName": "Business Ethics - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 6",
+      "participants": [
+        "Eshaan Chowdhry",
+        "Mohammad Kazmi",
+        "Yasin Mahmud"
+      ],
+      "startTime": "2026-04-23T10:55:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:52 AM",
+      "performTime": "10:55 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Business Ethics - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 6",
+      "participants": [
+        "Swarali Karale",
+        "Srianvika Siram"
+      ],
+      "startTime": "2026-04-23T11:12:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:09 AM",
+      "performTime": "11:12 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Business Ethics - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 6",
+      "participants": [
+        "Ananya Mallick",
+        "Shrita Palla"
+      ],
+      "startTime": "2026-04-23T11:29:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:26 AM",
+      "performTime": "11:29 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "STEM High School",
+      "eventName": "Business Ethics - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 6",
+      "participants": [
+        "Lindsey Kim",
+        "Mahi Phadke"
+      ],
+      "startTime": "2026-04-23T11:46:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:43 AM",
+      "performTime": "11:46 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Marysville Getchell High School",
+      "eventName": "Business Plan - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 7",
+      "participants": [
+        "Ivan Powell"
+      ],
+      "startTime": "2026-04-23T08:03:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:00 AM",
+      "performTime": "8:03 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Spokane Valley Tech",
+      "eventName": "Business Plan - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 7",
+      "participants": [
+        "Sarah Orebaugh",
+        "Peyton Ward"
+      ],
+      "startTime": "2026-04-23T08:20:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:17 AM",
+      "performTime": "8:20 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Union High School",
+      "eventName": "Business Plan - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 7",
+      "participants": [
+        "Sophie Huang",
+        "Lucy Song"
+      ],
+      "startTime": "2026-04-23T08:37:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:34 AM",
+      "performTime": "8:37 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "River Ridge High School",
+      "eventName": "Business Plan - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 7",
+      "participants": [
+        "River Clark",
+        "Alexander Gross",
+        "Shane Nguyen"
+      ],
+      "startTime": "2026-04-23T08:54:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:51 AM",
+      "performTime": "8:54 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Skyline High School",
+      "eventName": "Business Plan - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 7",
+      "participants": [
+        "Arnav Gollapally",
+        "Amaye Jain",
+        "Sidharth Shyam"
+      ],
+      "startTime": "2026-04-23T09:11:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:08 AM",
+      "performTime": "9:11 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Odessa High School",
+      "eventName": "Business Plan - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 7",
+      "participants": [
+        "Leah Claassen",
+        "Leah Iverson"
+      ],
+      "startTime": "2026-04-23T09:28:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:25 AM",
+      "performTime": "9:28 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Walla Walla High School",
+      "eventName": "Business Plan - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 7",
+      "participants": [
+        "Eli Bona",
+        "Hayes Hendley"
+      ],
+      "startTime": "2026-04-23T09:45:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:42 AM",
+      "performTime": "9:45 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "University High School",
+      "eventName": "Business Plan - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 7",
+      "participants": [
+        "Tristan Hills",
+        "Carson Keeney"
+      ],
+      "startTime": "2026-04-23T10:08:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:05 AM",
+      "performTime": "10:08 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Fife High School",
+      "eventName": "Business Plan - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 7",
+      "participants": [
+        "Joel Frimpong",
+        "Chloe Lee"
+      ],
+      "startTime": "2026-04-23T10:25:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:22 AM",
+      "performTime": "10:25 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Skyline High School",
+      "eventName": "Business Plan - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 7",
+      "participants": [
+        "Ayush Agarwal",
+        "Dhir Goosari",
+        "Neil Shah"
+      ],
+      "startTime": "2026-04-23T10:42:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:39 AM",
+      "performTime": "10:42 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Business Plan - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 7",
+      "participants": [
+        "Rayan Alam",
+        "Ruhaan Sidhu",
+        "Vihaan Singh"
+      ],
+      "startTime": "2026-04-23T10:59:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:56 AM",
+      "performTime": "10:59 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "STEM High School",
+      "eventName": "Business Plan - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 7",
+      "participants": [
+        "Richa Badi",
+        "Diya Balaji"
+      ],
+      "startTime": "2026-04-23T11:16:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:13 AM",
+      "performTime": "11:16 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Business Plan - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 7",
+      "participants": [
+        "Anushree Gupta",
+        "Srianvika Siram"
+      ],
+      "startTime": "2026-04-23T11:33:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:30 AM",
+      "performTime": "11:33 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "STEM High School",
+      "eventName": "Business Plan - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 7",
+      "participants": [
+        "Raehan Baliga",
+        "Vihaan Fadnavis",
+        "Rajvir Mishra"
+      ],
+      "startTime": "2026-04-23T11:50:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:47 AM",
+      "performTime": "11:50 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Inglemoor High School",
+      "eventName": "Business Plan - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 7",
+      "participants": [
+        "Clover Ellenberg-Stoa",
+        "Ely Lee",
+        "Hanna Nguyen"
+      ],
+      "startTime": "2026-04-23T12:07:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "12:04 PM",
+      "performTime": "12:07 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "STEM High School",
+      "eventName": "Career Portfolio - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 8",
+      "participants": [
+        "Rhea Singh"
+      ],
+      "startTime": "2026-04-23T08:33:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:30 AM",
+      "performTime": "8:33 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "University High School",
+      "eventName": "Career Portfolio - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 8",
+      "participants": [
+        "Sindhu Surapaneni"
+      ],
+      "startTime": "2026-04-23T08:50:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:47 AM",
+      "performTime": "8:50 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "STEM High School",
+      "eventName": "Career Portfolio - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 8",
+      "participants": [
+        "Varshini Hari"
+      ],
+      "startTime": "2026-04-23T09:07:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:04 AM",
+      "performTime": "9:07 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Castle Rock High School",
+      "eventName": "Career Portfolio - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 8",
+      "participants": [
+        "Abigail Moore"
+      ],
+      "startTime": "2026-04-23T09:24:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:21 AM",
+      "performTime": "9:24 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Holy Names Academy",
+      "eventName": "Career Portfolio - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 8",
+      "participants": [
+        "Kayla Wijesekera"
+      ],
+      "startTime": "2026-04-23T09:41:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:38 AM",
+      "performTime": "9:41 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Liberty High School",
+      "eventName": "Career Portfolio - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 8",
+      "participants": [
+        "Jordyn Jeske"
+      ],
+      "startTime": "2026-04-23T09:58:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:55 AM",
+      "performTime": "9:58 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Career Portfolio - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 8",
+      "participants": [
+        "Alisa Kyrychenko"
+      ],
+      "startTime": "2026-04-23T10:21:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:18 AM",
+      "performTime": "10:21 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "STEM High School",
+      "eventName": "Career Portfolio - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 8",
+      "participants": [
+        "Shravan Mahesh Kumar"
+      ],
+      "startTime": "2026-04-23T10:38:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:35 AM",
+      "performTime": "10:38 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Davenport High School",
+      "eventName": "Career Portfolio - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 8",
+      "participants": [
+        "Clare Lathrop"
+      ],
+      "startTime": "2026-04-23T10:55:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:52 AM",
+      "performTime": "10:55 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Oroville High School",
+      "eventName": "Career Portfolio - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 8",
+      "participants": [
+        "Crystal Nemecio"
+      ],
+      "startTime": "2026-04-23T11:12:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:09 AM",
+      "performTime": "11:12 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Career Portfolio - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 8",
+      "participants": [
+        "Sneha Nandkeolyar"
+      ],
+      "startTime": "2026-04-23T11:29:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:26 AM",
+      "performTime": "11:29 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Marysville Getchell High School",
+      "eventName": "Career Portfolio - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 8",
+      "participants": [
+        "Leilani Okiyama"
+      ],
+      "startTime": "2026-04-23T11:46:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:43 AM",
+      "performTime": "11:46 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Stanwood High School",
+      "eventName": "Computer Game & Simulation Programming - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 9",
+      "participants": [
+        "Drew Mccullough"
+      ],
+      "startTime": "2026-04-23T08:03:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:00 AM",
+      "performTime": "8:03 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "STEM High School",
+      "eventName": "Computer Game & Simulation Programming - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 9",
+      "participants": [
+        "Jai Bindlish",
+        "Aashrith Pisupati",
+        "Pragyan Singh"
+      ],
+      "startTime": "2026-04-23T08:20:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:17 AM",
+      "performTime": "8:20 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Cedarcrest High School",
+      "eventName": "Computer Game & Simulation Programming - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 9",
+      "participants": [
+        "Mayukh Gattu",
+        "Naitik Tiwari"
+      ],
+      "startTime": "2026-04-23T08:37:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:34 AM",
+      "performTime": "8:37 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Lynden High School",
+      "eventName": "Computer Game & Simulation Programming - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 9",
+      "participants": [
+        "Declan Hurley",
+        "Kase Namminga",
+        "Caleb Rus"
+      ],
+      "startTime": "2026-04-23T08:54:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:51 AM",
+      "performTime": "8:54 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Computer Game & Simulation Programming - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 9",
+      "participants": [
+        "Abhinav Iyer",
+        "Srivats Iyer",
+        "Aryaman Rao"
+      ],
+      "startTime": "2026-04-23T09:11:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:08 AM",
+      "performTime": "9:11 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Columbia Basin Technical Skills Ctr - Tri",
+      "eventName": "Computer Game & Simulation Programming - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 9",
+      "participants": [
+        "North Central",
+        "Hailey Harper",
+        "Alexander Meyer"
+      ],
+      "startTime": "2026-04-23T09:28:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:25 AM",
+      "performTime": "9:28 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Computer Game & Simulation Programming - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 9",
+      "participants": [
+        "Ashrita Saravanan Vaishnavi",
+        "Elina Shah"
+      ],
+      "startTime": "2026-04-23T09:45:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:42 AM",
+      "performTime": "9:45 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Columbia Basin Technical Skills Ctr - Tri",
+      "eventName": "Computer Game & Simulation Programming - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 9",
+      "participants": [
+        "North Central",
+        "Connor McKenner",
+        "Nathan Sisson",
+        "Kayana Zamora"
+      ],
+      "startTime": "2026-04-23T10:02:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:59 AM",
+      "performTime": "10:02 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Sehome High School",
+      "eventName": "Computer Game & Simulation Programming - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 9",
+      "participants": [
+        "Luke Norman",
+        "Benjamin Zou"
+      ],
+      "startTime": "2026-04-23T10:25:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:22 AM",
+      "performTime": "10:25 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Castle Rock High School",
+      "eventName": "Computer Game & Simulation Programming - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 9",
+      "participants": [
+        "Sam Dunnavant",
+        "Wyatt Moore"
+      ],
+      "startTime": "2026-04-23T10:42:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:39 AM",
+      "performTime": "10:42 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Woodinville High School",
+      "eventName": "Computer Game & Simulation Programming - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 9",
+      "participants": [
+        "Aadi Shah"
+      ],
+      "startTime": "2026-04-23T10:59:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:56 AM",
+      "performTime": "10:59 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Bothell High School",
+      "eventName": "Computer Game & Simulation Programming - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 9",
+      "participants": [
+        "Yazad Hilloowala"
+      ],
+      "startTime": "2026-04-23T11:16:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:13 AM",
+      "performTime": "11:16 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "STEM High School",
+      "eventName": "Data Analysis - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 10",
+      "participants": [
+        "Rhea Singh",
+        "Sophie Zhao"
+      ],
+      "startTime": "2026-04-23T08:03:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:00 AM",
+      "performTime": "8:03 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Bainbridge High School",
+      "eventName": "Data Analysis - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 10",
+      "participants": [
+        "Joah Blair",
+        "Leland Hilgers"
+      ],
+      "startTime": "2026-04-23T08:20:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:17 AM",
+      "performTime": "8:20 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Skyline High School",
+      "eventName": "Data Analysis - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 10",
+      "participants": [
+        "Joaquin Calle",
+        "Aryan Sharma"
+      ],
+      "startTime": "2026-04-23T08:37:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:34 AM",
+      "performTime": "8:37 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Davenport High School",
+      "eventName": "Data Analysis - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 10",
+      "participants": [
+        "McCall Knopp",
+        "McGuire Knopp",
+        "John Wagner"
+      ],
+      "startTime": "2026-04-23T08:54:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:51 AM",
+      "performTime": "8:54 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Henry M. Jackson High School",
+      "eventName": "Data Analysis - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 10",
+      "participants": [
+        "Srinika Panthula",
+        "Aathira Thirukkumaran"
+      ],
+      "startTime": "2026-04-23T09:11:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:08 AM",
+      "performTime": "9:11 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Thurston High School",
+      "eventName": "Data Analysis - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 10",
+      "participants": [
+        "Toan Bui",
+        "Devon Demling",
+        "Anthony Pham"
+      ],
+      "startTime": "2026-04-23T09:28:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:25 AM",
+      "performTime": "9:28 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "STEM High School",
+      "eventName": "Data Analysis - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 10",
+      "participants": [
+        "Itai Shaked",
+        "Pragyan Singh",
+        "Siddharth Sreekanth"
+      ],
+      "startTime": "2026-04-23T09:51:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:48 AM",
+      "performTime": "9:51 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Davenport High School",
+      "eventName": "Data Analysis - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 10",
+      "participants": [
+        "Malachi Hoff"
+      ],
+      "startTime": "2026-04-23T10:08:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:05 AM",
+      "performTime": "10:08 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Data Analysis - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 10",
+      "participants": [
+        "Sujan Saravanan",
+        "Ruhaan Sidhu",
+        "Vihaan Singh"
+      ],
+      "startTime": "2026-04-23T10:25:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:22 AM",
+      "performTime": "10:25 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Skyline High School",
+      "eventName": "Data Analysis - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 10",
+      "participants": [
+        "Ahilya Dhole",
+        "Nissi Vangalapudi"
+      ],
+      "startTime": "2026-04-23T10:42:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:39 AM",
+      "performTime": "10:42 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Data Analysis - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 10",
+      "participants": [
+        "Vanshika Kalluri",
+        "Sreshta Namala",
+        "Nishtha Priya"
+      ],
+      "startTime": "2026-04-23T10:59:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:56 AM",
+      "performTime": "10:59 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Data Analysis - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 10",
+      "participants": [
+        "Shaurya Gera",
+        "Sprihi Sharma"
+      ],
+      "startTime": "2026-04-23T11:16:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:13 AM",
+      "performTime": "11:16 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Thurston High School",
+      "eventName": "Digital Animation - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 11",
+      "participants": [
+        "Aspen Bermensolo"
+      ],
+      "startTime": "2026-04-23T08:33:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:30 AM",
+      "performTime": "8:33 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Inglemoor High School",
+      "eventName": "Digital Animation - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 11",
+      "participants": [
+        "Adah Goel"
+      ],
+      "startTime": "2026-04-23T08:50:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:47 AM",
+      "performTime": "8:50 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Fife High School",
+      "eventName": "Digital Animation - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 11",
+      "participants": [
+        "Zane Gunter",
+        "Brandon Xie"
+      ],
+      "startTime": "2026-04-23T09:07:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:04 AM",
+      "performTime": "9:07 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Union High School",
+      "eventName": "Digital Animation - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 11",
+      "participants": [
+        "Camille Huang",
+        "Annie Lin"
+      ],
+      "startTime": "2026-04-23T09:24:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:21 AM",
+      "performTime": "9:24 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Squalicum High School",
+      "eventName": "Digital Animation - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 11",
+      "participants": [
+        "Berkeley Davis"
+      ],
+      "startTime": "2026-04-23T09:41:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:38 AM",
+      "performTime": "9:41 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Pe Ell High School",
+      "eventName": "Digital Animation - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 11",
+      "participants": [
+        "Oriya Busey",
+        "Brennan Collins",
+        "Peyton Pilz"
+      ],
+      "startTime": "2026-04-23T09:58:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:55 AM",
+      "performTime": "9:58 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Toutle Lake High School",
+      "eventName": "Digital Animation - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 11",
+      "participants": [
+        "Alida Gardner"
+      ],
+      "startTime": "2026-04-23T10:21:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:18 AM",
+      "performTime": "10:21 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Woodinville High School",
+      "eventName": "Digital Animation - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 11",
+      "participants": [
+        "Emiliano Rodriguez",
+        "Dheesha Sriram",
+        "Ava Veerapuram"
+      ],
+      "startTime": "2026-04-23T10:38:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:35 AM",
+      "performTime": "10:38 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Digital Animation - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 11",
+      "participants": [
+        "Oviya Raja"
+      ],
+      "startTime": "2026-04-23T10:55:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:52 AM",
+      "performTime": "10:55 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "STEM High School",
+      "eventName": "Digital Animation - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 11",
+      "participants": [
+        "Anoushka Gharat",
+        "Anastasiya Netchaeva",
+        "Anvie Sana"
+      ],
+      "startTime": "2026-04-23T11:12:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:09 AM",
+      "performTime": "11:12 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Wilbur High School",
+      "eventName": "Digital Animation - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 11",
+      "participants": [
+        "Anna Dreger"
+      ],
+      "startTime": "2026-04-23T11:29:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:26 AM",
+      "performTime": "11:29 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Holy Names Academy",
+      "eventName": "Digital Animation - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 11",
+      "participants": [
+        "Ellie Follis"
+      ],
+      "startTime": "2026-04-23T11:46:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:43 AM",
+      "performTime": "11:46 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Union High School",
+      "eventName": "Digital Video Production - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 12",
+      "participants": [
+        "William Lu",
+        "Daniel Tsay",
+        "Joseph Wei"
+      ],
+      "startTime": "2026-04-23T08:33:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:30 AM",
+      "performTime": "8:33 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Nooksack Valley High School",
+      "eventName": "Digital Video Production - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 12",
+      "participants": [
+        "Chase Hughes",
+        "Jacqueline Rodriguez"
+      ],
+      "startTime": "2026-04-23T08:50:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:47 AM",
+      "performTime": "8:50 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "River Ridge High School",
+      "eventName": "Digital Video Production - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 12",
+      "participants": [
+        "Jaran Balela",
+        "Maximus Mercado",
+        "Whistler Turla"
+      ],
+      "startTime": "2026-04-23T09:07:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:04 AM",
+      "performTime": "9:07 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Okanogan High School",
+      "eventName": "Digital Video Production - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 12",
+      "participants": [
+        "Finn Beery"
+      ],
+      "startTime": "2026-04-23T09:24:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:21 AM",
+      "performTime": "9:24 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Digital Video Production - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 12",
+      "participants": [
+        "Sapta Dey",
+        "Kavya Subramanian"
+      ],
+      "startTime": "2026-04-23T09:41:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:38 AM",
+      "performTime": "9:41 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Castle Rock High School",
+      "eventName": "Digital Video Production - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 12",
+      "participants": [
+        "Abigail Moore"
+      ],
+      "startTime": "2026-04-23T09:58:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:55 AM",
+      "performTime": "9:58 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Davenport High School",
+      "eventName": "Digital Video Production - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 12",
+      "participants": [
+        "Rebecca Choate",
+        "Anna Ordorica"
+      ],
+      "startTime": "2026-04-23T10:21:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:18 AM",
+      "performTime": "10:21 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Digital Video Production - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 12",
+      "participants": [
+        "Keyan Shah"
+      ],
+      "startTime": "2026-04-23T10:38:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:35 AM",
+      "performTime": "10:38 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "STEM High School",
+      "eventName": "Digital Video Production - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 12",
+      "participants": [
+        "Harshini Kondaparthy",
+        "Kavya Shenoy"
+      ],
+      "startTime": "2026-04-23T10:55:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:52 AM",
+      "performTime": "10:55 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "College Place High School",
+      "eventName": "Digital Video Production - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 12",
+      "participants": [
+        "McKenzie Catlett"
+      ],
+      "startTime": "2026-04-23T11:12:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:09 AM",
+      "performTime": "11:12 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Ridgeline High School",
+      "eventName": "Digital Video Production - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 12",
+      "participants": [
+        "Sofia Xavier"
+      ],
+      "startTime": "2026-04-23T11:29:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:26 AM",
+      "performTime": "11:29 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Digital Video Production - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 12",
+      "participants": [
+        "Joel Bijoy",
+        "Rishik Birru"
+      ],
+      "startTime": "2026-04-23T11:46:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:43 AM",
+      "performTime": "11:46 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Squalicum High School",
+      "eventName": "Event Planning - Final - Presentation",
+      "location": "Davenport Grand - Room 2",
+      "participants": [
+        "Peyton Horst",
+        "Ruby Stewart"
+      ],
+      "startTime": "2026-04-23T08:03:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:00 AM",
+      "performTime": "8:03 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Ridgeline High School",
+      "eventName": "Event Planning - Final - Presentation",
+      "location": "Davenport Grand - Room 2",
+      "participants": [
+        "Sienna Shadd"
+      ],
+      "startTime": "2026-04-23T08:20:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:17 AM",
+      "performTime": "8:20 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "STEM High School",
+      "eventName": "Event Planning - Final - Presentation",
+      "location": "Davenport Grand - Room 2",
+      "participants": [
+        "Richa Badi",
+        "Samanyu Ezhilarasan"
+      ],
+      "startTime": "2026-04-23T08:37:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:34 AM",
+      "performTime": "8:37 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "STEM High School",
+      "eventName": "Event Planning - Final - Presentation",
+      "location": "Davenport Grand - Room 2",
+      "participants": [
+        "JD Kim",
+        "Tyler Vanevoort"
+      ],
+      "startTime": "2026-04-23T08:54:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:51 AM",
+      "performTime": "8:54 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Eastmont High School",
+      "eventName": "Event Planning - Final - Presentation",
+      "location": "Davenport Grand - Room 2",
+      "participants": [
+        "Zaylie Doll",
+        "Jaylee Hix",
+        "Isabella Schultz"
+      ],
+      "startTime": "2026-04-23T09:11:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:08 AM",
+      "performTime": "9:11 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Freeman High School",
+      "eventName": "Event Planning - Final - Presentation",
+      "location": "Davenport Grand - Room 2",
+      "participants": [
+        "Avery Boswell"
+      ],
+      "startTime": "2026-04-23T09:32:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:29 AM",
+      "performTime": "9:32 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Woodinville High School",
+      "eventName": "Event Planning - Final - Presentation",
+      "location": "Davenport Grand - Room 2",
+      "participants": [
+        "Caroline Kovacich",
+        "Luna Vance",
+        "Anushka Vooradi"
+      ],
+      "startTime": "2026-04-23T09:49:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:46 AM",
+      "performTime": "9:49 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Event Planning - Final - Presentation",
+      "location": "Davenport Grand - Room 2",
+      "participants": [
+        "Yasha Gatla",
+        "Ayla Tamber"
+      ],
+      "startTime": "2026-04-23T10:06:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:03 AM",
+      "performTime": "10:06 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Sequim High School",
+      "eventName": "Event Planning - Final - Presentation",
+      "location": "Davenport Grand - Room 2",
+      "participants": [
+        "Kaitlyn Carpenter",
+        "Sophia Rhynes"
+      ],
+      "startTime": "2026-04-23T10:23:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:20 AM",
+      "performTime": "10:23 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Bothell High School",
+      "eventName": "Event Planning - Final - Presentation",
+      "location": "Davenport Grand - Room 2",
+      "participants": [
+        "Aishani Agrawal",
+        "Sanika Kabbur"
+      ],
+      "startTime": "2026-04-23T10:40:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:37 AM",
+      "performTime": "10:40 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Inglemoor High School",
+      "eventName": "Event Planning - Final - Presentation",
+      "location": "Davenport Grand - Room 2",
+      "participants": [
+        "Siena Newton",
+        "Jackson Sliger"
+      ],
+      "startTime": "2026-04-23T11:01:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:58 AM",
+      "performTime": "11:01 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Liberty High School",
+      "eventName": "Event Planning - Final - Presentation",
+      "location": "Davenport Grand - Room 2",
+      "participants": [
+        "Audrey Anderson",
+        "Claire Culley",
+        "Kaylee Neeley"
+      ],
+      "startTime": "2026-04-23T11:18:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:15 AM",
+      "performTime": "11:18 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Newport High School",
+      "eventName": "Event Planning - Final - Presentation",
+      "location": "Davenport Grand - Room 2",
+      "participants": [
+        "Marisa Dahl",
+        "Emmalee Doughty"
+      ],
+      "startTime": "2026-04-23T11:35:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:32 AM",
+      "performTime": "11:35 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Oroville High School",
+      "eventName": "Event Planning - Final - Presentation",
+      "location": "Davenport Grand - Room 2",
+      "participants": [
+        "Leahna Valdez"
+      ],
+      "startTime": "2026-04-23T11:52:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:49 AM",
+      "performTime": "11:52 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Woodinville High School",
+      "eventName": "Event Planning - Final - Presentation",
+      "location": "Davenport Grand - Room 2",
+      "participants": [
+        "Seneca Cipra",
+        "Maya Thaman"
+      ],
+      "startTime": "2026-04-23T12:09:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "12:06 PM",
+      "performTime": "12:09 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Cheney High School",
+      "eventName": "Financial Planning - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 64",
+      "participants": [
+        "Juan Tercero"
+      ],
+      "startTime": "2026-04-23T08:33:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:30 AM",
+      "performTime": "8:33 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Touchet High School",
+      "eventName": "Financial Planning - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 64",
+      "participants": [
+        "Holly Kolb"
+      ],
+      "startTime": "2026-04-23T08:50:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:47 AM",
+      "performTime": "8:50 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Woodinville High School",
+      "eventName": "Financial Planning - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 64",
+      "participants": [
+        "Ariana Pirvu",
+        "Riddhi Sangani",
+        "Roma Upalekar"
+      ],
+      "startTime": "2026-04-23T09:07:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:04 AM",
+      "performTime": "9:07 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Anacortes High School",
+      "eventName": "Financial Planning - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 64",
+      "participants": [
+        "Juniper Diamond",
+        "Elin Hall",
+        "Madeline Wray"
+      ],
+      "startTime": "2026-04-23T09:24:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:21 AM",
+      "performTime": "9:24 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Financial Planning - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 64",
+      "participants": [
+        "Anna Abraham",
+        "Srianshi Samantaray"
+      ],
+      "startTime": "2026-04-23T09:41:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:38 AM",
+      "performTime": "9:41 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Financial Planning - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 64",
+      "participants": [
+        "Nandini Komma",
+        "Komalika Mamidi"
+      ],
+      "startTime": "2026-04-23T09:58:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:55 AM",
+      "performTime": "9:58 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Inglemoor High School",
+      "eventName": "Financial Planning - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 64",
+      "participants": [
+        "Kirsten Hau",
+        "Amelia Pletosu",
+        "Ella Tulanon"
+      ],
+      "startTime": "2026-04-23T10:21:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:18 AM",
+      "performTime": "10:21 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "STEM High School",
+      "eventName": "Financial Planning - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 64",
+      "participants": [
+        "Himanshu Dasari",
+        "Jaskirat Singh"
+      ],
+      "startTime": "2026-04-23T10:38:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:35 AM",
+      "performTime": "10:38 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Bothell High School",
+      "eventName": "Financial Planning - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 64",
+      "participants": [
+        "Journey Jensen",
+        "Lauren Ma"
+      ],
+      "startTime": "2026-04-23T10:55:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:52 AM",
+      "performTime": "10:55 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Henry M. Jackson High School",
+      "eventName": "Financial Planning - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 64",
+      "participants": [
+        "Pratik Parida",
+        "Ryan Srivastava"
+      ],
+      "startTime": "2026-04-23T11:12:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:09 AM",
+      "performTime": "11:12 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Bothell High School",
+      "eventName": "Financial Planning - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 64",
+      "participants": [
+        "Suchet Chava",
+        "Lucian Fong",
+        "Devon Lowe-Nilsen"
+      ],
+      "startTime": "2026-04-23T11:29:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:26 AM",
+      "performTime": "11:29 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Bothell High School",
+      "eventName": "Financial Planning - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 64",
+      "participants": [
+        "Karsu Pogge",
+        "Clare Prata"
+      ],
+      "startTime": "2026-04-23T11:46:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:43 AM",
+      "performTime": "11:46 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Snohomish High School",
+      "eventName": "Financial Statement Analysis - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 66",
+      "participants": [
+        "Ayaan Shariff"
+      ],
+      "startTime": "2026-04-23T13:03:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "1:00 PM",
+      "performTime": "1:03 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Skyline High School",
+      "eventName": "Financial Statement Analysis - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 66",
+      "participants": [
+        "Kruthik Ankam",
+        "Jovin Desai",
+        "Darsh Paul Chowdhury"
+      ],
+      "startTime": "2026-04-23T13:20:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "1:17 PM",
+      "performTime": "1:20 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Odessa High School",
+      "eventName": "Financial Statement Analysis - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 66",
+      "participants": [
+        "Aiden Schmierer",
+        "Kaleb Walter",
+        "Hudson Watson"
+      ],
+      "startTime": "2026-04-23T13:37:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "1:34 PM",
+      "performTime": "1:37 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Woodinville High School",
+      "eventName": "Financial Statement Analysis - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 66",
+      "participants": [
+        "Ariana Pirvu",
+        "Catarina Pirvu"
+      ],
+      "startTime": "2026-04-23T13:54:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "1:51 PM",
+      "performTime": "1:54 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "STEM High School",
+      "eventName": "Financial Statement Analysis - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 66",
+      "participants": [
+        "Jai Bindlish",
+        "Veda Hiremath"
+      ],
+      "startTime": "2026-04-23T14:11:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "2:08 PM",
+      "performTime": "2:11 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Woodinville High School",
+      "eventName": "Financial Statement Analysis - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 66",
+      "participants": [
+        "Risha Jadhav",
+        "Charlie Lambert",
+        "Ian Miller"
+      ],
+      "startTime": "2026-04-23T14:28:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "2:25 PM",
+      "performTime": "2:28 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "STEM High School",
+      "eventName": "Financial Statement Analysis - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 66",
+      "participants": [
+        "Varun Hari",
+        "Sriram Marasanapalle-kalle",
+        "Suvan Pal"
+      ],
+      "startTime": "2026-04-23T14:51:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "2:48 PM",
+      "performTime": "2:51 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Financial Statement Analysis - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 66",
+      "participants": [
+        "Anusha Date"
+      ],
+      "startTime": "2026-04-23T15:08:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "3:05 PM",
+      "performTime": "3:08 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "International Community School",
+      "eventName": "Financial Statement Analysis - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 66",
+      "participants": [
+        "Alex Andriychenko",
+        "Rashid Arrabi",
+        "Steven Xia"
+      ],
+      "startTime": "2026-04-23T15:25:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "3:22 PM",
+      "performTime": "3:25 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Thurston High School",
+      "eventName": "Financial Statement Analysis - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 66",
+      "participants": [
+        "Isabella Matriotti"
+      ],
+      "startTime": "2026-04-23T15:42:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "3:39 PM",
+      "performTime": "3:42 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Inglemoor High School",
+      "eventName": "Financial Statement Analysis - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 66",
+      "participants": [
+        "Brylee Ross",
+        "Valerie Yang"
+      ],
+      "startTime": "2026-04-23T15:59:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "3:56 PM",
+      "performTime": "3:59 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Henry M. Jackson High School",
+      "eventName": "Financial Statement Analysis - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 66",
+      "participants": [
+        "Madhav Mavila",
+        "Aaditya Oberoi",
+        "Mukund Srinivasan Suresh"
+      ],
+      "startTime": "2026-04-23T16:16:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "4:13 PM",
+      "performTime": "4:16 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Inglemoor High School",
+      "eventName": "Future Business Educator - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 65",
+      "participants": [
+        "Isaac Yu"
+      ],
+      "startTime": "2026-04-23T08:33:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:30 AM",
+      "performTime": "8:33 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Future Business Educator - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 65",
+      "participants": [
+        "Benjamin Xavier"
+      ],
+      "startTime": "2026-04-23T08:50:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:47 AM",
+      "performTime": "8:50 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Yelm High School",
+      "eventName": "Future Business Educator - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 65",
+      "participants": [
+        "Rebecca Rankin"
+      ],
+      "startTime": "2026-04-23T09:07:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:04 AM",
+      "performTime": "9:07 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Washougal High School",
+      "eventName": "Future Business Educator - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 65",
+      "participants": [
+        "Liberty Andelman"
+      ],
+      "startTime": "2026-04-23T09:24:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:21 AM",
+      "performTime": "9:24 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Woodinville High School",
+      "eventName": "Future Business Educator - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 65",
+      "participants": [
+        "Jerry Xu"
+      ],
+      "startTime": "2026-04-23T09:41:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:38 AM",
+      "performTime": "9:41 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "STEM High School",
+      "eventName": "Future Business Educator - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 65",
+      "participants": [
+        "Nandini Acharya"
+      ],
+      "startTime": "2026-04-23T09:58:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:55 AM",
+      "performTime": "9:58 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Woodinville High School",
+      "eventName": "Future Business Educator - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 65",
+      "participants": [
+        "Roma Upalekar"
+      ],
+      "startTime": "2026-04-23T10:21:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:18 AM",
+      "performTime": "10:21 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Bothell High School",
+      "eventName": "Future Business Educator - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 65",
+      "participants": [
+        "Aadyaa Arora"
+      ],
+      "startTime": "2026-04-23T10:38:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:35 AM",
+      "performTime": "10:38 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "College Place High School",
+      "eventName": "Future Business Educator - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 65",
+      "participants": [
+        "Samantha Cardenas"
+      ],
+      "startTime": "2026-04-23T10:55:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:52 AM",
+      "performTime": "10:55 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "International Community School",
+      "eventName": "Future Business Educator - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 65",
+      "participants": [
+        "Shachar Shapira"
+      ],
+      "startTime": "2026-04-23T11:12:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:09 AM",
+      "performTime": "11:12 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Thurston High School",
+      "eventName": "Future Business Educator - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 65",
+      "participants": [
+        "Melia Sabas"
+      ],
+      "startTime": "2026-04-23T11:29:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:26 AM",
+      "performTime": "11:29 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Mount Vernon High School",
+      "eventName": "Future Business Educator - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 65",
+      "participants": [
+        "Victor Quiroz-Palma"
+      ],
+      "startTime": "2026-04-23T11:46:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:43 AM",
+      "performTime": "11:46 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Asotin High School",
+      "eventName": "Future Business Leader - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 67",
+      "participants": [
+        "Riddick Wirthlin"
+      ],
+      "startTime": "2026-04-23T13:00:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "1:00 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Mountain View High School",
+      "eventName": "Future Business Leader - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 67",
+      "participants": [
+        "Daisy Conway"
+      ],
+      "startTime": "2026-04-23T13:14:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "1:14 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Heritage High School",
+      "eventName": "Future Business Leader - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 67",
+      "participants": [
+        "Justin Levin"
+      ],
+      "startTime": "2026-04-23T13:28:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "1:28 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "International Community School",
+      "eventName": "Future Business Leader - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 67",
+      "participants": [
+        "Rosha Roudaki"
+      ],
+      "startTime": "2026-04-23T13:42:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "1:42 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Woodinville High School",
+      "eventName": "Future Business Leader - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 67",
+      "participants": [
+        "Risha Jadhav"
+      ],
+      "startTime": "2026-04-23T14:02:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "2:02 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Walla Walla High School",
+      "eventName": "Future Business Leader - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 67",
+      "participants": [
+        "Mica Hartman"
+      ],
+      "startTime": "2026-04-23T14:16:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "2:16 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Woodinville High School",
+      "eventName": "Future Business Leader - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 67",
+      "participants": [
+        "Guy O'Connell"
+      ],
+      "startTime": "2026-04-23T14:30:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "2:30 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Toutle Lake High School",
+      "eventName": "Future Business Leader - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 67",
+      "participants": [
+        "Deagan Martinsen"
+      ],
+      "startTime": "2026-04-23T14:44:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "2:44 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Spokane Valley High School",
+      "eventName": "Future Business Leader - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 67",
+      "participants": [
+        "Alexis Reyes"
+      ],
+      "startTime": "2026-04-23T15:04:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "3:04 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "STEM High School",
+      "eventName": "Future Business Leader - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 67",
+      "participants": [
+        "Aanya Atwal"
+      ],
+      "startTime": "2026-04-23T15:18:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "3:18 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Mount Vernon High School",
+      "eventName": "Future Business Leader - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 67",
+      "participants": [
+        "Daniel Fernandez Santos"
+      ],
+      "startTime": "2026-04-23T15:32:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "3:32 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Manson Secondary School",
+      "eventName": "Future Business Leader - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 67",
+      "participants": [
+        "Isabella Aburto"
+      ],
+      "startTime": "2026-04-23T15:46:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "3:46 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Marysville Getchell High School",
+      "eventName": "Graphic Design - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 66",
+      "participants": [
+        "Isaiah Dart",
+        "Jonah Thomas",
+        "Yashasvi Ungarala"
+      ],
+      "startTime": "2026-04-23T08:03:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:00 AM",
+      "performTime": "8:03 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Ridgeline High School",
+      "eventName": "Graphic Design - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 66",
+      "participants": [
+        "Mylie Lau",
+        "Valeria Lievano Caballero"
+      ],
+      "startTime": "2026-04-23T08:20:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:17 AM",
+      "performTime": "8:20 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Davenport High School",
+      "eventName": "Graphic Design - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 66",
+      "participants": [
+        "Faith Bell",
+        "Chloe Hammond",
+        "Tatum Hupp"
+      ],
+      "startTime": "2026-04-23T08:37:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:34 AM",
+      "performTime": "8:37 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Spokane Valley Tech",
+      "eventName": "Graphic Design - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 66",
+      "participants": [
+        "Sophia Chay",
+        "Dakota Davis"
+      ],
+      "startTime": "2026-04-23T08:54:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:51 AM",
+      "performTime": "8:54 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Zillah High School",
+      "eventName": "Graphic Design - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 66",
+      "participants": [
+        "Makayla Charbonneau",
+        "Noemy Lara",
+        "Margaret Miller"
+      ],
+      "startTime": "2026-04-23T09:11:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:08 AM",
+      "performTime": "9:11 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Royal High School",
+      "eventName": "Graphic Design - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 66",
+      "participants": [
+        "Kamila Espino",
+        "Ashley Popoca"
+      ],
+      "startTime": "2026-04-23T09:32:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:29 AM",
+      "performTime": "9:32 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "International Community School",
+      "eventName": "Graphic Design - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 66",
+      "participants": [
+        "Grace Yu",
+        "Emily Zhang"
+      ],
+      "startTime": "2026-04-23T09:49:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:46 AM",
+      "performTime": "9:49 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Castle Rock High School",
+      "eventName": "Graphic Design - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 66",
+      "participants": [
+        "Phaedra Mathis"
+      ],
+      "startTime": "2026-04-23T10:06:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:03 AM",
+      "performTime": "10:06 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Graphic Design - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 66",
+      "participants": [
+        "Mahi Parikh",
+        "Saanvi Vijayvargiya"
+      ],
+      "startTime": "2026-04-23T10:23:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:20 AM",
+      "performTime": "10:23 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Zillah High School",
+      "eventName": "Graphic Design - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 66",
+      "participants": [
+        "Mckenzie Castilleja"
+      ],
+      "startTime": "2026-04-23T10:40:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:37 AM",
+      "performTime": "10:40 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "STEM High School",
+      "eventName": "Graphic Design - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 66",
+      "participants": [
+        "Ashley Davison",
+        "Alicia Lin"
+      ],
+      "startTime": "2026-04-23T11:01:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:58 AM",
+      "performTime": "11:01 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Ridgeline High School",
+      "eventName": "Graphic Design - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 66",
+      "participants": [
+        "Sloane Barrera",
+        "Brennan Mcdermott"
+      ],
+      "startTime": "2026-04-23T11:18:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:15 AM",
+      "performTime": "11:18 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Davenport High School",
+      "eventName": "Graphic Design - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 66",
+      "participants": [
+        "David Coriell"
+      ],
+      "startTime": "2026-04-23T11:35:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:32 AM",
+      "performTime": "11:35 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Inglemoor High School",
+      "eventName": "Graphic Design - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 66",
+      "participants": [
+        "Emma Chadwick",
+        "Alynnah Gao"
+      ],
+      "startTime": "2026-04-23T11:52:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:49 AM",
+      "performTime": "11:52 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "International Community School",
+      "eventName": "Graphic Design - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 66",
+      "participants": [
+        "Xuanyue Shang"
+      ],
+      "startTime": "2026-04-23T12:09:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "12:06 PM",
+      "performTime": "12:09 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Stanwood High School",
+      "eventName": "Introduction to Business Presentation - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 68",
+      "participants": [
+        "Blane Hildenbrand"
+      ],
+      "startTime": "2026-04-23T13:03:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "1:00 PM",
+      "performTime": "1:03 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Union High School",
+      "eventName": "Introduction to Business Presentation - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 68",
+      "participants": [
+        "Chloe Lee",
+        "Stoney Liu"
+      ],
+      "startTime": "2026-04-23T13:20:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "1:17 PM",
+      "performTime": "1:20 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Skyline High School",
+      "eventName": "Introduction to Business Presentation - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 68",
+      "participants": [
+        "Soham Pandey"
+      ],
+      "startTime": "2026-04-23T13:37:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "1:34 PM",
+      "performTime": "1:37 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "STEM High School",
+      "eventName": "Introduction to Business Presentation - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 68",
+      "participants": [
+        "Nikhil Patil",
+        "Alex Shibalov"
+      ],
+      "startTime": "2026-04-23T13:54:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "1:51 PM",
+      "performTime": "1:54 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Ridgeline High School",
+      "eventName": "Introduction to Business Presentation - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 68",
+      "participants": [
+        "Sahil Modha"
+      ],
+      "startTime": "2026-04-23T14:11:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "2:08 PM",
+      "performTime": "2:11 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Davenport High School",
+      "eventName": "Introduction to Business Presentation - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 68",
+      "participants": [
+        "Everett Prewitt",
+        "Fiona Strozyk",
+        "Paige Van Buren"
+      ],
+      "startTime": "2026-04-23T14:28:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "2:25 PM",
+      "performTime": "2:28 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Stanwood High School",
+      "eventName": "Introduction to Business Presentation - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 68",
+      "participants": [
+        "Sarah Ann Jacques"
+      ],
+      "startTime": "2026-04-23T14:51:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "2:48 PM",
+      "performTime": "2:51 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Introduction to Business Presentation - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 68",
+      "participants": [
+        "Samick Churi",
+        "Sujan Saravanan",
+        "Sankeerth Vallapureddy"
+      ],
+      "startTime": "2026-04-23T15:08:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "3:05 PM",
+      "performTime": "3:08 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Introduction to Business Presentation - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 68",
+      "participants": [
+        "Nandini Komma",
+        "Komalika Mamidi"
+      ],
+      "startTime": "2026-04-23T15:25:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "3:22 PM",
+      "performTime": "3:25 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Bothell High School",
+      "eventName": "Introduction to Business Presentation - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 68",
+      "participants": [
+        "Krishav Anand",
+        "Anson Bian",
+        "Jack Pickrell"
+      ],
+      "startTime": "2026-04-23T15:42:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "3:39 PM",
+      "performTime": "3:42 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Freeman High School",
+      "eventName": "Introduction to Business Presentation - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 68",
+      "participants": [
+        "Emma Dreyer",
+        "Nevaeh Eigenhuis",
+        "Michael Valente"
+      ],
+      "startTime": "2026-04-23T15:59:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "3:56 PM",
+      "performTime": "3:59 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Vashon High School",
+      "eventName": "Introduction to Business Presentation - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 68",
+      "participants": [
+        "Pierson Guenther",
+        "Cassius Requa"
+      ],
+      "startTime": "2026-04-23T16:16:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "4:13 PM",
+      "performTime": "4:16 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Skyline High School",
+      "eventName": "Introduction to Business Presentation - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 68",
+      "participants": [
+        "Ardra Arwin"
+      ],
+      "startTime": "2026-04-23T16:33:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "4:30 PM",
+      "performTime": "4:33 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Castle Rock High School",
+      "eventName": "Introduction to Business Presentation - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 68",
+      "participants": [
+        "Libby Ledford"
+      ],
+      "startTime": "2026-04-23T16:50:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "4:47 PM",
+      "performTime": "4:50 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Introduction to Business Presentation - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 68",
+      "participants": [
+        "Krithikha Bharathy - Mohan"
+      ],
+      "startTime": "2026-04-23T17:07:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "5:04 PM",
+      "performTime": "5:07 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Spokane Valley Tech",
+      "eventName": "Introduction to Programming - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 67",
+      "participants": [
+        "Melanie Coy",
+        "Lyric Santana"
+      ],
+      "startTime": "2026-04-23T08:33:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:30 AM",
+      "performTime": "8:33 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Henry M. Jackson High School",
+      "eventName": "Introduction to Programming - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 67",
+      "participants": [
+        "Dev Agarwal",
+        "Maanas Egamamidi",
+        "Harshil Sharma"
+      ],
+      "startTime": "2026-04-23T08:50:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:47 AM",
+      "performTime": "8:50 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Stanwood High School",
+      "eventName": "Introduction to Programming - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 67",
+      "participants": [
+        "Blane Hildenbrand",
+        "Drew Mccullough"
+      ],
+      "startTime": "2026-04-23T09:07:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:04 AM",
+      "performTime": "9:07 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Henry M. Jackson High School",
+      "eventName": "Introduction to Programming - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 67",
+      "participants": [
+        "Jose Gerald",
+        "Uday Kamboj",
+        "Vivaan Pillai"
+      ],
+      "startTime": "2026-04-23T09:24:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:21 AM",
+      "performTime": "9:24 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Introduction to Programming - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 67",
+      "participants": [
+        "Vedant Gopalan",
+        "Advaith Koushik",
+        "Aarav Sharma"
+      ],
+      "startTime": "2026-04-23T09:41:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:38 AM",
+      "performTime": "9:41 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Othello High School",
+      "eventName": "Introduction to Programming - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 67",
+      "participants": [
+        "Leonardo Corrales Orozco",
+        "Joseph Dominguez -camacho",
+        "Devonte Hubbard"
+      ],
+      "startTime": "2026-04-23T09:58:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:55 AM",
+      "performTime": "9:58 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Introduction to Programming - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 67",
+      "participants": [
+        "Shreya Battula",
+        "Shresta Srinivasa"
+      ],
+      "startTime": "2026-04-23T10:21:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:18 AM",
+      "performTime": "10:21 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Thurston High School",
+      "eventName": "Introduction to Programming - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 67",
+      "participants": [
+        "Faith Balajadia"
+      ],
+      "startTime": "2026-04-23T10:38:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:35 AM",
+      "performTime": "10:38 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Introduction to Programming - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 67",
+      "participants": [
+        "Yo-cheng Liao",
+        "Tanisha Shankpal"
+      ],
+      "startTime": "2026-04-23T10:55:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:52 AM",
+      "performTime": "10:55 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "STEM High School",
+      "eventName": "Introduction to Programming - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 67",
+      "participants": [
+        "Aadi Gupta",
+        "Samriddhi Kandaswamy"
+      ],
+      "startTime": "2026-04-23T11:12:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:09 AM",
+      "performTime": "11:12 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Introduction to Programming - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 67",
+      "participants": [
+        "Akshaya Nandigama"
+      ],
+      "startTime": "2026-04-23T11:29:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:26 AM",
+      "performTime": "11:29 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Stanwood High School",
+      "eventName": "Introduction to Programming - Final - Presentation",
+      "location": "Davenport Grand Ballroom - Station 67",
+      "participants": [
+        "Vivaswan Singh",
+        "Jonas Torset"
+      ],
+      "startTime": "2026-04-23T11:46:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:43 AM",
+      "performTime": "11:46 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "River Ridge High School",
+      "eventName": "Introduction to Public Speaking - Final - Performance",
+      "location": "Davenport Grand - Room 1",
+      "participants": [
+        "Iris Thomas"
+      ],
+      "startTime": "2026-04-23T13:00:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "1:00 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Davenport High School",
+      "eventName": "Introduction to Public Speaking - Final - Performance",
+      "location": "Davenport Grand - Room 1",
+      "participants": [
+        "Fiona Strozyk"
+      ],
+      "startTime": "2026-04-23T13:11:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "1:11 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Thurston High School",
+      "eventName": "Introduction to Public Speaking - Final - Performance",
+      "location": "Davenport Grand - Room 1",
+      "participants": [
+        "Razan Al-nuaimi"
+      ],
+      "startTime": "2026-04-23T13:22:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "1:22 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Junior Highs--Eastmont",
+      "eventName": "Introduction to Public Speaking - Final - Performance",
+      "location": "Davenport Grand - Room 1",
+      "participants": [
+        "Haven Hepner"
+      ],
+      "startTime": "2026-04-23T13:33:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "1:33 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Freeman High School",
+      "eventName": "Introduction to Public Speaking - Final - Performance",
+      "location": "Davenport Grand - Room 1",
+      "participants": [
+        "Emma Dreyer"
+      ],
+      "startTime": "2026-04-23T13:44:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "1:44 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Introduction to Public Speaking - Final - Performance",
+      "location": "Davenport Grand - Room 1",
+      "participants": [
+        "Samick Churi"
+      ],
+      "startTime": "2026-04-23T14:01:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "2:01 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Hockinson High School",
+      "eventName": "Introduction to Public Speaking - Final - Performance",
+      "location": "Davenport Grand - Room 1",
+      "participants": [
+        "Cameron Perez"
+      ],
+      "startTime": "2026-04-23T14:12:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "2:12 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Anacortes High School",
+      "eventName": "Introduction to Public Speaking - Final - Performance",
+      "location": "Davenport Grand - Room 1",
+      "participants": [
+        "Juniper Diamond"
+      ],
+      "startTime": "2026-04-23T14:23:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "2:23 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Castle Rock High School",
+      "eventName": "Introduction to Public Speaking - Final - Performance",
+      "location": "Davenport Grand - Room 1",
+      "participants": [
+        "Brynn White"
+      ],
+      "startTime": "2026-04-23T14:34:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "2:34 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Introduction to Public Speaking - Final - Performance",
+      "location": "Davenport Grand - Room 1",
+      "participants": [
+        "Dhriti Baireddy"
+      ],
+      "startTime": "2026-04-23T14:45:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "2:45 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Elma High School",
+      "eventName": "Introduction to Public Speaking - Final - Performance",
+      "location": "Davenport Grand - Room 1",
+      "participants": [
+        "Anthony Yanez-ortuno"
+      ],
+      "startTime": "2026-04-23T15:02:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "3:02 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Introduction to Public Speaking - Final - Performance",
+      "location": "Davenport Grand - Room 1",
+      "participants": [
+        "Ayushi Malla"
+      ],
+      "startTime": "2026-04-23T15:13:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "3:13 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Walla Walla High School",
+      "eventName": "Introduction to Social Media Strategy - Final - Performance",
+      "location": "Davenport Grand - Room 9",
+      "participants": [
+        "Anabella Car"
+      ],
+      "startTime": "2026-04-23T13:03:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "1:00 PM",
+      "performTime": "1:03 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Henry M. Jackson High School",
+      "eventName": "Introduction to Social Media Strategy - Final - Performance",
+      "location": "Davenport Grand - Room 9",
+      "participants": [
+        "Sri Satya Manasvini Chundru",
+        "Ishitha Guntupalli",
+        "Nilima Pahari"
+      ],
+      "startTime": "2026-04-23T13:20:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "1:17 PM",
+      "performTime": "1:20 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Introduction to Social Media Strategy - Final - Performance",
+      "location": "Davenport Grand - Room 9",
+      "participants": [
+        "Aarin Hatkhamkar",
+        "Maaya Ramesh",
+        "Shayantam Singh"
+      ],
+      "startTime": "2026-04-23T13:37:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "1:34 PM",
+      "performTime": "1:37 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "STEM High School",
+      "eventName": "Introduction to Social Media Strategy - Final - Performance",
+      "location": "Davenport Grand - Room 9",
+      "participants": [
+        "Adeline Wheeler"
+      ],
+      "startTime": "2026-04-23T13:54:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "1:51 PM",
+      "performTime": "1:54 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Davenport High School",
+      "eventName": "Introduction to Social Media Strategy - Final - Performance",
+      "location": "Davenport Grand - Room 9",
+      "participants": [
+        "Ruby Miranda",
+        "Fiona Strozyk",
+        "Paige Van Buren"
+      ],
+      "startTime": "2026-04-23T14:11:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "2:08 PM",
+      "performTime": "2:11 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Fife High School",
+      "eventName": "Introduction to Social Media Strategy - Final - Performance",
+      "location": "Davenport Grand - Room 9",
+      "participants": [
+        "Joel Frimpong"
+      ],
+      "startTime": "2026-04-23T14:28:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "2:25 PM",
+      "performTime": "2:28 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "International Community School",
+      "eventName": "Introduction to Social Media Strategy - Final - Performance",
+      "location": "Davenport Grand - Room 9",
+      "participants": [
+        "Michael Desilva",
+        "Ahaan Raman",
+        "Anshul Shankar"
+      ],
+      "startTime": "2026-04-23T14:45:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "2:42 PM",
+      "performTime": "2:45 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Liberty High School",
+      "eventName": "Introduction to Social Media Strategy - Final - Performance",
+      "location": "Davenport Grand - Room 9",
+      "participants": [
+        "Leslie Bothman",
+        "Rylee Omlin"
+      ],
+      "startTime": "2026-04-23T15:08:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "3:05 PM",
+      "performTime": "3:08 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Introduction to Social Media Strategy - Final - Performance",
+      "location": "Davenport Grand - Room 9",
+      "participants": [
+        "evelyn lee",
+        "Muskaan Mathur"
+      ],
+      "startTime": "2026-04-23T15:25:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "3:22 PM",
+      "performTime": "3:25 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Odessa High School",
+      "eventName": "Introduction to Social Media Strategy - Final - Performance",
+      "location": "Davenport Grand - Room 9",
+      "participants": [
+        "Crystal Devore",
+        "Aubrey Iverson",
+        "Paige Martin"
+      ],
+      "startTime": "2026-04-23T15:42:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "3:39 PM",
+      "performTime": "3:42 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Introduction to Social Media Strategy - Final - Performance",
+      "location": "Davenport Grand - Room 9",
+      "participants": [
+        "Vanshi Patel",
+        "Nayana Surisetti"
+      ],
+      "startTime": "2026-04-23T15:59:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "3:56 PM",
+      "performTime": "3:59 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Woodinville High School",
+      "eventName": "Introduction to Social Media Strategy - Final - Performance",
+      "location": "Davenport Grand - Room 9",
+      "participants": [
+        "Julia Burns",
+        "Aanya Sathuri"
+      ],
+      "startTime": "2026-04-23T16:16:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "4:13 PM",
+      "performTime": "4:16 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Mount Vernon High School",
+      "eventName": "Introduction to Social Media Strategy - Final - Performance",
+      "location": "Davenport Grand - Room 9",
+      "participants": [
+        "Annie Wu"
+      ],
+      "startTime": "2026-04-23T16:33:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "4:30 PM",
+      "performTime": "4:33 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Henry M. Jackson High School",
+      "eventName": "Introduction to Social Media Strategy - Final - Performance",
+      "location": "Davenport Grand - Room 9",
+      "participants": [
+        "Kashish Doshi"
+      ],
+      "startTime": "2026-04-23T16:50:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "4:47 PM",
+      "performTime": "4:50 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Introduction to Social Media Strategy - Final - Performance",
+      "location": "Davenport Grand - Room 9",
+      "participants": [
+        "Connor Huang",
+        "Reyansh Kuntawar"
+      ],
+      "startTime": "2026-04-23T17:07:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "5:04 PM",
+      "performTime": "5:07 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Davenport High School",
+      "eventName": "Job Interview - Final - Interview",
+      "location": "Davenport Grand Ballroom - Station 68",
+      "participants": [
+        "Josie Wynecoop"
+      ],
+      "startTime": "2026-04-23T08:30:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "8:30 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Davenport High School",
+      "eventName": "Job Interview - Final - Interview",
+      "location": "Davenport Grand Ballroom - Station 68",
+      "participants": [
+        "Beau Copenhaver"
+      ],
+      "startTime": "2026-04-23T08:44:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "8:44 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Stanwood High School",
+      "eventName": "Job Interview - Final - Interview",
+      "location": "Davenport Grand Ballroom - Station 68",
+      "participants": [
+        "Brooke Berry"
+      ],
+      "startTime": "2026-04-23T08:58:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "8:58 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Almira Coulee Hartline High School",
+      "eventName": "Job Interview - Final - Interview",
+      "location": "Davenport Grand Ballroom - Station 68",
+      "participants": [
+        "Lainee Baergen"
+      ],
+      "startTime": "2026-04-23T09:12:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "9:12 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Ritzville High School",
+      "eventName": "Job Interview - Final - Interview",
+      "location": "Davenport Grand Ballroom - Station 68",
+      "participants": [
+        "Beau Fode"
+      ],
+      "startTime": "2026-04-23T09:26:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "9:26 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Woodinville High School",
+      "eventName": "Job Interview - Final - Interview",
+      "location": "Davenport Grand Ballroom - Station 68",
+      "participants": [
+        "Vesna Parthiban"
+      ],
+      "startTime": "2026-04-23T09:46:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "9:46 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Job Interview - Final - Interview",
+      "location": "Davenport Grand Ballroom - Station 68",
+      "participants": [
+        "Prakruthi Venugopalan"
+      ],
+      "startTime": "2026-04-23T10:00:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "10:00 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Union High School",
+      "eventName": "Job Interview - Final - Interview",
+      "location": "Davenport Grand Ballroom - Station 68",
+      "participants": [
+        "Camille Huang"
+      ],
+      "startTime": "2026-04-23T10:14:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "10:14 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Okanogan High School",
+      "eventName": "Job Interview - Final - Interview",
+      "location": "Davenport Grand Ballroom - Station 68",
+      "participants": [
+        "Olivia Ramirez"
+      ],
+      "startTime": "2026-04-23T10:28:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "10:28 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Mount Vernon High School",
+      "eventName": "Job Interview - Final - Interview",
+      "location": "Davenport Grand Ballroom - Station 68",
+      "participants": [
+        "Annalia Garcia-Munoz"
+      ],
+      "startTime": "2026-04-23T10:42:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "10:42 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Manson Secondary School",
+      "eventName": "Job Interview - Final - Interview",
+      "location": "Davenport Grand Ballroom - Station 68",
+      "participants": [
+        "Amelia Sivertson"
+      ],
+      "startTime": "2026-04-23T11:02:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "11:02 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Ridgeline High School",
+      "eventName": "Job Interview - Final - Interview",
+      "location": "Davenport Grand Ballroom - Station 68",
+      "participants": [
+        "Jaylynn Whitton"
+      ],
+      "startTime": "2026-04-23T11:16:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "11:16 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Squalicum High School",
+      "eventName": "Public Service Announcement - Final - Performance",
+      "location": "Davenport Grand - Room 2",
+      "participants": [
+        "Berkeley Davis",
+        "Kiona Innani",
+        "Natalie Ravitsky"
+      ],
+      "startTime": "2026-04-23T13:33:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "1:30 PM",
+      "performTime": "1:33 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "River Ridge High School",
+      "eventName": "Public Service Announcement - Final - Performance",
+      "location": "Davenport Grand - Room 2",
+      "participants": [
+        "Maximus Mercado"
+      ],
+      "startTime": "2026-04-23T13:50:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "1:47 PM",
+      "performTime": "1:50 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Sehome High School",
+      "eventName": "Public Service Announcement - Final - Performance",
+      "location": "Davenport Grand - Room 2",
+      "participants": [
+        "Dean Sutherland"
+      ],
+      "startTime": "2026-04-23T14:07:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "2:04 PM",
+      "performTime": "2:07 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Washougal High School",
+      "eventName": "Public Service Announcement - Final - Performance",
+      "location": "Davenport Grand - Room 2",
+      "participants": [
+        "Madeline Brock"
+      ],
+      "startTime": "2026-04-23T14:24:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "2:21 PM",
+      "performTime": "2:24 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Oak Harbor High School",
+      "eventName": "Public Service Announcement - Final - Performance",
+      "location": "Davenport Grand - Room 2",
+      "participants": [
+        "Eleanor Saltonstall",
+        "Katherine Sheppard"
+      ],
+      "startTime": "2026-04-23T14:41:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "2:38 PM",
+      "performTime": "2:41 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "College Place High School",
+      "eventName": "Public Service Announcement - Final - Performance",
+      "location": "Davenport Grand - Room 2",
+      "participants": [
+        "Emily Alexander",
+        "Abigail Enriquez"
+      ],
+      "startTime": "2026-04-23T14:58:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "2:55 PM",
+      "performTime": "2:58 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "STEM High School",
+      "eventName": "Public Service Announcement - Final - Performance",
+      "location": "Davenport Grand - Room 2",
+      "participants": [
+        "Helankrutha Murugesh",
+        "Abhilasha Patil"
+      ],
+      "startTime": "2026-04-23T15:21:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "3:18 PM",
+      "performTime": "3:21 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Public Service Announcement - Final - Performance",
+      "location": "Davenport Grand - Room 2",
+      "participants": [
+        "Anoushka Haloi"
+      ],
+      "startTime": "2026-04-23T15:38:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "3:35 PM",
+      "performTime": "3:38 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Public Service Announcement - Final - Performance",
+      "location": "Davenport Grand - Room 2",
+      "participants": [
+        "Kody Choi",
+        "Jaithra Putane"
+      ],
+      "startTime": "2026-04-23T15:55:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "3:52 PM",
+      "performTime": "3:55 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "STEM High School",
+      "eventName": "Public Service Announcement - Final - Performance",
+      "location": "Davenport Grand - Room 2",
+      "participants": [
+        "Rohan Gupta",
+        "Rehet Hans",
+        "Tejas Panja"
+      ],
+      "startTime": "2026-04-23T16:12:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "4:09 PM",
+      "performTime": "4:12 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Mariner High School",
+      "eventName": "Public Service Announcement - Final - Performance",
+      "location": "Davenport Grand - Room 2",
+      "participants": [
+        "Austin Klam",
+        "Preston Klam"
+      ],
+      "startTime": "2026-04-23T16:29:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "4:26 PM",
+      "performTime": "4:29 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "International School",
+      "eventName": "Public Service Announcement - Final - Performance",
+      "location": "Davenport Grand - Room 2",
+      "participants": [
+        "Avani Abad",
+        "Amy Carlson",
+        "Prisha Garg"
+      ],
+      "startTime": "2026-04-23T16:46:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "4:43 PM",
+      "performTime": "4:46 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Bainbridge High School",
+      "eventName": "Public Speaking - Final - Performance",
+      "location": "Davenport Grand - Room 3",
+      "participants": [
+        "Joah Blair"
+      ],
+      "startTime": "2026-04-23T08:30:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "8:30 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Odessa High School",
+      "eventName": "Public Speaking - Final - Performance",
+      "location": "Davenport Grand - Room 3",
+      "participants": [
+        "Aiden Schmierer"
+      ],
+      "startTime": "2026-04-23T08:41:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "8:41 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Okanogan High School",
+      "eventName": "Public Speaking - Final - Performance",
+      "location": "Davenport Grand - Room 3",
+      "participants": [
+        "Jackson Bruestle"
+      ],
+      "startTime": "2026-04-23T08:52:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "8:52 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "STEM High School",
+      "eventName": "Public Speaking - Final - Performance",
+      "location": "Davenport Grand - Room 3",
+      "participants": [
+        "Veda Hiremath"
+      ],
+      "startTime": "2026-04-23T09:03:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "9:03 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Squalicum High School",
+      "eventName": "Public Speaking - Final - Performance",
+      "location": "Davenport Grand - Room 3",
+      "participants": [
+        "Ngansi Atem"
+      ],
+      "startTime": "2026-04-23T09:14:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "9:14 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Anacortes High School",
+      "eventName": "Public Speaking - Final - Performance",
+      "location": "Davenport Grand - Room 3",
+      "participants": [
+        "Allison Hanson"
+      ],
+      "startTime": "2026-04-23T09:31:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "9:31 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "STEM High School",
+      "eventName": "Public Speaking - Final - Performance",
+      "location": "Davenport Grand - Room 3",
+      "participants": [
+        "Rafael Reyes"
+      ],
+      "startTime": "2026-04-23T09:42:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "9:42 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Cedarcrest High School",
+      "eventName": "Public Speaking - Final - Performance",
+      "location": "Davenport Grand - Room 3",
+      "participants": [
+        "Ruby Wenzel"
+      ],
+      "startTime": "2026-04-23T09:53:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "9:53 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Anacortes High School",
+      "eventName": "Public Speaking - Final - Performance",
+      "location": "Davenport Grand - Room 3",
+      "participants": [
+        "Bella Hall"
+      ],
+      "startTime": "2026-04-23T10:04:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "10:04 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Timberline High School",
+      "eventName": "Public Speaking - Final - Performance",
+      "location": "Davenport Grand - Room 3",
+      "participants": [
+        "Maggie Metzger"
+      ],
+      "startTime": "2026-04-23T10:15:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "10:15 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Cashmere High School",
+      "eventName": "Public Speaking - Final - Performance",
+      "location": "Davenport Grand - Room 3",
+      "participants": [
+        "Eliana Thomas"
+      ],
+      "startTime": "2026-04-23T10:32:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "10:32 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Squalicum High School",
+      "eventName": "Public Speaking - Final - Performance",
+      "location": "Davenport Grand - Room 3",
+      "participants": [
+        "Nathan Stout"
+      ],
+      "startTime": "2026-04-23T10:43:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "10:43 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Newport High School",
+      "eventName": "Public Speaking - Final - Performance",
+      "location": "Davenport Grand - Room 3",
+      "participants": [
+        "Truce Ugartechea"
+      ],
+      "startTime": "2026-04-23T10:54:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "10:54 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Ritzville High School",
+      "eventName": "Public Speaking - Final - Performance",
+      "location": "Davenport Grand - Room 3",
+      "participants": [
+        "Jackson Nichols"
+      ],
+      "startTime": "2026-04-23T11:05:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "11:05 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Colfax High School",
+      "eventName": "Public Speaking - Final - Performance",
+      "location": "Davenport Grand - Room 3",
+      "participants": [
+        "Elizabeth Salmond"
+      ],
+      "startTime": "2026-04-23T11:16:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": null,
+      "performTime": "11:16 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Ridgeline High School",
+      "eventName": "Social Media Strategies - Final - Performance",
+      "location": "Davenport Grand - Room 8",
+      "participants": [
+        "Karsen Mcferrin"
+      ],
+      "startTime": "2026-04-23T08:33:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:30 AM",
+      "performTime": "8:33 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Squalicum High School",
+      "eventName": "Social Media Strategies - Final - Performance",
+      "location": "Davenport Grand - Room 8",
+      "participants": [
+        "Natalie Ravitsky"
+      ],
+      "startTime": "2026-04-23T08:50:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:47 AM",
+      "performTime": "8:50 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Odessa High School",
+      "eventName": "Social Media Strategies - Final - Performance",
+      "location": "Davenport Grand - Room 8",
+      "participants": [
+        "Leah Claassen",
+        "Alexis Eden",
+        "Jordyn Lewis"
+      ],
+      "startTime": "2026-04-23T09:07:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:04 AM",
+      "performTime": "9:07 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Cedarcrest High School",
+      "eventName": "Social Media Strategies - Final - Performance",
+      "location": "Davenport Grand - Room 8",
+      "participants": [
+        "Sysha Shaikh",
+        "Elaine Varghese"
+      ],
+      "startTime": "2026-04-23T09:24:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:21 AM",
+      "performTime": "9:24 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Ritzville High School",
+      "eventName": "Social Media Strategies - Final - Performance",
+      "location": "Davenport Grand - Room 8",
+      "participants": [
+        "Leland Bowman",
+        "Allesandra Mendez"
+      ],
+      "startTime": "2026-04-23T09:41:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:38 AM",
+      "performTime": "9:41 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Timberline High School",
+      "eventName": "Social Media Strategies - Final - Performance",
+      "location": "Davenport Grand - Room 8",
+      "participants": [
+        "Ava Leon"
+      ],
+      "startTime": "2026-04-23T09:58:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:55 AM",
+      "performTime": "9:58 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "STEM High School",
+      "eventName": "Social Media Strategies - Final - Performance",
+      "location": "Davenport Grand - Room 8",
+      "participants": [
+        "Ava Arvind",
+        "Sarah Youn"
+      ],
+      "startTime": "2026-04-23T10:21:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:18 AM",
+      "performTime": "10:21 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Social Media Strategies - Final - Performance",
+      "location": "Davenport Grand - Room 8",
+      "participants": [
+        "Geethika Chandolu",
+        "Bharvi Doshi"
+      ],
+      "startTime": "2026-04-23T10:38:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:35 AM",
+      "performTime": "10:38 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Bothell High School",
+      "eventName": "Social Media Strategies - Final - Performance",
+      "location": "Davenport Grand - Room 8",
+      "participants": [
+        "Kritika Gantyeada",
+        "Sanika Kabbur"
+      ],
+      "startTime": "2026-04-23T10:55:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:52 AM",
+      "performTime": "10:55 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "STEM High School",
+      "eventName": "Social Media Strategies - Final - Performance",
+      "location": "Davenport Grand - Room 8",
+      "participants": [
+        "Ananiah Gashaw",
+        "Nethaniah Gashaw"
+      ],
+      "startTime": "2026-04-23T11:12:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:09 AM",
+      "performTime": "11:12 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "STEM High School",
+      "eventName": "Social Media Strategies - Final - Performance",
+      "location": "Davenport Grand - Room 8",
+      "participants": [
+        "Alisha Goyal",
+        "Shriya Krishnan"
+      ],
+      "startTime": "2026-04-23T11:29:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:26 AM",
+      "performTime": "11:29 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Zillah High School",
+      "eventName": "Social Media Strategies - Final - Performance",
+      "location": "Davenport Grand - Room 8",
+      "participants": [
+        "Jazlyn Sosa"
+      ],
+      "startTime": "2026-04-23T11:46:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:43 AM",
+      "performTime": "11:46 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Mountain View High School",
+      "eventName": "Visual Design - Final - Presentation",
+      "location": "Davenport Grand - Room 3",
+      "participants": [
+        "Daisy Conway",
+        "Maya Iyer",
+        "Ethan Tay"
+      ],
+      "startTime": "2026-04-23T13:03:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "1:00 PM",
+      "performTime": "1:03 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Union High School",
+      "eventName": "Visual Design - Final - Presentation",
+      "location": "Davenport Grand - Room 3",
+      "participants": [
+        "Lillian Chen",
+        "Shreya Gupta",
+        "Elsa Smith"
+      ],
+      "startTime": "2026-04-23T13:20:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "1:17 PM",
+      "performTime": "1:20 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Spokane Valley Tech",
+      "eventName": "Visual Design - Final - Presentation",
+      "location": "Davenport Grand - Room 3",
+      "participants": [
+        "Ella Routson"
+      ],
+      "startTime": "2026-04-23T13:37:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "1:34 PM",
+      "performTime": "1:37 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Visual Design - Final - Presentation",
+      "location": "Davenport Grand - Room 3",
+      "participants": [
+        "Harshi Abburi",
+        "Samshi Chinthireddy",
+        "Brandon Lin"
+      ],
+      "startTime": "2026-04-23T13:54:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "1:51 PM",
+      "performTime": "1:54 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Visual Design - Final - Presentation",
+      "location": "Davenport Grand - Room 3",
+      "participants": [
+        "Krithi Grandhe",
+        "Alisha Verma"
+      ],
+      "startTime": "2026-04-23T14:11:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "2:08 PM",
+      "performTime": "2:11 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Davenport High School",
+      "eventName": "Visual Design - Final - Presentation",
+      "location": "Davenport Grand - Room 3",
+      "participants": [
+        "Nevaeh Farrens"
+      ],
+      "startTime": "2026-04-23T14:34:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "2:31 PM",
+      "performTime": "2:34 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Zillah High School",
+      "eventName": "Visual Design - Final - Presentation",
+      "location": "Davenport Grand - Room 3",
+      "participants": [
+        "Allie Farmer"
+      ],
+      "startTime": "2026-04-23T14:51:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "2:48 PM",
+      "performTime": "2:51 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Kiona - Benton High School",
+      "eventName": "Visual Design - Final - Presentation",
+      "location": "Davenport Grand - Room 3",
+      "participants": [
+        "Theron Harding"
+      ],
+      "startTime": "2026-04-23T15:08:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "3:05 PM",
+      "performTime": "3:08 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Visual Design - Final - Presentation",
+      "location": "Davenport Grand - Room 3",
+      "participants": [
+        "Samhitha Manukonda",
+        "Kavya Mohanasundaram"
+      ],
+      "startTime": "2026-04-23T15:25:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "3:22 PM",
+      "performTime": "3:25 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Visual Design - Final - Presentation",
+      "location": "Davenport Grand - Room 3",
+      "participants": [
+        "Saanvi Vijayvargiya"
+      ],
+      "startTime": "2026-04-23T15:42:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "3:39 PM",
+      "performTime": "3:42 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Visual Design - Final - Presentation",
+      "location": "Davenport Grand - Room 3",
+      "participants": [
+        "Ishita Ponnaganti",
+        "Varenya Pothukuchi"
+      ],
+      "startTime": "2026-04-23T16:05:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "4:02 PM",
+      "performTime": "4:05 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Colfax High School",
+      "eventName": "Visual Design - Final - Presentation",
+      "location": "Davenport Grand - Room 3",
+      "participants": [
+        "Hunter Dowell",
+        "Bailey Mcneilly"
+      ],
+      "startTime": "2026-04-23T16:22:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "4:19 PM",
+      "performTime": "4:22 PM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Oak Harbor High School",
+      "eventName": "Website Design - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 70",
+      "participants": [
+        "Julianne Socorro Dalire",
+        "Gianne Guevarra",
+        "Dale Matro"
+      ],
+      "startTime": "2026-04-23T08:33:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:30 AM",
+      "performTime": "8:33 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Union High School",
+      "eventName": "Website Design - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 70",
+      "participants": [
+        "Brian Lin",
+        "Daniel Tsay"
+      ],
+      "startTime": "2026-04-23T08:50:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "8:47 AM",
+      "performTime": "8:50 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Squalicum High School",
+      "eventName": "Website Design - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 70",
+      "participants": [
+        "Gabriel Harrison",
+        "Chloe Putney",
+        "Tully Putney"
+      ],
+      "startTime": "2026-04-23T09:07:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:04 AM",
+      "performTime": "9:07 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Website Design - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 70",
+      "participants": [
+        "Ishaan Agarwal",
+        "Amogh Jain",
+        "Akshar Parmar"
+      ],
+      "startTime": "2026-04-23T09:24:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:21 AM",
+      "performTime": "9:24 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Ridgeline High School",
+      "eventName": "Website Design - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 70",
+      "participants": [
+        "Mia Morgen"
+      ],
+      "startTime": "2026-04-23T09:41:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:38 AM",
+      "performTime": "9:41 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "North Creek High School",
+      "eventName": "Website Design - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 70",
+      "participants": [
+        "Swarali Karale",
+        "Yunhan Li"
+      ],
+      "startTime": "2026-04-23T09:58:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "9:55 AM",
+      "performTime": "9:58 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "International School",
+      "eventName": "Website Design - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 70",
+      "participants": [
+        "Aaryaman Chopra",
+        "Palash Desarda"
+      ],
+      "startTime": "2026-04-23T10:21:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:18 AM",
+      "performTime": "10:21 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Ritzville High School",
+      "eventName": "Website Design - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 70",
+      "participants": [
+        "Zoe Galbreath"
+      ],
+      "startTime": "2026-04-23T10:38:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:35 AM",
+      "performTime": "10:38 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Cedarcrest High School",
+      "eventName": "Website Design - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 70",
+      "participants": [
+        "Mark Higley"
+      ],
+      "startTime": "2026-04-23T10:55:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "10:52 AM",
+      "performTime": "10:55 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "International Community School",
+      "eventName": "Website Design - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 70",
+      "participants": [
+        "Adeline Chang",
+        "Kexin Li"
+      ],
+      "startTime": "2026-04-23T11:12:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:09 AM",
+      "performTime": "11:12 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "STEM High School",
+      "eventName": "Website Design - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 70",
+      "participants": [
+        "Khush Kothari",
+        "Ayaan Oberoi",
+        "Malhar Pawar"
+      ],
+      "startTime": "2026-04-23T11:29:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:26 AM",
+      "performTime": "11:29 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    },
+    {
+      "school": "Woodinville High School",
+      "eventName": "Website Design - Final - Performance",
+      "location": "Davenport Grand Ballroom - Station 70",
+      "participants": [
+        "Kamya Jagtap"
+      ],
+      "startTime": "2026-04-23T11:46:00",
+      "date": "2026-04-23",
+      "prepTime": null,
+      "setupTime": "11:43 AM",
+      "performTime": "11:46 AM",
+      "sourceAsset": "FINAL ROUND Competitive Event Schedules By Event 4-22.pdf"
+    }
+  ]
+}
