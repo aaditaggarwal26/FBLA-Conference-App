@@ -1,4 +1,5 @@
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:sign_in_with_apple/sign_in_with_apple.dart';
 import 'package:cloud_firestore/cloud_firestore.dart';
@@ -10,9 +11,28 @@ import '../models/user_model.dart';
 /// Service to handle user authentication via Firebase Auth.
 /// Supports Email/Password, Google Sign-In, and Apple Sign-In.
 class AuthService {
+  static const String _appleGoogleClientId =
+      '518774774037-u8t6pfdumr2a449hrnif8c0jiu4esmmh.apps.googleusercontent.com';
+
   final FirebaseAuth _auth = FirebaseAuth.instance;
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
-  final GoogleSignIn _googleSignIn = GoogleSignIn();
+  late final GoogleSignIn _googleSignIn = GoogleSignIn(
+    clientId: _googleClientIdForCurrentPlatform,
+  );
+
+  String? get _googleClientIdForCurrentPlatform {
+    if (kIsWeb) {
+      return null;
+    }
+
+    switch (defaultTargetPlatform) {
+      case TargetPlatform.iOS:
+      case TargetPlatform.macOS:
+        return _appleGoogleClientId;
+      default:
+        return null;
+    }
+  }
 
   /// Returns the currently signed-in user, or null if none.
   User? get currentUser => _auth.currentUser;
