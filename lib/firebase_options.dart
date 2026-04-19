@@ -66,7 +66,7 @@ class DefaultFirebaseOptions {
     messagingSenderId: '518774774037',
     projectId: 'fbla-conference-app',
     storageBucket: 'fbla-conference-app.firebasestorage.app',
-    iosBundleId: 'com.fbla.conference',
+    iosBundleId: 'com.convex.fblaConferenceApp',
   );
 
   static const FirebaseOptions macos = FirebaseOptions(
@@ -75,6 +75,6 @@ class DefaultFirebaseOptions {
     messagingSenderId: '518774774037',
     projectId: 'fbla-conference-app',
     storageBucket: 'fbla-conference-app.firebasestorage.app',
-    iosBundleId: 'com.fbla.conference',
+    iosBundleId: 'com.convex.fblaConferenceApp',
   );
 }
