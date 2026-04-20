@@ -1,11 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/event_model.dart';
+import '../../models/location_pin_model.dart';
 import '../../services/event_service.dart';
 import '../../services/auth_service.dart';
 import '../../services/linkedin_service.dart';
+import '../../services/location_pin_service.dart';
 import '../../theme/app_theme.dart';
 import 'event_qr_code_screen.dart';
+import '../ar_navigation/drop_location_pin_screen.dart';
+import '../ar_navigation/ar_navigation_screen.dart';
+import '../../models/parsed_event_model.dart';
 
 class EventDetailScreen extends StatefulWidget {
   final EventModel event;
@@ -20,14 +26,111 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
   final EventService _eventService = EventService();
   final AuthService _authService = AuthService();
   final LinkedInService _linkedInService = LinkedInService();
+  final LocationPinService _locationPinService = LocationPinService();
   bool _isRegistered = false;
   bool _isLoading = false;
   bool _isSharingToLinkedIn = false;
+  LocationPinModel? _linkedLocation;
+  bool _isLoadingPin = false;
+  String? _userSchoolId;
 
   @override
   void initState() {
     super.initState();
     _checkRegistrationStatus();
+    _loadLocationPin();
+    _loadUserSchool();
+  }
+
+  Future<void> _loadUserSchool() async {
+    final uid = _authService.currentUser?.uid;
+    if (uid == null) return;
+    try {
+      final doc = await FirebaseFirestore.instance.collection('users').doc(uid).get();
+      if (doc.exists && mounted) {
+        setState(() {
+          _userSchoolId = (doc.data() as Map<String, dynamic>)['schoolId'] as String?;
+        });
+      }
+    } catch (_) {}
+  }
+
+  String get _locationLinkId => widget.event.id;
+
+  Future<void> _loadLocationPin() async {
+    setState(() => _isLoadingPin = true);
+    try {
+      final linkDoc = await FirebaseFirestore.instance
+          .collection('event_location_links')
+          .doc(_locationLinkId)
+          .get();
+      if (linkDoc.exists) {
+        final pinId = linkDoc.data()?['locationPinId'] as String?;
+        if (pinId != null && pinId.isNotEmpty) {
+          final pin = await _locationPinService.getLocationPinById(pinId);
+          if (mounted) setState(() => _linkedLocation = pin);
+        }
+      }
+    } catch (_) {} finally {
+      if (mounted) setState(() => _isLoadingPin = false);
+    }
+  }
+
+  Future<void> _dropLocationPin() async {
+    final userId = _authService.currentUser?.uid;
+    final schoolId = _userSchoolId;
+    if (userId == null) return;
+    if (schoolId == null || schoolId.isEmpty) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Join a school first to drop location pins'),
+          backgroundColor: AppTheme.warning,
+        ),
+      );
+      return;
+    }
+
+    final result = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DropLocationPinScreen(
+          schoolId: schoolId,
+          userId: userId,
+        ),
+      ),
+    );
+
+    if (result != null && mounted) {
+      try {
+        await FirebaseFirestore.instance
+            .collection('event_location_links')
+            .doc(_locationLinkId)
+            .set({
+          'locationPinId': result,
+          'schoolId': schoolId,
+          'eventName': widget.event.title,
+          'schoolName': '',
+        });
+        await _loadLocationPin();
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            const SnackBar(
+              content: Text('Location pin linked to this event!'),
+              backgroundColor: AppTheme.success,
+            ),
+          );
+        }
+      } catch (e) {
+        if (mounted) {
+          ScaffoldMessenger.of(context).showSnackBar(
+            SnackBar(
+              content: Text('Error linking pin: $e'),
+              backgroundColor: AppTheme.error,
+            ),
+          );
+        }
+      }
+    }
   }
 
   void _checkRegistrationStatus() {
@@ -249,6 +352,128 @@ class _EventDetailScreenState extends State<EventDetailScreen> {
                               style: Theme.of(context).textTheme.bodyLarge,
                             ),
                           ],
+                        ),
+                      ),
+                    ),
+                  ],
+
+                  const SizedBox(height: 24),
+
+                  // AR Navigation Section
+                  Text(
+                    'AR Navigation',
+                    style: Theme.of(context).textTheme.titleLarge?.copyWith(
+                      fontWeight: FontWeight.bold,
+                    ),
+                  ),
+                  const SizedBox(height: 12),
+                  if (_isLoadingPin)
+                    const Center(child: CircularProgressIndicator())
+                  else if (_linkedLocation != null) ...[
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: AppTheme.lightBlue,
+                        borderRadius: BorderRadius.circular(12),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.location_on_rounded, color: AppTheme.primaryBlue, size: 28),
+                          const SizedBox(width: 12),
+                          Expanded(
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                Text(
+                                  _linkedLocation!.name,
+                                  style: const TextStyle(fontWeight: FontWeight.bold),
+                                ),
+                                if (_linkedLocation!.buildingName != null)
+                                  Text(
+                                    _linkedLocation!.buildingName!,
+                                    style: Theme.of(context).textTheme.bodySmall,
+                                  ),
+                              ],
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: () {
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => ARNavigationScreen(
+                                event: ParsedEventModel(
+                                  id: widget.event.id,
+                                  schoolId: _userSchoolId ?? '',
+                                  eventName: widget.event.title,
+                                  location: widget.event.location,
+                                  startTime: widget.event.startTime,
+                                  endTime: widget.event.endTime,
+                                  participants: const [],
+                                  totalParticipants: 0,
+                                  locationPinId: _linkedLocation!.id,
+                                ),
+                                schoolId: _userSchoolId ?? '',
+                              ),
+                            ),
+                          );
+                        },
+                        icon: const Icon(Icons.navigation_rounded),
+                        label: const Text('Navigate with AR'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.primaryBlue,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                        ),
+                      ),
+                    ),
+                    const SizedBox(height: 8),
+                    SizedBox(
+                      width: double.infinity,
+                      child: OutlinedButton.icon(
+                        onPressed: _dropLocationPin,
+                        icon: const Icon(Icons.edit_location_alt_rounded),
+                        label: const Text('Update Location Pin'),
+                        style: OutlinedButton.styleFrom(
+                          foregroundColor: AppTheme.primaryBlue,
+                          side: BorderSide(color: AppTheme.primaryBlue),
+                          padding: const EdgeInsets.symmetric(vertical: 14),
+                        ),
+                      ),
+                    ),
+                  ] else ...[
+                    Container(
+                      padding: const EdgeInsets.all(16),
+                      decoration: BoxDecoration(
+                        color: AppTheme.background,
+                        borderRadius: BorderRadius.circular(12),
+                        border: Border.all(color: AppTheme.mediumGray.withOpacity(0.3)),
+                      ),
+                      child: Row(
+                        children: [
+                          Icon(Icons.location_off_rounded, color: AppTheme.mediumGray),
+                          const SizedBox(width: 12),
+                          const Expanded(
+                            child: Text('No location pin set for this event yet.'),
+                          ),
+                        ],
+                      ),
+                    ),
+                    const SizedBox(height: 12),
+                    SizedBox(
+                      width: double.infinity,
+                      child: ElevatedButton.icon(
+                        onPressed: _dropLocationPin,
+                        icon: const Icon(Icons.add_location_alt_rounded),
+                        label: const Text('Drop Location Pin'),
+                        style: ElevatedButton.styleFrom(
+                          backgroundColor: AppTheme.primaryBlue,
+                          padding: const EdgeInsets.symmetric(vertical: 14),
                         ),
                       ),
                     ),
