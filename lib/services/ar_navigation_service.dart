@@ -5,6 +5,8 @@ import '../models/location_pin_model.dart';
 /// Service to handle AR navigation logic, including location tracking,
 /// bearing calculation, and navigation instructions.
 class ARNavigationService {
+  static const double _targetAccuracyMeters = 12.0;
+  static const int _defaultSampleCount = 4;
   
   /// Checks if location permission is currently granted.
   /// Returns true if permission is 'whileInUse' or 'always'.
@@ -53,6 +55,13 @@ class ARNavigationService {
   /// Handles permission checks and service status checks internally.
   /// Returns null if location cannot be retrieved.
   Future<Position?> getCurrentLocation() async {
+    return getBestCurrentLocation();
+  }
+
+  Future<Position?> getBestCurrentLocation({
+    int sampleCount = _defaultSampleCount,
+    double targetAccuracyMeters = _targetAccuracyMeters,
+  }) async {
     try {
       // Verify that location services are enabled on the device
       final serviceEnabled = await Geolocator.isLocationServiceEnabled();
@@ -77,11 +86,27 @@ class ARNavigationService {
         return null;
       }
 
-      // Fetch the current position with a 10-second timeout
-      return await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-        timeLimit: const Duration(seconds: 10),
-      );
+      Position? bestPosition;
+      for (var index = 0; index < sampleCount; index++) {
+        final position = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.bestForNavigation,
+          timeLimit: const Duration(seconds: 10),
+        );
+
+        if (bestPosition == null || position.accuracy < bestPosition.accuracy) {
+          bestPosition = position;
+        }
+
+        if (bestPosition.accuracy <= targetAccuracyMeters) {
+          break;
+        }
+
+        if (index < sampleCount - 1) {
+          await Future<void>.delayed(const Duration(milliseconds: 700));
+        }
+      }
+
+      return bestPosition;
     } catch (e) {
       print('Error getting current location: $e');
       return null;
@@ -92,8 +117,8 @@ class ARNavigationService {
   /// Useful for real-time navigation.
   Stream<Position> getLocationStream() {
     final LocationSettings locationSettings = const LocationSettings(
-      accuracy: LocationAccuracy.high,
-      distanceFilter: 1, // Update every 1 meter
+      accuracy: LocationAccuracy.bestForNavigation,
+      distanceFilter: 0,
     );
     
     return Geolocator.getPositionStream(locationSettings: locationSettings);

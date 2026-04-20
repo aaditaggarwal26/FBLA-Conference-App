@@ -1,5 +1,6 @@
 import 'dart:async';
 import 'dart:math' as math;
+import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:flutter/material.dart';
 import 'package:geolocator/geolocator.dart';
 import 'package:camera/camera.dart';
@@ -29,6 +30,11 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
     with TickerProviderStateMixin, WidgetsBindingObserver {
   final ARNavigationService _navService = ARNavigationService();
   final LocationPinService _locationService = LocationPinService();
+  static const Color _brandNavy = Color(0xFF071B34);
+  static const Color _brandBlue = Color(0xFF2F80ED);
+  static const Color _brandMint = Color(0xFF27C3A8);
+  static const Color _brandAmber = Color(0xFFF4B740);
+  static const double _maxOperationalAccuracyMeters = 35.0;
 
   // Navigation state
   LocationPinModel? _destination;
@@ -39,6 +45,8 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
   double _currentHeading = 0.0;
   bool _isLoading = true;
   String? _errorMessage;
+  double? _currentAccuracyMeters;
+  double? _destinationAccuracyMeters;
 
   // Camera state
   CameraController? _cameraController;
@@ -195,7 +203,8 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
 
       // Step 5: Get destination location pin
       debugPrint('📌 Step 5: Loading destination...');
-      if (widget.event.locationPinId == null) {
+      final locationPinId = await _resolveLocationPinId();
+      if (locationPinId == null || locationPinId.isEmpty) {
         setState(() {
           _errorMessage = 'This event does not have a location assigned';
           _isLoading = false;
@@ -203,7 +212,7 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
         return;
       }
 
-      final destination = await _locationService.getLocationPinById(widget.event.locationPinId!);
+      final destination = await _locationService.getLocationPinById(locationPinId);
       debugPrint('📌 Destination loaded: ${destination?.name ?? "NULL"}');
       
       if (destination == null) {
@@ -216,11 +225,13 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
 
       setState(() {
         _destination = destination;
+        _destinationAccuracyMeters =
+            (destination.metadata?['capturedAccuracyMeters'] as num?)?.toDouble();
       });
 
       // Step 6: Get initial position
       debugPrint('🌍 Step 6: Getting current location...');
-      final position = await _navService.getCurrentLocation();
+      final position = await _navService.getBestCurrentLocation();
       debugPrint('🌍 Current position: ${position != null ? "${position.latitude}, ${position.longitude}" : "NULL"}');
       
       if (position == null) {
@@ -231,8 +242,18 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
         return;
       }
 
+      if (position.accuracy > _maxOperationalAccuracyMeters) {
+        setState(() {
+          _errorMessage =
+              'GPS accuracy is too low for reliable AR (±${position.accuracy.toStringAsFixed(1)}m).\n\nMove closer to a window or open area, then try again.';
+          _isLoading = false;
+        });
+        return;
+      }
+
       setState(() {
         _currentPosition = position;
+        _currentAccuracyMeters = position.accuracy;
         _updateNavigation();
         _isLoading = false;
       });
@@ -244,8 +265,13 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
       // Step 7: Start listening to position updates
       _positionSubscription = _navService.getLocationStream().listen(
         (position) {
+          if (position.accuracy > _maxOperationalAccuracyMeters) {
+            return;
+          }
+
           setState(() {
             _currentPosition = position;
+            _currentAccuracyMeters = position.accuracy;
             _updateNavigation();
           });
         },
@@ -267,6 +293,37 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
         _isLoading = false;
       });
     }
+  }
+
+  Future<String?> _resolveLocationPinId() async {
+    if (widget.event.locationPinId != null && widget.event.locationPinId!.isNotEmpty) {
+      return widget.event.locationPinId;
+    }
+
+    if (widget.event.schoolName != null) {
+      final compositeKey = '${widget.event.eventName}::${widget.event.schoolName ?? ''}';
+      final linkDoc = await FirebaseFirestore.instance
+          .collection('event_location_links')
+          .doc(compositeKey)
+          .get();
+      final linkedPinId = linkDoc.data()?['locationPinId'] as String?;
+      if (linkedPinId != null && linkedPinId.isNotEmpty) {
+        return linkedPinId;
+      }
+    }
+
+    if (widget.event.id.isNotEmpty) {
+      final eventDoc = await FirebaseFirestore.instance
+          .collection('parsed_events')
+          .doc(widget.event.id)
+          .get();
+      final parsedPinId = eventDoc.data()?['locationPinId'] as String?;
+      if (parsedPinId != null && parsedPinId.isNotEmpty) {
+        return parsedPinId;
+      }
+    }
+
+    return null;
   }
 
   /// Updates the navigation instruction based on current position and heading.
@@ -301,9 +358,9 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
   /// Returns a color based on the navigation state (distance, arrival).
   Color _getDirectionColor() {
     if (_navInstruction == null) return Colors.grey;
-    if (_navInstruction!.hasArrived) return Colors.green;
-    if (_navInstruction!.distance < 10) return Colors.orange;
-    return const Color(0xFF001231);
+    if (_navInstruction!.hasArrived) return _brandMint;
+    if (_navInstruction!.distance < 10) return _brandAmber;
+    return _brandBlue;
   }
 
   /// Returns the appropriate icon for the navigation arrow.
@@ -317,6 +374,20 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
     return Icons.arrow_upward;
   }
 
+  String? _buildAccuracyNotice() {
+    final currentAccuracy = _currentAccuracyMeters;
+    if (currentAccuracy != null && currentAccuracy > 15) {
+      return 'GPS accuracy is limited (±${currentAccuracy.toStringAsFixed(0)}m). Follow directions as approximate guidance.';
+    }
+
+    final destinationAccuracy = _destinationAccuracyMeters;
+    if (destinationAccuracy != null && destinationAccuracy > 15) {
+      return 'The saved pin was captured with ±${destinationAccuracy.toStringAsFixed(0)}m accuracy. Re-drop it for tighter AR guidance.';
+    }
+
+    return null;
+  }
+
   @override
   Widget build(BuildContext context) {
     // Show loading state
@@ -324,7 +395,8 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
       return Scaffold(
         appBar: AppBar(
           title: const Text('AR Navigation'),
-          backgroundColor: const Color(0xFF001231),
+          backgroundColor: _brandNavy,
+          foregroundColor: Colors.white,
         ),
         body: const Center(
           child: CircularProgressIndicator(),
@@ -340,7 +412,8 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
       return Scaffold(
         appBar: AppBar(
           title: const Text('AR Navigation'),
-          backgroundColor: const Color(0xFF001231),
+          backgroundColor: _brandNavy,
+          foregroundColor: Colors.white,
         ),
         body: Center(
           child: Padding(
@@ -364,7 +437,7 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
                     icon: const Icon(Icons.settings),
                     label: const Text('Open Settings'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: const Color(0xFF001231),
+                      backgroundColor: _brandNavy,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -398,11 +471,12 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
 
     // Main AR View
     return Scaffold(
-      extendBodyBehindAppBar: true,
       appBar: AppBar(
         title: const Text('AR Navigation'),
-        backgroundColor: Colors.transparent,
+        backgroundColor: _brandNavy,
+        foregroundColor: Colors.white,
         elevation: 0,
+        surfaceTintColor: Colors.transparent,
         leading: IconButton(
           icon: const Icon(Icons.arrow_back, color: Colors.white),
           onPressed: () => Navigator.pop(context),
@@ -445,30 +519,58 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
           Positioned.fill(
             child: Column(
               children: [
-                const SizedBox(height: 100),
+                const SizedBox(height: 20),
 
                 // Event Info Card
                 Padding(
                   padding: const EdgeInsets.all(16),
                   child: Card(
-                    color: Colors.white.withOpacity(0.95),
+                    elevation: 0,
+                    color: const Color(0xFFF8FBFF).withValues(alpha: 0.96),
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(20),
+                      side: BorderSide(color: _brandBlue.withValues(alpha: 0.25)),
+                    ),
                     child: Padding(
                       padding: const EdgeInsets.all(16),
                       child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
                             widget.event.eventName,
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 18,
+                              color: _brandNavy,
                             ),
-                            textAlign: TextAlign.center,
                           ),
                           const SizedBox(height: 4),
                           Text(
                             'Going to: ${_destination?.name ?? "Unknown"}',
-                            style: const TextStyle(color: Colors.grey),
+                            style: const TextStyle(
+                              color: Color(0xFF425466),
+                              fontWeight: FontWeight.w500,
+                            ),
                           ),
+                          if (_buildAccuracyNotice() != null) ...[
+                            const SizedBox(height: 12),
+                            Container(
+                              width: double.infinity,
+                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                              decoration: BoxDecoration(
+                                color: _brandAmber.withValues(alpha: 0.14),
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                              child: Text(
+                                _buildAccuracyNotice()!,
+                                style: const TextStyle(
+                                  color: _brandNavy,
+                                  fontSize: 12.5,
+                                  fontWeight: FontWeight.w600,
+                                ),
+                              ),
+                            ),
+                          ],
                         ],
                       ),
                     ),
@@ -591,17 +693,24 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
             child: Container(
               padding: const EdgeInsets.all(16),
               decoration: BoxDecoration(
-                color: Colors.white.withOpacity(0.95),
+                color: const Color(0xFFF8FBFF).withValues(alpha: 0.97),
                 borderRadius: const BorderRadius.vertical(
                   top: Radius.circular(20),
                 ),
+                boxShadow: const [
+                  BoxShadow(
+                    color: Color(0x33000000),
+                    blurRadius: 18,
+                    offset: Offset(0, -4),
+                  ),
+                ],
               ),
               child: Column(
                 children: [
                   if (_destination != null) ...[
                     Row(
                       children: [
-                        const Icon(Icons.location_on, color: Color(0xFF001231)),
+                        const Icon(Icons.location_on, color: _brandNavy),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Column(
@@ -628,12 +737,22 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
                     Row(
                       mainAxisAlignment: MainAxisAlignment.spaceAround,
                       children: [
+                        if (_currentAccuracyMeters != null)
+                          _buildInfoChip(
+                            icon: Icons.gps_fixed,
+                            label: 'GPS ±${_currentAccuracyMeters!.toStringAsFixed(0)}m',
+                          ),
                         _buildInfoChip(
                           icon: Icons.layers,
                           label: _destination!.floorLevel == 0
                               ? 'Ground Floor'
                               : 'Floor ${_destination!.floorLevel}',
                         ),
+                        if (_destinationAccuracyMeters != null)
+                          _buildInfoChip(
+                            icon: Icons.place,
+                            label: 'Pin ±${_destinationAccuracyMeters!.toStringAsFixed(0)}m',
+                          ),
                         _buildInfoChip(
                           icon: Icons.schedule,
                           label:
@@ -655,12 +774,12 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
       decoration: BoxDecoration(
-        color: const Color(0xFF001231).withOpacity(0.1),
+        color: _brandBlue.withValues(alpha: 0.12),
         borderRadius: BorderRadius.circular(20),
       ),
       child: Row(
         children: [
-          Icon(icon, size: 16, color: const Color(0xFF001231)),
+          Icon(icon, size: 16, color: _brandNavy),
           const SizedBox(width: 4),
           Text(label, style: const TextStyle(fontSize: 12)),
         ],

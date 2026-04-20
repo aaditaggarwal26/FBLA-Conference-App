@@ -18,6 +18,9 @@ class DropLocationPinScreen extends StatefulWidget {
 }
 
 class _DropLocationPinScreenState extends State<DropLocationPinScreen> {
+  static const double _recommendedAccuracyMeters = 12.0;
+  static const double _maximumSaveAccuracyMeters = 30.0;
+
   final LocationPinService _locationService = LocationPinService();
   
   final _formKey = GlobalKey<FormState>();
@@ -90,14 +93,32 @@ class _DropLocationPinScreenState extends State<DropLocationPinScreen> {
         return;
       }
 
-      // Permission is granted, get location
-      final position = await Geolocator.getCurrentPosition(
-        desiredAccuracy: LocationAccuracy.high,
-        timeLimit: const Duration(seconds: 10),
-      );
+      Position? bestPosition;
+      for (var index = 0; index < 4; index++) {
+        final sample = await Geolocator.getCurrentPosition(
+          desiredAccuracy: LocationAccuracy.bestForNavigation,
+          timeLimit: const Duration(seconds: 10),
+        );
+
+        if (bestPosition == null || sample.accuracy < bestPosition.accuracy) {
+          bestPosition = sample;
+        }
+
+        if (bestPosition.accuracy <= _recommendedAccuracyMeters) {
+          break;
+        }
+
+        if (index < 3) {
+          await Future<void>.delayed(const Duration(milliseconds: 700));
+        }
+      }
+
+      if (bestPosition == null) {
+        throw Exception('No GPS fix available');
+      }
       
       setState(() {
-        _currentPosition = position;
+        _currentPosition = bestPosition;
         _isLoadingLocation = false;
       });
 
@@ -105,9 +126,11 @@ class _DropLocationPinScreenState extends State<DropLocationPinScreen> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Location acquired: ${position.latitude.toStringAsFixed(6)}, ${position.longitude.toStringAsFixed(6)}',
+              'Location captured with ±${bestPosition.accuracy.toStringAsFixed(1)}m accuracy',
             ),
-            backgroundColor: Colors.green,
+            backgroundColor: bestPosition.accuracy <= _recommendedAccuracyMeters
+                ? Colors.green
+                : Colors.orange,
           ),
         );
       }
@@ -199,6 +222,17 @@ class _DropLocationPinScreenState extends State<DropLocationPinScreen> {
       );
       return;
     }
+    if (_currentPosition!.accuracy > _maximumSaveAccuracyMeters) {
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text(
+            'GPS accuracy is too weak (±${_currentPosition!.accuracy.toStringAsFixed(1)}m). Move closer to a window and refresh location before saving.',
+          ),
+          backgroundColor: Colors.orange,
+        ),
+      );
+      return;
+    }
 
     setState(() => _isSaving = true);
 
@@ -207,6 +241,8 @@ class _DropLocationPinScreenState extends State<DropLocationPinScreen> {
       if (_roomNumberController.text.isNotEmpty) {
         metadata['roomNumber'] = _roomNumberController.text;
       }
+      metadata['capturedAccuracyMeters'] = _currentPosition!.accuracy;
+      metadata['capturedAt'] = DateTime.now().toIso8601String();
 
       final locationPinId = await _locationService.createLocationPin(
         schoolId: widget.schoolId,
@@ -269,7 +305,9 @@ class _DropLocationPinScreenState extends State<DropLocationPinScreen> {
               Card(
                 color: _currentPosition == null
                     ? Colors.orange.shade50
-                    : Colors.green.shade50,
+                    : _currentPosition!.accuracy <= _recommendedAccuracyMeters
+                        ? Colors.green.shade50
+                        : Colors.orange.shade50,
                 child: Padding(
                   padding: const EdgeInsets.all(16),
                   child: Column(
@@ -283,13 +321,17 @@ class _DropLocationPinScreenState extends State<DropLocationPinScreen> {
                                 : Icons.location_on,
                             color: _currentPosition == null
                                 ? Colors.orange
-                                : Colors.green,
+                              : _currentPosition!.accuracy <= _recommendedAccuracyMeters
+                                ? Colors.green
+                                : Colors.orange,
                           ),
                           const SizedBox(width: 8),
                           Text(
                             _currentPosition == null
                                 ? 'Acquiring Location...'
-                                : 'Location Acquired',
+                                : _currentPosition!.accuracy <= _recommendedAccuracyMeters
+                                    ? 'High-Confidence Location'
+                                    : 'Low-Confidence Location',
                             style: const TextStyle(
                               fontWeight: FontWeight.bold,
                               fontSize: 16,
@@ -302,7 +344,8 @@ class _DropLocationPinScreenState extends State<DropLocationPinScreen> {
                         Text(
                           'Lat: ${_currentPosition!.latitude.toStringAsFixed(6)}\n'
                           'Lng: ${_currentPosition!.longitude.toStringAsFixed(6)}\n'
-                          'Accuracy: ±${_currentPosition!.accuracy.toStringAsFixed(1)}m',
+                          'Accuracy: ±${_currentPosition!.accuracy.toStringAsFixed(1)}m\n'
+                          '${_currentPosition!.accuracy <= _recommendedAccuracyMeters ? 'Ready to save' : 'Refresh until accuracy improves for reliable AR'}',
                           style: const TextStyle(fontSize: 12),
                         ),
                       ],
