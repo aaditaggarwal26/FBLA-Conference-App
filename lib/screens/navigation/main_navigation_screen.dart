@@ -31,18 +31,20 @@ class _MainNavigationScreenState extends State<MainNavigationScreen> {
 
     return Scaffold(
       body: _screens[_currentIndex],
-      floatingActionButton: FloatingActionButton(
-        onPressed: () {
-          Navigator.of(context).push(
-            MaterialPageRoute(
-              builder: (context) => const AIChatScreen(),
+      floatingActionButton: _currentIndex == 2
+          ? null
+          : FloatingActionButton(
+              onPressed: () {
+                Navigator.of(context).push(
+                  MaterialPageRoute(
+                    builder: (context) => const AIChatScreen(),
+                  ),
+                );
+              },
+              backgroundColor: isDark ? AppTheme.darkPrimary : AppTheme.primaryBlue,
+              foregroundColor: Colors.white,
+              child: const Icon(Icons.auto_awesome_rounded),
             ),
-          );
-        },
-        backgroundColor: isDark ? AppTheme.darkPrimary : AppTheme.primaryBlue,
-        foregroundColor: Colors.white,
-        child: const Icon(Icons.auto_awesome_rounded),
-      ),
       bottomNavigationBar: Container(
         decoration: BoxDecoration(
           color: isDark ? AppTheme.darkSurface : Colors.white,

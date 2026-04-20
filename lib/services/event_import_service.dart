@@ -6,9 +6,8 @@ import '../models/parsed_event_model.dart';
 class EventImportService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
 
-  // Load SBLC 2026 schedule directly from bundled JSON asset (no Firestore needed)
-  Future<List<ParsedEventModel>> loadSBLCSchedule() async {
-    final jsonString = await rootBundle.loadString('lib/data/nccc_2025_events.json');
+  Future<List<ParsedEventModel>> _loadScheduleAsset(String assetPath) async {
+    final jsonString = await rootBundle.loadString(assetPath);
     final jsonData = json.decode(jsonString) as Map<String, dynamic>;
     final eventsJson = jsonData['events'] as List<dynamic>;
 
@@ -17,7 +16,8 @@ class EventImportService {
       final e = raw as Map<String, dynamic>;
       final eventName = e['eventName'] as String?;
       if (eventName == null) continue;
-      final participants = ((e['participants'] as List<dynamic>?) ?? []).cast<String>().toSet();
+      final participants =
+          ((e['participants'] as List<dynamic>?) ?? []).cast<String>().toSet();
       eventTotals.putIfAbsent(eventName, () => <String>{}).addAll(participants);
     }
 
@@ -30,25 +30,44 @@ class EventImportService {
       if (startTime == null) continue;
       final eventName = e['eventName'] as String?;
       if (eventName == null) continue;
-      final participants = ((e['participants'] as List<dynamic>?) ?? []).cast<String>().toList();
-      results.add(ParsedEventModel(
-        id: '',
-        schoolId: '',
-        schoolName: e['school'] as String?,
-        eventName: eventName,
-        location: (e['location'] as String?) ?? '',
-        startTime: startTime,
-        endTime: startTime.add(const Duration(minutes: 20)),
-        participants: participants,
-        totalParticipants: eventTotals[eventName]?.length ?? participants.length,
-        performLocation: e['location'] as String?,
-        prepLocation: null,
-        locationPinId: null,
-        metadata: null,
-      ));
+      final participants =
+          ((e['participants'] as List<dynamic>?) ?? []).cast<String>().toList();
+      results.add(
+        ParsedEventModel(
+          id: '',
+          schoolId: '',
+          schoolName: e['school'] as String?,
+          eventName: eventName,
+          location: (e['location'] as String?) ?? '',
+          startTime: startTime,
+          endTime: startTime.add(const Duration(minutes: 20)),
+          participants: participants,
+          totalParticipants: eventTotals[eventName]?.length ?? participants.length,
+          performLocation: e['location'] as String?,
+          prepLocation: null,
+          locationPinId: null,
+          metadata: {
+            'date': e['date'],
+            'prepTime': e['prepTime'],
+            'setupTime': e['setupTime'],
+            'performTime': e['performTime'],
+            'sourceAsset': assetPath,
+          },
+        ),
+      );
     }
+
     results.sort((a, b) => a.startTime.compareTo(b.startTime));
     return results;
+  }
+
+  // Load SBLC 2026 schedule directly from bundled JSON asset (no Firestore needed)
+  Future<List<ParsedEventModel>> loadSBLCSchedule() async {
+    return _loadScheduleAsset('lib/data/nccc_2025_events.json');
+  }
+
+  Future<List<ParsedEventModel>> loadFinalsSchedule() async {
+    return _loadScheduleAsset('lib/data/nccc_final_2025_events.json');
   }
 
   // Import NCCC 2025 events from the bundled JSON asset

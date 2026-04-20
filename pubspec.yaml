@@ -107,6 +107,7 @@ flutter:
   assets:
     - assets/logo.png
     - lib/data/nccc_2025_events.json
+    - lib/data/nccc_final_2025_events.json
     - .env
 
   # An image asset can refer to one or more resolution-specific "variants", see
