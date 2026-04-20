@@ -158,6 +158,73 @@ class _EventDetailPageState extends State<EventDetailPage> {
     }
   }
 
+  Future<void> _openDropLocationPin() async {
+    final userId = FirebaseAuth.instance.currentUser?.uid;
+    if (userId == null) {
+      return;
+    }
+
+    final result = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(
+        builder: (context) => DropLocationPinScreen(
+          schoolId: widget.schoolId,
+          userId: userId,
+        ),
+      ),
+    );
+
+    if (result == null || !mounted) {
+      return;
+    }
+
+    try {
+      await FirebaseFirestore.instance
+          .collection('event_location_links')
+          .doc(_eventId)
+          .set({
+        'locationPinId': result,
+        'schoolId': widget.schoolId,
+        'eventName': widget.event.eventName,
+        'schoolName': widget.event.schoolName,
+      });
+
+      if (widget.event.id.isNotEmpty) {
+        await FirebaseFirestore.instance
+            .collection('parsed_events')
+            .doc(widget.event.id)
+            .set({
+          'locationPinId': result,
+        }, SetOptions(merge: true));
+      }
+
+      await Future.delayed(const Duration(milliseconds: 300));
+      await _loadLocationPin();
+
+      if (!mounted) {
+        return;
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        const SnackBar(
+          content: Text('Location pin linked successfully!'),
+          backgroundColor: Colors.green,
+        ),
+      );
+    } catch (e) {
+      if (!mounted) {
+        return;
+      }
+
+      ScaffoldMessenger.of(context).showSnackBar(
+        SnackBar(
+          content: Text('Error linking pin: $e'),
+          backgroundColor: Colors.red,
+        ),
+      );
+    }
+  }
+
   /// Determines the color theme for the event based on its name/category.
   Color _getEventColor() {
     final eventName = widget.event.eventName.toLowerCase();
@@ -614,6 +681,23 @@ class _EventDetailPageState extends State<EventDetailPage> {
                                   ),
                                 ),
                               ),
+                              const SizedBox(height: 12),
+                              SizedBox(
+                                width: double.infinity,
+                                child: OutlinedButton.icon(
+                                  onPressed: _openDropLocationPin,
+                                  icon: const Icon(Icons.edit_location_alt_rounded),
+                                  label: const Text('Update Location Pin'),
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor: eventColor,
+                                    side: BorderSide(color: eventColor),
+                                    padding: const EdgeInsets.symmetric(vertical: 16),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
+                                    ),
+                                  ),
+                                ),
+                              ),
                             ],
                           )
                         else
@@ -645,72 +729,23 @@ class _EventDetailPageState extends State<EventDetailPage> {
                                   ),
                                 ],
                               ),
-                              if (widget.isAdmin) ...[
-                                const SizedBox(height: 16),
-                                SizedBox(
-                                  width: double.infinity,
-                                  child: OutlinedButton.icon(
-                                    onPressed: () async {
-                                      final userId = FirebaseAuth.instance.currentUser?.uid;
-                                      if (userId == null) return;
-                                      
-                                      final result = await Navigator.push(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder: (context) => DropLocationPinScreen(
-                                            schoolId: widget.schoolId,
-                                            userId: userId,
-                                          ),
-                                        ),
-                                      );
-                                      if (result != null && mounted) {
-                                        // Link the created pin to this event using the composite key
-                                        // so it works for JSON-loaded events (no Firestore document ID)
-                                        try {
-                                          await FirebaseFirestore.instance
-                                              .collection('event_location_links')
-                                              .doc(_eventId)
-                                              .set({
-                                            'locationPinId': result,
-                                            'schoolId': widget.schoolId,
-                                            'eventName': widget.event.eventName,
-                                            'schoolName': widget.event.schoolName,
-                                          });
-                                          await Future.delayed(const Duration(milliseconds: 300));
-                                          if (mounted) {
-                                            await _loadLocationPin();
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                              const SnackBar(
-                                                content: Text('Location pin linked successfully!'),
-                                                backgroundColor: Colors.green,
-                                              ),
-                                            );
-                                          }
-                                        } catch (e) {
-                                          if (mounted) {
-                                            ScaffoldMessenger.of(context).showSnackBar(
-                                              SnackBar(
-                                                content: Text('Error linking pin: $e'),
-                                                backgroundColor: Colors.red,
-                                              ),
-                                            );
-                                          }
-                                        }
-                                      }
-                                    },
-                                    icon: const Icon(Icons.add_location_rounded),
-                                    label: const Text('Drop Location Pin (Admin)'),
-                                    style: OutlinedButton.styleFrom(
-                                      foregroundColor: eventColor,
-                                      side: BorderSide(color: eventColor),
-                                      padding: const EdgeInsets.symmetric(vertical: 16),
-                                      shape: RoundedRectangleBorder(
-                                        borderRadius: BorderRadius.circular(12),
-                                      ),
+                              const SizedBox(height: 16),
+                              SizedBox(
+                                width: double.infinity,
+                                child: OutlinedButton.icon(
+                                  onPressed: _openDropLocationPin,
+                                  icon: const Icon(Icons.add_location_rounded),
+                                  label: const Text('Drop Location Pin'),
+                                  style: OutlinedButton.styleFrom(
+                                    foregroundColor: eventColor,
+                                    side: BorderSide(color: eventColor),
+                                    padding: const EdgeInsets.symmetric(vertical: 16),
+                                    shape: RoundedRectangleBorder(
+                                      borderRadius: BorderRadius.circular(12),
                                     ),
                                   ),
                                 ),
-                              ],
+                              ),
                             ],
                           ),
                       ],

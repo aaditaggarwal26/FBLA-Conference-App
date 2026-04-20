@@ -22,13 +22,15 @@ class NCCCEventDetailScreen extends StatefulWidget {
 
 class _NCCCEventDetailScreenState extends State<NCCCEventDetailScreen> {
   final EventImportService _eventService = EventImportService();
-  late Future<List<ParsedEventModel>> _eventsFuture;
+  late Future<List<ParsedEventModel>> _stateEventsFuture;
+  late Future<List<ParsedEventModel>> _finalsEventsFuture;
 
   final TextEditingController _searchController = TextEditingController();
   String _searchQuery = '';
   String? _selectedEvent;
   bool _showOnlyMyEvents = false;
   bool _hasPromptedClaim = false;
+  int _selectedScheduleIndex = 0;
 
   static const _darkBg = Color(0xFF0D1117);
   static const _darkSurface = Color(0xFF161B22);
@@ -42,7 +44,8 @@ class _NCCCEventDetailScreenState extends State<NCCCEventDetailScreen> {
   @override
   void initState() {
     super.initState();
-    _eventsFuture = _eventService.loadSBLCSchedule();
+    _stateEventsFuture = _eventService.loadSBLCSchedule();
+    _finalsEventsFuture = _eventService.loadFinalsSchedule();
   }
 
   @override
@@ -322,6 +325,33 @@ class _NCCCEventDetailScreenState extends State<NCCCEventDetailScreen> {
     return Icons.event;
   }
 
+  Future<List<ParsedEventModel>> get _activeEventsFuture {
+    return _selectedScheduleIndex == 0 ? _stateEventsFuture : _finalsEventsFuture;
+  }
+
+  String get _activeScheduleLabel {
+    return _selectedScheduleIndex == 0 ? 'FBLA State' : 'Finals';
+  }
+
+  void _switchSchedule(int index) {
+    if (_selectedScheduleIndex == index) return;
+    setState(() {
+      _selectedScheduleIndex = index;
+      _selectedEvent = null;
+      _hasPromptedClaim = false;
+    });
+  }
+
+  void _reloadActiveSchedule() {
+    setState(() {
+      if (_selectedScheduleIndex == 0) {
+        _stateEventsFuture = _eventService.loadSBLCSchedule();
+      } else {
+        _finalsEventsFuture = _eventService.loadFinalsSchedule();
+      }
+    });
+  }
+
   @override
   Widget build(BuildContext context) {
     final isDark = Theme.of(context).brightness == Brightness.dark;
@@ -339,7 +369,7 @@ class _NCCCEventDetailScreenState extends State<NCCCEventDetailScreen> {
       backgroundColor: bgColor,
       appBar: AppBar(
         title: Text(
-          'FBLA State',
+          'Results',
           style: TextStyle(color: textPrimary, fontWeight: FontWeight.w700, fontSize: 18),
         ),
         backgroundColor: surfaceColor,
@@ -366,7 +396,7 @@ class _NCCCEventDetailScreenState extends State<NCCCEventDetailScreen> {
         ],
       ),
       body: FutureBuilder<List<ParsedEventModel>>(
-        future: _eventsFuture,
+        future: _activeEventsFuture,
         builder: (context, snapshot) {
           if (snapshot.hasError) {
             return Center(
@@ -384,8 +414,7 @@ class _NCCCEventDetailScreenState extends State<NCCCEventDetailScreen> {
                         style: TextStyle(fontSize: 12, color: textSecondary), textAlign: TextAlign.center),
                     const SizedBox(height: 24),
                     FilledButton.icon(
-                      onPressed: () =>
-                          setState(() => _eventsFuture = _eventService.loadSBLCSchedule()),
+                      onPressed: _reloadActiveSchedule,
                       icon: const Icon(Icons.refresh_rounded),
                       label: const Text('Retry'),
                       style: FilledButton.styleFrom(backgroundColor: accent),
@@ -403,7 +432,7 @@ class _NCCCEventDetailScreenState extends State<NCCCEventDetailScreen> {
                 children: [
                   CircularProgressIndicator(color: accent, strokeWidth: 2.5),
                   const SizedBox(height: 20),
-                  Text('Loading FBLA State schedule\u2026',
+                  Text('Loading ${_activeScheduleLabel.toLowerCase()} schedule\u2026',
                       style: TextStyle(color: textSecondary, fontSize: 14)),
                 ],
               ),
@@ -424,6 +453,41 @@ class _NCCCEventDetailScreenState extends State<NCCCEventDetailScreen> {
 
           return Column(
             children: [
+              Container(
+                color: surfaceColor,
+                padding: const EdgeInsets.fromLTRB(14, 12, 14, 6),
+                child: Container(
+                  padding: const EdgeInsets.all(4),
+                  decoration: BoxDecoration(
+                    color: inputColor,
+                    borderRadius: BorderRadius.circular(14),
+                    border: Border.all(color: divider),
+                  ),
+                  child: Row(
+                    children: [
+                      Expanded(
+                        child: _scheduleTab(
+                          label: 'FBLA State',
+                          selected: _selectedScheduleIndex == 0,
+                          accent: accent,
+                          textSecondary: textSecondary,
+                          onTap: () => _switchSchedule(0),
+                        ),
+                      ),
+                      Expanded(
+                        child: _scheduleTab(
+                          label: 'Finals',
+                          selected: _selectedScheduleIndex == 1,
+                          accent: accent,
+                          textSecondary: textSecondary,
+                          onTap: () => _switchSchedule(1),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ),
+
               // Search bar
               Container(
                 color: surfaceColor,
@@ -566,7 +630,7 @@ class _NCCCEventDetailScreenState extends State<NCCCEventDetailScreen> {
         },
       ),
       floatingActionButton: FutureBuilder<List<ParsedEventModel>>(
-        future: _eventsFuture,
+        future: _activeEventsFuture,
         builder: (context, snap) {
           if (!snap.hasData || snap.data!.isEmpty) return const SizedBox.shrink();
           return FloatingActionButton.extended(
@@ -578,6 +642,37 @@ class _NCCCEventDetailScreenState extends State<NCCCEventDetailScreen> {
             elevation: isDark ? 2 : 4,
           );
         },
+      ),
+    );
+  }
+
+  Widget _scheduleTab({
+    required String label,
+    required bool selected,
+    required Color accent,
+    required Color textSecondary,
+    required VoidCallback onTap,
+  }) {
+    return GestureDetector(
+      onTap: onTap,
+      child: AnimatedContainer(
+        duration: const Duration(milliseconds: 180),
+        curve: Curves.easeOut,
+        padding: const EdgeInsets.symmetric(vertical: 10),
+        decoration: BoxDecoration(
+          color: selected ? accent : Colors.transparent,
+          borderRadius: BorderRadius.circular(10),
+        ),
+        child: Center(
+          child: Text(
+            label,
+            style: TextStyle(
+              color: selected ? Colors.white : textSecondary,
+              fontWeight: selected ? FontWeight.w700 : FontWeight.w600,
+              fontSize: 13,
+            ),
+          ),
+        ),
       ),
     );
   }

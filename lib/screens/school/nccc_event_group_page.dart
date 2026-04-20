@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:firebase_auth/firebase_auth.dart';
+import 'package:cloud_firestore/cloud_firestore.dart';
 import '../../models/parsed_event_model.dart';
 import '../../models/location_pin_model.dart';
 import '../../services/location_pin_service.dart';
@@ -44,25 +45,40 @@ class _NCCCEventGroupPageState extends State<NCCCEventGroupPage> {
   }
 
   Future<void> _loadLocationPin() async {
-    // Check if any event in this group has a location pin
-    final firstEventWithPin = widget.events.firstWhere(
-      (event) => event.locationPinId != null,
-      orElse: () => widget.events.first,
-    );
+    try {
+      String? pinId;
 
-    if (firstEventWithPin.locationPinId != null) {
-      try {
-        final pin = await _locationPinService.getLocationPinById(
-          firstEventWithPin.locationPinId!,
-        );
-        if (mounted) {
-          setState(() {
-            _linkedLocation = pin;
-          });
+      for (final event in widget.events) {
+        final linkId = '${event.eventName}::${event.schoolName ?? ""}';
+        final linkDoc = await FirebaseFirestore.instance
+            .collection('event_location_links')
+            .doc(linkId)
+            .get();
+        if (linkDoc.exists) {
+          pinId = linkDoc.data()?['locationPinId'] as String?;
         }
-      } catch (e) {
-        print('Error loading location pin: $e');
+
+        pinId ??= event.locationPinId;
+        if (pinId != null && pinId.isNotEmpty) {
+          break;
+        }
       }
+
+      if (pinId == null || pinId.isEmpty) {
+        if (mounted) {
+          setState(() => _linkedLocation = null);
+        }
+        return;
+      }
+
+      final pin = await _locationPinService.getLocationPinById(pinId);
+      if (mounted) {
+        setState(() {
+          _linkedLocation = pin;
+        });
+      }
+    } catch (e) {
+      debugPrint('Error loading location pin: $e');
     }
   }
 
