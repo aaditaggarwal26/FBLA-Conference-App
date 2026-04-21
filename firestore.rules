@@ -292,7 +292,7 @@ service cloud.firestore {
 
       allow read: if isSignedIn();
 
-      allow create: if isSignedIn() && isSchoolAdmin(request.resource.data.schoolId);
+      allow create: if isSignedIn() && isSchoolMember(request.resource.data.schoolId);
 
       allow update, delete: if isSignedIn() && isSchoolAdmin(resource.data.schoolId);
 
@@ -302,9 +302,11 @@ service cloud.firestore {
 
       allow read: if isSignedIn();
 
-      allow create: if isSignedIn() && isSchoolAdmin(request.resource.data.schoolId);
+      allow create: if isSignedIn() && isSchoolMember(request.resource.data.schoolId);
 
-      allow update, delete: if isSignedIn() && isSchoolAdmin(resource.data.schoolId);
+      allow update: if isSignedIn() && isSchoolMember(resource.data.schoolId);
+
+      allow delete: if isSignedIn() && isSchoolAdmin(resource.data.schoolId);
 
     }
 
