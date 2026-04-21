@@ -30,10 +30,14 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
     with TickerProviderStateMixin, WidgetsBindingObserver {
   final ARNavigationService _navService = ARNavigationService();
   final LocationPinService _locationService = LocationPinService();
-  static const Color _brandNavy = Color(0xFF071B34);
-  static const Color _brandBlue = Color(0xFF2F80ED);
-  static const Color _brandMint = Color(0xFF27C3A8);
-  static const Color _brandAmber = Color(0xFFF4B740);
+  static const Color _brandInk = Color(0xFF08111F);
+  static const Color _brandSlate = Color(0xFF132238);
+  static const Color _brandBlue = Color(0xFF5AA9FF);
+  static const Color _brandMint = Color(0xFF37D2B3);
+  static const Color _brandAmber = Color(0xFFFFC857);
+  static const Color _brandCoral = Color(0xFFFF7A59);
+  static const Color _glassText = Color(0xFFF5F7FB);
+  static const Color _glassMutedText = Color(0xFFB8C7DD);
   static const double _maxOperationalAccuracyMeters = 35.0;
 
   // Navigation state
@@ -269,6 +273,10 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
             return;
           }
 
+          if (!_shouldAcceptPosition(position)) {
+            return;
+          }
+
           setState(() {
             _currentPosition = position;
             _currentAccuracyMeters = position.accuracy;
@@ -355,6 +363,28 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
     }
   }
 
+  bool _shouldAcceptPosition(Position nextPosition) {
+    final currentPosition = _currentPosition;
+    if (currentPosition == null) {
+      return true;
+    }
+
+    final sampledMovement = _navService.calculateDistance(
+      fromLatitude: currentPosition.latitude,
+      fromLongitude: currentPosition.longitude,
+      toLatitude: nextPosition.latitude,
+      toLongitude: nextPosition.longitude,
+    );
+
+    final currentAccuracy = currentPosition.accuracy;
+    final nextAccuracy = nextPosition.accuracy;
+    final noiseFloor = math.max(currentAccuracy, nextAccuracy);
+    final isMostlyNoise = sampledMovement <= noiseFloor;
+    final isMeaningfullyWorseFix = nextAccuracy > currentAccuracy + 4;
+
+    return !(isMostlyNoise && isMeaningfullyWorseFix);
+  }
+
   /// Returns a color based on the navigation state (distance, arrival).
   Color _getDirectionColor() {
     if (_navInstruction == null) return Colors.grey;
@@ -388,16 +418,229 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
     return null;
   }
 
+  Color _headerTone() {
+    if (_navInstruction == null) {
+      return _brandBlue;
+    }
+
+    if (_navInstruction!.hasArrived) {
+      return _brandMint;
+    }
+
+    if (!_navInstruction!.hasPreciseDistance) {
+      return _brandAmber;
+    }
+
+    return _brandBlue;
+  }
+
+  Widget _buildTopHeader() {
+    final destinationName = _destination?.name ?? 'Destination';
+    final badgeColor = _headerTone();
+    final distanceLabel = _navInstruction?.distanceFormatted ?? 'Locating…';
+    final distanceContext = _navInstruction?.distanceContextLabel ?? 'Finding a stable GPS fix';
+
+    return SafeArea(
+      bottom: false,
+      child: Padding(
+        padding: const EdgeInsets.fromLTRB(14, 12, 14, 0),
+        child: Container(
+          decoration: BoxDecoration(
+            color: _brandInk.withValues(alpha: 0.82),
+            borderRadius: BorderRadius.circular(24),
+            border: Border.all(color: Colors.white.withValues(alpha: 0.08)),
+            boxShadow: const [
+              BoxShadow(
+                color: Color(0x55000000),
+                blurRadius: 24,
+                offset: Offset(0, 12),
+              ),
+            ],
+          ),
+          child: Padding(
+            padding: const EdgeInsets.fromLTRB(14, 14, 14, 14),
+            child: Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Row(
+                  children: [
+                    _buildHeaderIconButton(
+                      icon: Icons.arrow_back_rounded,
+                      onTap: () => Navigator.pop(context),
+                    ),
+                    const SizedBox(width: 12),
+                    Expanded(
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
+                          Text(
+                            'AR Navigation',
+                            style: const TextStyle(
+                              color: _glassText,
+                              fontSize: 18,
+                              fontWeight: FontWeight.w800,
+                            ),
+                          ),
+                          const SizedBox(height: 2),
+                          Text(
+                            destinationName,
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
+                            style: const TextStyle(
+                              color: _glassMutedText,
+                              fontSize: 13,
+                              fontWeight: FontWeight.w600,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                    Container(
+                      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+                      decoration: BoxDecoration(
+                        color: badgeColor.withValues(alpha: 0.18),
+                        borderRadius: BorderRadius.circular(14),
+                        border: Border.all(color: badgeColor.withValues(alpha: 0.4)),
+                      ),
+                      child: Text(
+                        _navInstruction?.hasPreciseDistance == false ? 'APPROX' : 'LIVE',
+                        style: TextStyle(
+                          color: badgeColor,
+                          fontWeight: FontWeight.w800,
+                          fontSize: 11,
+                          letterSpacing: 0.8,
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+                const SizedBox(height: 16),
+                Text(
+                  distanceLabel,
+                  style: const TextStyle(
+                    color: _glassText,
+                    fontSize: 30,
+                    fontWeight: FontWeight.w800,
+                    height: 1,
+                  ),
+                ),
+                const SizedBox(height: 6),
+                Text(
+                  distanceContext,
+                  style: const TextStyle(
+                    color: _glassMutedText,
+                    fontSize: 13,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+                const SizedBox(height: 14),
+                Wrap(
+                  spacing: 8,
+                  runSpacing: 8,
+                  children: [
+                    _buildHeaderChip(
+                      icon: Icons.gps_fixed_rounded,
+                      label: _currentAccuracyMeters == null
+                          ? 'GPS acquiring'
+                          : 'GPS ±${_currentAccuracyMeters!.toStringAsFixed(0)}m',
+                    ),
+                    if (_destinationAccuracyMeters != null)
+                      _buildHeaderChip(
+                        icon: Icons.place_rounded,
+                        label: 'Pin ±${_destinationAccuracyMeters!.toStringAsFixed(0)}m',
+                      ),
+                    _buildHeaderChip(
+                      icon: Icons.event_rounded,
+                      label: widget.event.eventName,
+                    ),
+                  ],
+                ),
+                if (_buildAccuracyNotice() != null) ...[
+                  const SizedBox(height: 12),
+                  Container(
+                    width: double.infinity,
+                    padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
+                    decoration: BoxDecoration(
+                      color: _brandAmber.withValues(alpha: 0.12),
+                      borderRadius: BorderRadius.circular(14),
+                      border: Border.all(color: _brandAmber.withValues(alpha: 0.25)),
+                    ),
+                    child: Text(
+                      _buildAccuracyNotice()!,
+                      style: const TextStyle(
+                        color: _glassText,
+                        fontSize: 12.5,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ),
+                ],
+              ],
+            ),
+          ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeaderIconButton({
+    required IconData icon,
+    required VoidCallback onTap,
+  }) {
+    return Material(
+      color: Colors.white.withValues(alpha: 0.08),
+      borderRadius: BorderRadius.circular(14),
+      child: InkWell(
+        onTap: onTap,
+        borderRadius: BorderRadius.circular(14),
+        child: SizedBox(
+          width: 42,
+          height: 42,
+          child: Icon(icon, color: _glassText),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildHeaderChip({
+    required IconData icon,
+    required String label,
+  }) {
+    return Container(
+      constraints: const BoxConstraints(maxWidth: 220),
+      padding: const EdgeInsets.symmetric(horizontal: 10, vertical: 8),
+      decoration: BoxDecoration(
+        color: Colors.white.withValues(alpha: 0.06),
+        borderRadius: BorderRadius.circular(14),
+      ),
+      child: Row(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Icon(icon, size: 15, color: _glassMutedText),
+          const SizedBox(width: 6),
+          Flexible(
+            child: Text(
+              label,
+              maxLines: 1,
+              overflow: TextOverflow.ellipsis,
+              style: const TextStyle(
+                color: _glassText,
+                fontSize: 12,
+                fontWeight: FontWeight.w600,
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     // Show loading state
     if (_isLoading) {
       return Scaffold(
-        appBar: AppBar(
-          title: const Text('AR Navigation'),
-          backgroundColor: _brandNavy,
-          foregroundColor: Colors.white,
-        ),
+        backgroundColor: _brandInk,
         body: const Center(
           child: CircularProgressIndicator(),
         ),
@@ -410,11 +653,7 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
                                       _errorMessage!.contains('Permission');
       
       return Scaffold(
-        appBar: AppBar(
-          title: const Text('AR Navigation'),
-          backgroundColor: _brandNavy,
-          foregroundColor: Colors.white,
-        ),
+        backgroundColor: _brandInk,
         body: Center(
           child: Padding(
             padding: const EdgeInsets.all(24),
@@ -437,7 +676,7 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
                     icon: const Icon(Icons.settings),
                     label: const Text('Open Settings'),
                     style: ElevatedButton.styleFrom(
-                      backgroundColor: _brandNavy,
+                      backgroundColor: _brandSlate,
                     ),
                   ),
                   const SizedBox(height: 12),
@@ -471,17 +710,7 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
 
     // Main AR View
     return Scaffold(
-      appBar: AppBar(
-        title: const Text('AR Navigation'),
-        backgroundColor: _brandNavy,
-        foregroundColor: Colors.white,
-        elevation: 0,
-        surfaceTintColor: Colors.transparent,
-        leading: IconButton(
-          icon: const Icon(Icons.arrow_back, color: Colors.white),
-          onPressed: () => Navigator.pop(context),
-        ),
-      ),
+      backgroundColor: Colors.black,
       body: Stack(
         children: [
           // Camera View
@@ -507,9 +736,9 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
                 begin: Alignment.topCenter,
                 end: Alignment.bottomCenter,
                 colors: [
-                  Colors.black.withOpacity(0.3),
+                  Colors.black.withValues(alpha: 0.3),
                   Colors.transparent,
-                  Colors.black.withOpacity(0.7),
+                  Colors.black.withValues(alpha: 0.7),
                 ],
               ),
             ),
@@ -519,63 +748,7 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
           Positioned.fill(
             child: Column(
               children: [
-                const SizedBox(height: 20),
-
-                // Event Info Card
-                Padding(
-                  padding: const EdgeInsets.all(16),
-                  child: Card(
-                    elevation: 0,
-                    color: const Color(0xFFF8FBFF).withValues(alpha: 0.96),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(20),
-                      side: BorderSide(color: _brandBlue.withValues(alpha: 0.25)),
-                    ),
-                    child: Padding(
-                      padding: const EdgeInsets.all(16),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            widget.event.eventName,
-                            style: const TextStyle(
-                              fontWeight: FontWeight.bold,
-                              fontSize: 18,
-                              color: _brandNavy,
-                            ),
-                          ),
-                          const SizedBox(height: 4),
-                          Text(
-                            'Going to: ${_destination?.name ?? "Unknown"}',
-                            style: const TextStyle(
-                              color: Color(0xFF425466),
-                              fontWeight: FontWeight.w500,
-                            ),
-                          ),
-                          if (_buildAccuracyNotice() != null) ...[
-                            const SizedBox(height: 12),
-                            Container(
-                              width: double.infinity,
-                              padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 10),
-                              decoration: BoxDecoration(
-                                color: _brandAmber.withValues(alpha: 0.14),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Text(
-                                _buildAccuracyNotice()!,
-                                style: const TextStyle(
-                                  color: _brandNavy,
-                                  fontSize: 12.5,
-                                  fontWeight: FontWeight.w600,
-                                ),
-                              ),
-                            ),
-                          ],
-                        ],
-                      ),
-                    ),
-                  ),
-                ),
+                _buildTopHeader(),
 
                 const Spacer(),
 
@@ -594,7 +767,7 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
                       height: 150,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: _getDirectionColor().withOpacity(0.2),
+                        color: _getDirectionColor().withValues(alpha: 0.2),
                         border: Border.all(
                           color: _getDirectionColor(),
                           width: 4,
@@ -631,6 +804,22 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
                       ],
                     ),
                   ),
+                  const SizedBox(height: 6),
+                  Text(
+                    _navInstruction!.distanceContextLabel,
+                    textAlign: TextAlign.center,
+                    style: const TextStyle(
+                      color: _glassMutedText,
+                      fontSize: 13,
+                      fontWeight: FontWeight.w600,
+                      shadows: [
+                        Shadow(
+                          blurRadius: 10,
+                          color: Colors.black,
+                        ),
+                      ],
+                    ),
+                  ),
                   const SizedBox(height: 8),
 
                   // Direction Text
@@ -659,7 +848,7 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
                     Container(
                       padding: const EdgeInsets.all(12),
                       decoration: BoxDecoration(
-                        color: Colors.orange.withOpacity(0.9),
+                        color: _brandCoral.withValues(alpha: 0.94),
                         borderRadius: BorderRadius.circular(8),
                       ),
                       child: Row(
@@ -710,7 +899,7 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
                   if (_destination != null) ...[
                     Row(
                       children: [
-                        const Icon(Icons.location_on, color: _brandNavy),
+                        const Icon(Icons.location_on, color: _brandInk),
                         const SizedBox(width: 8),
                         Expanded(
                           child: Column(
@@ -779,7 +968,7 @@ class _ARNavigationScreenState extends State<ARNavigationScreen>
       ),
       child: Row(
         children: [
-          Icon(icon, size: 16, color: _brandNavy),
+          Icon(icon, size: 16, color: _brandInk),
           const SizedBox(width: 4),
           Text(label, style: const TextStyle(fontSize: 12)),
         ],
