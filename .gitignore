@@ -17,6 +17,12 @@ migrate_working_dir/
 .env.*
 !.env.example
 
+# Firebase config — contains API keys, regenerate with: flutterfire configure
+GoogleService-Info.plist
+ios/Runner/GoogleService-Info.plist
+android/app/google-services.json
+lib/firebase_options.dart
+
 # IntelliJ related
 *.iml
 *.ipr

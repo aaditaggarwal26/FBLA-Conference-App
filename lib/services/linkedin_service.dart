@@ -5,36 +5,34 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/services.dart';
 import 'package:url_launcher/url_launcher.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import '../screens/linkedin/linkedin_preview_screen.dart';
 
-/// LinkedIn API Service
-/// Handles OAuth authentication and posting to LinkedIn
 class LinkedInService {
   final FirebaseFirestore _firestore = FirebaseFirestore.instance;
   final FirebaseAuth _auth = FirebaseAuth.instance;
 
-  // LinkedIn OAuth endpoints
+  // linkedIn OAuth endpoints
   static const String _authorizationUrl =
       'https://www.linkedin.com/oauth/v2/authorization';
   static const String _tokenUrl =
       'https://www.linkedin.com/oauth/v2/accessToken';
   static const String _apiBaseUrl = 'https://api.linkedin.com/v2';
 
-  // Note: These should be stored in environment variables or Firebase config
-  // For now, using placeholder values that need to be configured
-  static const String _clientId = 'YOUR_LINKEDIN_CLIENT_ID';
-  static const String _clientSecret = 'YOUR_LINKEDIN_CLIENT_SECRET';
+  static String get _clientId =>
+      dotenv.env['LINKEDIN_CLIENT_ID'] ?? '';
+  static String get _clientSecret =>
+      dotenv.env['LINKEDIN_CLIENT_SECRET'] ?? '';
   static const String _redirectUri =
       'https://fbla-conference-app.firebaseapp.com/linkedin/callback.html';
 
-  // Scopes needed for posting and retrieving the member ID
+  // scopes needed for posting and retrieving the member ID
   // w_member_social: allows posting to LinkedIn (Share on LinkedIn product)
   // openid/profile/email: OpenID Connect info
   // r_liteprofile: gives numeric member ID via /me endpoint
   static const String _scopes =
       'w_member_social openid profile email r_basicprofile';
 
-  /// Check if LinkedIn is connected for the current user/school
   Future<bool> isConnected({String? schoolId}) async {
     try {
       final userId = _auth.currentUser?.uid;
@@ -46,8 +44,8 @@ class LinkedInService {
       final data = doc.data() as Map<String, dynamic>?;
       final accessToken = data?['accessToken'] as String?;
 
-      // Just check if token exists - don't verify it here (that will happen when posting)
-      // This avoids unnecessary API calls and potential failures
+      // just check if token exists - don't verify it here (that will happen when posting)
+      // this avoids unnecessary API calls and potential failures
       return accessToken != null && accessToken.isNotEmpty;
     } catch (e) {
       print('Error checking LinkedIn connection: $e');
@@ -55,7 +53,6 @@ class LinkedInService {
     }
   }
 
-  /// Get LinkedIn connection status
   Future<Map<String, dynamic>?> getConnectionStatus({String? schoolId}) async {
     try {
       final userId = _auth.currentUser?.uid;
@@ -77,8 +74,6 @@ class LinkedInService {
     }
   }
 
-  /// Initiate LinkedIn OAuth flow
-  /// Returns the authorization URL to open in browser
   String getAuthorizationUrl() {
     final state = DateTime.now().millisecondsSinceEpoch.toString();
 
@@ -94,13 +89,12 @@ class LinkedInService {
     return uri.toString();
   }
 
-  /// Handle OAuth callback and exchange code for access token
   Future<bool> handleOAuthCallback(String code, {String? schoolId}) async {
     try {
       final userId = _auth.currentUser?.uid;
       if (userId == null) throw Exception('User not authenticated');
 
-      // Exchange authorization code for access token
+      // exchange authorization code for access token
       final tokenResponse = await http.post(
         Uri.parse(_tokenUrl),
         headers: {'Content-Type': 'application/x-www-form-urlencoded'},
@@ -123,30 +117,30 @@ class LinkedInService {
       final expiresIn = tokenData['expires_in'] as int?;
       final refreshToken = tokenData['refresh_token'] as String?;
 
-      // Try to get person URN from token response (if available)
+      // try to get person URN from token response (if available)
       String? personUrn;
       String username = 'LinkedIn User';
 
-      // First, check if token response itself contains member ID
-      // Sometimes LinkedIn includes it in the token response
+      // first, check if token response itself contains member ID
+      // sometimes LinkedIn includes it in the token response
       if (tokenData.containsKey('linkedin_member_id')) {
         final memberId = tokenData['linkedin_member_id'] as String;
         personUrn = 'urn:li:member:$memberId';
         print('Got member ID from token response: $personUrn');
       }
 
-      // Check if token response contains user info via ID token
+      // check if token response contains user info via ID token
       if ((personUrn == null || personUrn.isEmpty) &&
           tokenData.containsKey('id_token')) {
-        // If using OpenID Connect, decode the ID token
+        // if using OpenID Connect, decode the ID token
         try {
-          // ID token is a JWT, we can decode it to get user info
+          // iD token is a JWT, we can decode it to get user info
           final idToken = tokenData['id_token'] as String;
           final parts = idToken.split('.');
           if (parts.length >= 2) {
-            // Decode the payload (base64)
+            // decode the payload (base64)
             final payload = parts[1];
-            // Add padding if needed
+            // add padding if needed
             String normalizedPayload = payload;
             switch (payload.length % 4) {
               case 1:
@@ -172,7 +166,7 @@ class LinkedInService {
               }
             }
 
-            // Also check for other fields that might contain member ID
+            // also check for other fields that might contain member ID
             print('ID token data keys: ${idTokenData.keys.toList()}');
             for (final key in idTokenData.keys) {
               print('ID token $key: ${idTokenData[key]}');
@@ -186,9 +180,9 @@ class LinkedInService {
         }
       }
 
-      // If we still don't have person URN from ID token, that's okay
-      // We'll get it when posting (the UGC Posts API might provide it)
-      // Store tokens and person URN (if we have it)
+      // if we still don't have person URN from ID token, that's okay
+      // we'll get it when posting (the UGC Posts API might provide it)
+      // store tokens and person URN (if we have it)
       await _storeTokens(
         userId: userId,
         schoolId: schoolId,
@@ -206,7 +200,6 @@ class LinkedInService {
     }
   }
 
-  /// Post text content to LinkedIn
   Future<bool> postToLinkedIn({
     required String text,
     String? schoolId,
@@ -226,8 +219,8 @@ class LinkedInService {
         throw Exception('LinkedIn access token not found');
       }
 
-      // For demo purposes: Always show the preview screen instead of actual API posting
-      // This provides a polished, reliable demo experience
+      // for demo purposes: Always show the preview screen instead of actual API posting
+      // this provides a polished, reliable demo experience
       if (context != null && context.mounted) {
         final result = await Navigator.of(context).push<bool>(
           MaterialPageRoute(
@@ -237,15 +230,15 @@ class LinkedInService {
         return result ?? false;
       }
 
-      // Get person URN from stored data
+      // get person URN from stored data
       String? personUrn = data?['personUrn'] as String?;
 
-      // If we don't have person URN stored, try alternative methods
+      // if we don't have person URN stored, try alternative methods
       if (personUrn == null || personUrn.isEmpty) {
-        // Method 1: Try to get from UGC Posts API by making a minimal request
-        // Sometimes LinkedIn returns the person URN in error messages
+        // method 1: Try to get from UGC Posts API by making a minimal request
+        // sometimes LinkedIn returns the person URN in error messages
         try {
-          // Try posting with a placeholder to see if we get person URN in response
+          // try posting with a placeholder to see if we get person URN in response
           final testResponse = await http.post(
             Uri.parse('$_apiBaseUrl/ugcPosts'),
             headers: {
@@ -268,18 +261,18 @@ class LinkedInService {
             }),
           );
 
-          // Check error response for person URN hints
+          // check error response for person URN hints
           if (testResponse.statusCode != 201) {
             final errorBody = testResponse.body;
             print('Test post error (looking for person URN): $errorBody');
 
-            // Try to extract member ID from error message
-            // Error format: "urn:li:member:\d+" or similar
+            // try to extract member ID from error message
+            // error format: "urn:li:member:\d+" or similar
             try {
               final errorData = json.decode(errorBody) as Map<String, dynamic>;
               final message = errorData['message'] as String? ?? '';
 
-              // Look for member ID pattern in error message
+              // look for member ID pattern in error message
               final memberIdRegex = RegExp(r'urn:li:member:(\d+)');
               final match = memberIdRegex.firstMatch(message);
               if (match != null) {
@@ -295,8 +288,8 @@ class LinkedInService {
           print('Error in test post: $e');
         }
 
-        // Method 2: Try LinkedIn's user info endpoint (OpenID Connect endpoint)
-        // This should now work because we request openid/profile/email scopes
+        // method 2: Try LinkedIn's user info endpoint (OpenID Connect endpoint)
+        // this should now work because we request openid/profile/email scopes
         if (personUrn == null || personUrn.isEmpty) {
           try {
             final userInfoResponse = await http.get(
@@ -324,7 +317,7 @@ class LinkedInService {
           }
         }
 
-        // Method 3: Try the /me endpoint (requires r_liteprofile)
+        // method 3: Try the /me endpoint (requires r_liteprofile)
         if (personUrn == null || personUrn.isEmpty) {
           final profileUrn = await _getMemberUrnFromProfile(accessToken);
           if (profileUrn != null) {
@@ -333,7 +326,7 @@ class LinkedInService {
           }
         }
 
-        // If we got it, store it for future use
+        // if we got it, store it for future use
         if (personUrn != null && personUrn.isNotEmpty) {
           await _getLinkedInDocRef(
             userId,
@@ -346,7 +339,7 @@ class LinkedInService {
         }
       }
 
-      // Create share content with a valid member URN
+      // create share content with a valid member URN
       var authorUrn = personUrn;
       if (!authorUrn.startsWith('urn:li:member:')) {
         if (authorUrn.startsWith('urn:li:person:')) {
@@ -371,7 +364,7 @@ class LinkedInService {
         'visibility': {'com.linkedin.ugc.MemberNetworkVisibility': 'PUBLIC'},
       };
 
-      // Post to LinkedIn
+      // post to LinkedIn
       final response = await http.post(
         Uri.parse('$_apiBaseUrl/ugcPosts'),
         headers: {
@@ -416,7 +409,6 @@ class LinkedInService {
     }
   }
 
-  /// Share event to LinkedIn with formatted text
   Future<bool> shareEvent({
     required String title,
     required String description,
@@ -445,7 +437,6 @@ $description
     );
   }
 
-  /// Share announcement to LinkedIn
   Future<bool> shareAnnouncement({
     required String title,
     required String content,
@@ -466,7 +457,6 @@ $content
     );
   }
 
-  /// Share pin to LinkedIn
   Future<bool> sharePin({
     required String pinName,
     String? description,
@@ -488,11 +478,11 @@ $content
 
   Future<void> _openLinkedInShareFallback(String text) async {
     try {
-      // Copy text to clipboard so user can paste it into LinkedIn
+      // copy text to clipboard so user can paste it into LinkedIn
       await Clipboard.setData(ClipboardData(text: text));
       print('Content copied to clipboard. Opening LinkedIn...');
 
-      // Try to open LinkedIn mobile app first with deep link
+      // try to open LinkedIn mobile app first with deep link
       final appUrl = Uri.parse('linkedin://');
       bool openedApp = false;
 
@@ -505,7 +495,7 @@ $content
         print('LinkedIn app not available: $e');
       }
 
-      // If app didn't open, open LinkedIn website
+      // if app didn't open, open LinkedIn website
       if (!openedApp) {
         final webUrl = Uri.parse('https://www.linkedin.com/feed/');
         await launchUrl(
@@ -521,7 +511,6 @@ $content
     }
   }
 
-  /// Disconnect LinkedIn account
   Future<void> disconnect({String? schoolId}) async {
     try {
       final userId = _auth.currentUser?.uid;
@@ -534,7 +523,6 @@ $content
     }
   }
 
-  /// Set auto-post preference
   Future<void> setAutoPost(bool enabled, {String? schoolId}) async {
     try {
       final userId = _auth.currentUser?.uid;
@@ -547,7 +535,7 @@ $content
     }
   }
 
-  // Private helper methods
+  // private helper methods
 
   Future<DocumentSnapshot> _getLinkedInDoc(
     String userId,
