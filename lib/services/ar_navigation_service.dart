@@ -1,28 +1,29 @@
-import 'dart:math' show atan2, cos, sin, pi;
+import 'dart:math' show atan2, cos, sin, pi, sqrt;
+import 'package:flutter/foundation.dart';
 import 'package:geolocator/geolocator.dart';
 import '../models/location_pin_model.dart';
 
 /// Service to handle AR navigation logic, including location tracking,
 /// bearing calculation, and navigation instructions.
 class ARNavigationService {
-  static const double _targetAccuracyMeters = 12.0;
-  static const int _defaultSampleCount = 4;
+  static const double _targetAccuracyMeters = 8.0;
+  static const int _defaultSampleCount = 6;
   
   /// Checks if location permission is currently granted.
   /// Returns true if permission is 'whileInUse' or 'always'.
   Future<bool> checkLocationPermission() async {
     try {
-      print('📍 Checking location permission...');
+      debugPrint('📍 Checking location permission...');
       final permission = await Geolocator.checkPermission();
-      print('📍 Location permission status: $permission');
+      debugPrint('📍 Location permission status: $permission');
       
       final granted = permission == LocationPermission.whileInUse || 
                      permission == LocationPermission.always;
-      print(granted ? '✅ Location permission granted' : '❌ Location permission denied');
+      debugPrint(granted ? '✅ Location permission granted' : '❌ Location permission denied');
       
       return granted;
     } catch (e) {
-      print('❌ Error checking location permission: $e');
+      debugPrint('❌ Error checking location permission: $e');
       return false;
     }
   }
@@ -31,17 +32,17 @@ class ARNavigationService {
   /// Returns true if permission is granted after the request.
   Future<bool> requestLocationPermission() async {
     try {
-      print('🔄 Requesting location permission...');
+      debugPrint('🔄 Requesting location permission...');
       final permission = await Geolocator.requestPermission();
-      print('📍 Location permission after request: $permission');
+      debugPrint('📍 Location permission after request: $permission');
       
       final granted = permission == LocationPermission.whileInUse || 
                      permission == LocationPermission.always;
-      print(granted ? '✅ Location GRANTED' : '❌ Location DENIED');
+      debugPrint(granted ? '✅ Location GRANTED' : '❌ Location DENIED');
       
       return granted;
     } catch (e) {
-      print('❌ Error requesting location permission: $e');
+      debugPrint('❌ Error requesting location permission: $e');
       return false;
     }
   }
@@ -66,7 +67,7 @@ class ARNavigationService {
       // Verify that location services are enabled on the device
       final serviceEnabled = await Geolocator.isLocationServiceEnabled();
       if (!serviceEnabled) {
-        print('Location services are disabled');
+        debugPrint('Location services are disabled');
         return null;
       }
 
@@ -76,13 +77,13 @@ class ARNavigationService {
       if (permission == LocationPermission.denied) {
         permission = await Geolocator.requestPermission();
         if (permission == LocationPermission.denied) {
-          print('Location permissions are denied');
+          debugPrint('Location permissions are denied');
           return null;
         }
       }
       
       if (permission == LocationPermission.deniedForever) {
-        print('Location permissions are permanently denied');
+        debugPrint('Location permissions are permanently denied');
         return null;
       }
 
@@ -108,7 +109,7 @@ class ARNavigationService {
 
       return bestPosition;
     } catch (e) {
-      print('Error getting current location: $e');
+      debugPrint('Error getting current location: $e');
       return null;
     }
   }
@@ -171,6 +172,8 @@ class ARNavigationService {
     required LocationPinModel destination,
     required double currentHeading, // User's current compass heading in degrees
   }) {
+    final destinationAccuracyMeters =
+        (destination.metadata?['capturedAccuracyMeters'] as num?)?.toDouble();
     final distance = calculateDistance(
       fromLatitude: currentPosition.latitude,
       fromLongitude: currentPosition.longitude,
@@ -186,7 +189,7 @@ class ARNavigationService {
     );
 
     // Calculate relative bearing (difference between target bearing and user heading)
-    double relativeBearing = bearing - currentHeading;
+    double relativeBearing = bearing - _normalizeHeading(currentHeading);
     if (relativeBearing < 0) relativeBearing += 360;
     if (relativeBearing > 360) relativeBearing -= 360;
     
@@ -235,10 +238,21 @@ class ARNavigationService {
       direction: direction,
       arrowDirection: arrowDirection,
       destination: destination,
+      currentAccuracyMeters: currentPosition.accuracy,
+      destinationAccuracyMeters: destinationAccuracyMeters,
       currentFloor: 0, // Placeholder for floor detection logic
       destinationFloor: destination.floorLevel,
       needsFloorChange: destination.floorLevel != 0,
     );
+  }
+
+  double _normalizeHeading(double heading) {
+    if (!heading.isFinite) {
+      return 0;
+    }
+
+    final normalized = heading % 360;
+    return normalized < 0 ? normalized + 360 : normalized;
   }
 
   /// Formats a distance in meters to a human-readable string (m or km).
@@ -276,6 +290,8 @@ class NavigationInstruction {
   final String direction; // Text instruction (e.g., "Turn left")
   final String arrowDirection; // Icon identifier for UI
   final LocationPinModel destination; // Target location
+  final double currentAccuracyMeters; // GPS accuracy for the current fix
+  final double? destinationAccuracyMeters; // Accuracy when the destination pin was captured
   final int currentFloor; // User's current floor (estimated)
   final int destinationFloor; // Target floor
   final bool needsFloorChange; // Whether a floor change is required
@@ -287,16 +303,40 @@ class NavigationInstruction {
     required this.direction,
     required this.arrowDirection,
     required this.destination,
+    required this.currentAccuracyMeters,
+    required this.destinationAccuracyMeters,
     required this.currentFloor,
     required this.destinationFloor,
     required this.needsFloorChange,
   });
+
+  double get uncertaintyMeters {
+    final destinationAccuracy = destinationAccuracyMeters ?? 0;
+    return sqrt(
+      (currentAccuracyMeters * currentAccuracyMeters) +
+          (destinationAccuracy * destinationAccuracy),
+    );
+  }
+
+  bool get hasPreciseDistance => uncertaintyMeters <= 4;
+
+  double get minimumReliableDistance =>
+      distance > uncertaintyMeters ? distance - uncertaintyMeters : 0;
+
+  double get maximumReliableDistance => distance + uncertaintyMeters;
 
   /// Returns true if the user is within 3 meters of the destination.
   bool get hasArrived => distance < 3;
 
   /// Returns a formatted string representation of the distance.
   String get distanceFormatted {
+    if (!hasPreciseDistance) {
+      return _formatDistanceRange(
+        minimumReliableDistance,
+        maximumReliableDistance,
+      );
+    }
+
     if (distance < 1) {
       return '${distance.toStringAsFixed(1)} m';
     } else if (distance < 1000) {
@@ -304,6 +344,26 @@ class NavigationInstruction {
     } else {
       return '${(distance / 1000).toStringAsFixed(2)} km';
     }
+  }
+
+  String get distanceContextLabel {
+    if (hasArrived) {
+      return 'You are at the saved pin';
+    }
+
+    if (hasPreciseDistance) {
+      return 'Live distance from your current GPS fix';
+    }
+
+    return 'Estimated range based on GPS and saved pin accuracy';
+  }
+
+  String _formatDistanceRange(double minimumMeters, double maximumMeters) {
+    if (maximumMeters < 1000) {
+      return '${minimumMeters.round()}-${maximumMeters.round()} m';
+    }
+
+    return '${(minimumMeters / 1000).toStringAsFixed(2)}-${(maximumMeters / 1000).toStringAsFixed(2)} km';
   }
 
   /// Returns instructions for changing floors if necessary.
